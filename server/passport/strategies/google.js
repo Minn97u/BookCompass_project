@@ -3,8 +3,8 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../../models/userSchema');
 
 const googleStrategy = new GoogleStrategy({
-    clientID: '566767953402-uuj5q47mqcrn9hu8ra76fb2k6apmkmrb.apps.googleusercontent.com',
-    clientSecret: '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',
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: 'http://localhost:5000/auth/google/callback'
   },
   async (accessToken, refreshToken, profile, done) => {

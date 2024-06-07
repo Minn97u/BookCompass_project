@@ -4,9 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Home Page</h1>
+    <div id="login-status"></div>
     <a href="/auth/google">Login with Google</a>
+    <button id="logout-button">Logout</button>
+
+    <script>
+        $(document).ready(function() {
+            $.ajax({
+                type: 'GET',
+                url: '/auth/check-login',
+                success: function(response) {
+                    if (response.loggedIn) {
+                        $('#login-status').html('<p>Logged in as ' + response.user.name + '</p>');
+                    } else {
+                        $('#login-status').html('<p>Not logged in</p>');
+                    }
+                },
+                error: function(error) {
+                    console.log('Error:', error);
+                }
+            });
+
+            $('#logout-button').click(function() {
+                window.location.href = '/auth/logout';
+            });
+        });
+    </script>
 </body>
 </html>

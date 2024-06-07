@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
@@ -6,6 +8,7 @@ const authRoutes = require('./routes/authRoutes');
 const MongoStore = require('connect-mongo');
 const path = require('path');
 const { swaggerUi, swaggerSpec } = require('./swagger');
+
 
 const app = express();
 // MongoDB 연결

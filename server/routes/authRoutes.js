@@ -13,6 +13,13 @@ const sendMail = require('../utils/sendmail');
  *   description: Authentication endpoints
  */
 
+router.get('/check-login', (req, res) => {
+    if (req.isAuthenticated()) {
+        res.status(200).json({ loggedIn: true, user: req.user });
+    } else {
+        res.status(200).json({ loggedIn: false });
+    }
+});
 /**
  * @swagger
  * /auth/register:
@@ -180,7 +187,7 @@ router.get('/logout', ensureAuthenticated, (req, res) => {
  *       200:
  *         description: Password reset successfully
  *       400:
- *         description: Bad request
+ *         description: Please use social login to access your account
  *       404:
  *         description: User not found
  *       500:
@@ -189,36 +196,36 @@ router.get('/logout', ensureAuthenticated, (req, res) => {
 // 비밀번호 초기화 라우트
 router.post('/reset-password', async (req, res) => {
     const { email } = req.body;
-
     try {
         const user = await User.findOne({ email });
+
         if (!user) {
             return res.status(404).json({ msg: 'User not found' });
         }
 
-        // 8자리 무작위 숫자 생성
-        const newPassword = Math.random().toString().slice(-8);
+        // 소셜 로그인 회원인지 확인
+        if (user.password === null) {
+            return res.status(400).json({ msg: 'Please use social login to access your account' });
+        }
 
-        // 비밀번호 해시화
+        // 비밀번호 초기화 로직
+        const newPassword = Math.random().toString(36).slice(-8);
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-        // 사용자 업데이트
         user.password = hashedPassword;
         await user.save();
 
-        // 이메일 전송
-        const subject = '비밀번호가 변경되었습니다.';
-        const text = `변경된 비밀번호는: ${newPassword} 입니다.`;
-        await sendMail(email, subject, text);
+        // 이메일로 새로운 비밀번호 전송
+        await sendMail(user.email, 'Password Reset', `Your new password is: ${newPassword}`);
 
-        // 응답 전송
-        res.status(200).json({ msg: 'Password reset successfully, please check your email for the new password.' });
+        res.status(200).json({ msg: 'Password has been reset. Please check your email for the new password.' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: 'Server error' });
     }
 });
+
 
 /**
  * @swagger

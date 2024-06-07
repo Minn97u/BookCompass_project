@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Additional Information</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Provide Additional Information</h1>
-    <form action="/auth/additional-info" method="POST">
+    <form id="additional-info-form">
         <label for="region">Region:</label>
         <input type="text" name="region" id="region" required>
         <br>
@@ -16,5 +17,32 @@
         <br>
         <button type="submit">Submit</button>
     </form>
+
+    <script>
+        $(document).ready(function() {
+            $('#additional-info-form').submit(function(event) {
+                event.preventDefault();
+
+                const formData = {
+                    region: $('#region').val(),
+                    favoriteAuthor: $('#favoriteAuthor').val()
+                };
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/auth/additional-info',
+                    data: JSON.stringify(formData),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        alert(response.msg);
+                        window.location.href = '/';  // 원래 페이지로 리디렉션
+                    },
+                    error: function(error) {
+                        alert('An error occurred: ' + error.responseJSON.msg);
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
