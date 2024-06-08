@@ -4,9 +4,49 @@ const Post = require('../models/postSchema');
 const User = require('../models/userSchema'); // User 모델 가져오기
 const commentRoutes = require('./commentRoutes'); // 댓글 라우트 추가
 const { ensureAuthenticated } = require('../middlewares/checklogin');
+const upload = require('../middlewares/upload'); // multer 미들웨어 추가
+/**
+ * @swagger
+ * tags:
+ *   name: Posts
+ *   description: Post management endpoints
+ */
 
 // 게시글 생성
-router.post('/', ensureAuthenticated, async (req, res) => {
+/**
+ * @swagger
+ * /api/posts:
+ *   post:
+ *     summary: Create a new post
+ *     tags: [Posts]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               tag:
+ *                 type: string
+ *               postImg:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       201:
+ *         description: Post created successfully
+ *       400:
+ *         description: Title and content are required
+ *       500:
+ *         description: Server error
+ */
+router.post('/', ensureAuthenticated, upload.single('postImg'), async (req, res) => {
     const { title, content, tag } = req.body;
 
     if (!title || !content) {
@@ -19,6 +59,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
             content,
             tag,
             author: req.user._id,
+            postImg: req.file ? req.file.path : null
         });
 
         const savedPost = await newPost.save();
@@ -29,7 +70,31 @@ router.post('/', ensureAuthenticated, async (req, res) => {
     }
 });
 
+
 // 게시글 목록 불러오기
+/**
+ * @swagger
+ * /api/posts:
+ *   get:
+ *     summary: Get a list of posts
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of posts per page
+ *     responses:
+ *       200:
+ *         description: A list of posts
+ *       500:
+ *         description: Server error
+ */
 router.get('/', async (req, res) => {
     const page = parseInt(req.query.page) || 1; // 페이지 번호, 기본값 1
     const limit = parseInt(req.query.limit) || 10; // 페이지당 항목 수, 기본값 10
@@ -38,12 +103,12 @@ router.get('/', async (req, res) => {
         const posts = await Post.find()
             .populate('author', 'name profilePic') // 작성자 이름과 프로필 사진을 가져오기 위해 populate 사용
             .sort({ createdAt: -1 }) // 새롭게 작성된 글부터 정렬
-            .select('shortId title tag author createdAt updatedAt') // shortId, 제목, 태그, 작성자 이름, 생성 및 수정 시간 선택
+            .select('shortId title tag author postImg createdAt updatedAt') // 필요한 필드 선택
             .skip((page - 1) * limit) // 건너뛸 문서 수
             .limit(limit) // 가져올 문서 수
             .lean(); // lean 메서드를 사용하여 일반 자바스크립트 객체로 변환
 
-        // 작성자 이름만 포함하는 형태로 변환
+        // 작성자 이름과 프로필 사진만 포함하는 형태로 변환
         const transformedPosts = posts.map(post => ({
             shortId: post.shortId,
             title: post.title,
@@ -52,6 +117,7 @@ router.get('/', async (req, res) => {
                 name: post.author.name,
                 profilePic: post.author.profilePic
             },
+            postImg: post.postImg,
             createdAt: post.createdAt,
             updatedAt: post.updatedAt
         }));
@@ -72,12 +138,37 @@ router.get('/', async (req, res) => {
 });
 
 // 게시물 상세 정보 불러오기
+/**
+ * @swagger
+ * /api/posts/{shortId}:
+ *   get:
+ *     summary: Get post details
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: shortId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the post to get
+ *     responses:
+ *       200:
+ *         description: Post details
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
 router.get('/:shortId', async (req, res) => {
     const { shortId } = req.params;
 
     try {
         const post = await Post.findOne({ shortId })
             .populate('author', 'name profilePic') // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+            .populate({
+                path: 'comments.author',
+                select: 'name profilePic' // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+            })
             .lean();
 
         if (!post) {
@@ -93,6 +184,17 @@ router.get('/:shortId', async (req, res) => {
                 name: post.author.name,
                 profilePic: post.author.profilePic
             },
+            postImg: post.postImg,
+            comments: post.comments.map(comment => ({
+                _id: comment._id,
+                author: {
+                    name: comment.author.name,
+                    profilePic: comment.author.profilePic
+                },
+                content: comment.content,
+                createdAt: comment.createdAt,
+                updatedAt: comment.updatedAt
+            })),
             createdAt: post.createdAt,
             updatedAt: post.updatedAt
         };
@@ -105,7 +207,51 @@ router.get('/:shortId', async (req, res) => {
 });
 
 // 게시글 수정
-router.put('/:shortId', ensureAuthenticated, async (req, res) => {
+/**
+ * @swagger
+ * /api/posts/{shortId}:
+ *   put:
+ *     summary: Update a post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: shortId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the post to update
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - title
+ *               - content
+ *             properties:
+ *               title:
+ *                 type: string
+ *               content:
+ *                 type: string
+ *               tag:
+ *                 type: string
+ *               postImg:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Post updated successfully
+ *       400:
+ *         description: Title and content are required
+ *       403:
+ *         description: Not authorized to edit this post
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
+router.put('/:shortId', ensureAuthenticated, upload.single('postImg'), async (req, res) => {
     const { shortId } = req.params;
     const { title, content, tag } = req.body;
 
@@ -129,6 +275,7 @@ router.put('/:shortId', ensureAuthenticated, async (req, res) => {
         post.title = title;
         post.content = content;
         post.tag = tag;
+        post.postImg = req.file ? req.file.path : post.postImg; // 이미지 업데이트
         post.updatedAt = Date.now(); // 수정한 시간 기록
 
         const updatedPost = await post.save();
@@ -139,7 +286,31 @@ router.put('/:shortId', ensureAuthenticated, async (req, res) => {
     }
 });
 
+
 // 게시글 삭제
+/**
+ * @swagger
+ * /api/posts/{shortId}:
+ *   delete:
+ *     summary: Delete a post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: shortId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID of the post to delete
+ *     responses:
+ *       200:
+ *         description: Post deleted successfully
+ *       403:
+ *         description: Not authorized to delete this post
+ *       404:
+ *         description: Post not found
+ *       500:
+ *         description: Server error
+ */
 router.delete('/:shortId', ensureAuthenticated, async (req, res) => {
     const { shortId } = req.params;
 

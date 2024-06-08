@@ -22,6 +22,10 @@ const PostSchema = new Schema({
         ref: 'User',
         required: true,
       },
+      postImg: {
+        type: String,
+        default: null
+      },
       comments: [CommentSchema], // 댓글 스키마를 서브 스키마로 추가
     }, {
       timestamps: true,
