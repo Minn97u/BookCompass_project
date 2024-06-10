@@ -1,4 +1,3 @@
-// 환경 변수 로드
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -12,18 +11,8 @@ const MongoStore = require("connect-mongo");
 
 const app = express();
 //라우트
-
-const parkRoutes = require("./routes/parkRoutes");
-const authRoutes = require("./routes/authRoutes");
-const postRoutes = require("./routes/postRoutes");
-const mypageRoutes = require("./routes/mypageRoutes");
-const libraryRoutes = require("./routes/libraryRoutes");
-const reviewRoutes = require("./routes/reviewRoutes");
-const libraryLocationRoutes = require("./routes/libraryLocationRoutes");
-const parkLocationRoutes = require("./routes/parkLocationRoutes");
+const routes = require("./routes");
 const errorHandler = require("./middlewares/errorHandler");
-const Library = require("./models/librarySchema");
-const Park = require("./models/parkSchema");
 
 // MongoDB Atlas 연결 설정
 mongoose
@@ -73,14 +62,7 @@ app.use(express.static(path.join(__dirname, "../client/public")));
 
 // 라우트 설정
 
-app.use("/api/libraries", libraryRoutes);
-app.use("/api/parks", parkRoutes);
-app.use("/api", authRoutes);
-app.use("/api/posts", postRoutes); //댓글 라우트 포함
-app.use("/api/mypage", mypageRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/library_locations", libraryLocationRoutes);
-app.use("/api/park_locations", parkLocationRoutes);
+app.use("/api", routes);
 
 // 모든 요청에 대해 index.html 파일을 반환
 app.get("*", (req, res) => {

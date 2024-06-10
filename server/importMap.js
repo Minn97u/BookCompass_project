@@ -73,7 +73,7 @@ const insertLibraryData = () => {
 const insertParkData = () => {
     return new Promise((resolve, reject) => {
         const results = [];
-        fs.createReadStream("./data/park.csv")
+        fs.createReadStream("./data/parks.csv")
             .pipe(csv())
             .on("data", (data) => {
                 const mappedData = mapParkFields(data);
