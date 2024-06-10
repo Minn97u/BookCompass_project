@@ -23,6 +23,7 @@ const googleStrategy = new GoogleStrategy({
                 googleId: profile.id,
                 name: profile.displayName,
                 email: profile.emails[0].value,
+                profilePic: profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null,
                 // 다른 필요한 필드들
             });
             await user.save();
