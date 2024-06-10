@@ -20,7 +20,7 @@ const FindEmailForm = ({ setFormType }) => {
     };
     try {
       const res = await postFindEmail(data);
-      console.log('이메일 찾기 성공', res.data[0].email);
+      console.log('이메일 찾기 성공', res);
       setResultText(`가입 이메일 : ${res.data[0].email}`);
     } catch (error) {
       console.error('이메일 찾기 실패:', error);

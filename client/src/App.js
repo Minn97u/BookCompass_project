@@ -6,6 +6,7 @@ import Intro from './pages/Intro';
 import Board from './components/board/Board';
 import Mypage from './pages/Mypage';
 import Main from './pages/Main';
+import EditPage from './pages/EditPage';
 
 const App = () => {
   return (
@@ -17,6 +18,7 @@ const App = () => {
           <Route path='/library' element={<Main />} />
           <Route path='/board' element={<Board />} />
           <Route path='/mypage' element={<Mypage />} />
+          <Route path='/mypage/edit' element={<EditPage />} />
         </Routes>
       </div>
     </BrowserRouter>

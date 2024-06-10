@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import MypageBox from '../components/mypage/MypageBox';
-import AuthModalController from '../components/auth/AuthModalController';
+import AuthModal from '../components/auth/AuthModal';
 import WriteList from '../components/mypage/WriteList';
 import BookMarkList from '../components/mypage/BookMarkList';
 import ReviewList from '../components/mypage/ReviewList';
@@ -19,10 +20,10 @@ const Mypage = () => {
   const [description, setDescription] = useState('내용을 추가하세요.');
   const [showModal, setShowModal] = useState(false);
   const [initialFormType, setInitialFormType] = useState('로그인');
+  const navigate = useNavigate();
 
   const handleSettingClick = () => {
-    setInitialFormType('기본 정보 수정');
-    setShowModal(true);
+    navigate('/mypage/edit');
   };
 
   const handleCloseModal = () => {
@@ -71,7 +72,7 @@ const Mypage = () => {
         />
       </MypageContainer>
       {showModal && (
-        <AuthModalController
+        <AuthModal
           onClose={handleCloseModal}
           initialFormType={initialFormType}
         />

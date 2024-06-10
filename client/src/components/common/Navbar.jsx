@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { ReactComponent as LogoSVG } from '../../assets/icons/Logo.svg';
-import AuthModalController from '../auth/AuthModalController';
+import AuthModal from '../auth/AuthModal';
 import { getLogout } from '../../api/Auth';
 
 function Button({ children, isActive, onClick }) {
@@ -100,10 +100,7 @@ function Navbar() {
         </NavbarContainer>
       </NavbarWrapper>
       {showModal && (
-        <AuthModalController
-          onClose={handleCloseModal}
-          initialFormType='로그인'
-        />
+        <AuthModal onClose={handleCloseModal} initialFormType='로그인' />
       )}
     </>
   );

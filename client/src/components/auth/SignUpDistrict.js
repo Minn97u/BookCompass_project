@@ -66,7 +66,7 @@ const DropdownBox = styled.div`
   justify-content: center;
   align-items: center;
   width: 8.5rem;
-  height: 1.4rem;
+  height: 1.35rem;
   color: #191619;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
@@ -92,6 +92,7 @@ const IconContainer = styled.div`
 const DropdownList = styled.ul`
   position: absolute;
   border-radius: 5px;
+  width: 10rem;
   top: 100%;
   left: 0;
   right: 0;
