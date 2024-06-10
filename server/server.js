@@ -45,7 +45,6 @@ mongoose
 app.use(cors());
 
 // 미들웨어 설정
-app.use(bodyParser.json());
 app.use("/static", express.static(path.join(__dirname, "static")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
