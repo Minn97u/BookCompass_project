@@ -1,6 +1,5 @@
 // 환경 변수 로드
 require("dotenv").config();
-
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -13,7 +12,7 @@ const MongoStore = require("connect-mongo");
 
 const app = express();
 //라우트
-const userRoutes = require("./routes/userRoutes");
+
 const parkRoutes = require("./routes/parkRoutes");
 const authRoutes = require("./routes/authRoutes");
 const postRoutes = require("./routes/postRoutes");
@@ -74,7 +73,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.static(path.join(__dirname, "../client/public")));
 
 // 라우트 설정
-app.use("/api/users", userRoutes);
+
 app.use("/api/libraries", libraryRoutes);
 app.use("/api/parks", parkRoutes);
 app.use("/api", authRoutes);
