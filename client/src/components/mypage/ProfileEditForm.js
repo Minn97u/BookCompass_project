@@ -51,7 +51,6 @@ const ProfileEditForm = () => {
               <Label>기본 위치 설정</Label>
               <SignUpDistrict options={Districts} location={location} />
             </InputBox>
-            <InfoEditBtn>수정</InfoEditBtn>
           </InfoBox>
           <InfoBox>
             <InputBox>
@@ -86,7 +85,7 @@ const ProfileEditForm = () => {
                 />
               </PasswordBox>
             </InputBox>
-            <EditBtn>수정</EditBtn>
+            <EditBtn>변경</EditBtn>
           </PasswordContainer>
         </InputConatiner>
       </EditInfo>

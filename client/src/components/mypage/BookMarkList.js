@@ -50,6 +50,7 @@ const LocationIconImg = styled.img`
 const TextBox = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: left;
 `;
 
 const Title = styled.span`

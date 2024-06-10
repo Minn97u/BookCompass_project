@@ -74,6 +74,7 @@ const TextContainer = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 10px;
+  text-align: left;
 `;
 
 const ReviewText = styled.div`

@@ -34,6 +34,7 @@ const List = styled.div`
 const TextBox = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: left;
 `;
 
 const Title = styled.span`
