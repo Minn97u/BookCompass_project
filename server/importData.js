@@ -6,7 +6,7 @@ dotenv.config();
 
 // MongoDB Atlas 연결 설정
 const client = new MongoClient(
-  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@cluster0.wnsz2zq.mongodb.net/?retryWrites=true&w=majority`
+  `mongodb+srv://KimMIngyu:30PeEHk4ZN3JYlil@cluster0.wnsz2zq.mongodb.net/?retryWrites=true&w=majority`
 );
 
 async function importLibraryData() {
