@@ -1,10 +1,10 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Post = require('../models/postSchema');
-const User = require('../models/userSchema'); // User 모델 가져오기
-const commentRoutes = require('./commentRoutes'); // 댓글 라우트 추가
-const { ensureAuthenticated } = require('../middlewares/checklogin');
-const upload = require('../middlewares/upload'); // multer 미들웨어 추가
+const Post = require("../models/postSchema");
+const User = require("../models/userSchema"); // User 모델 가져오기
+const commentRoutes = require("./commentRoutes"); // 댓글 라우트 추가
+const { ensureAuthenticated } = require("../middlewares/checklogin");
+const upload = require("../middlewares/upload"); // multer 미들웨어 추가
 /**
  * @swagger
  * tags:
@@ -46,30 +46,36 @@ const upload = require('../middlewares/upload'); // multer 미들웨어 추가
  *       500:
  *         description: Server error
  */
-router.post('/', ensureAuthenticated, upload.single('postImg'), async (req, res) => {
-    const { title, content, tag } = req.body;
+router.post(
+    "/",
+    ensureAuthenticated,
+    upload.single("postImg"),
+    async (req, res) => {
+        const { title, content, tag } = req.body;
 
-    if (!title || !content) {
-        return res.status(400).json({ msg: 'Title and content are required' });
+        if (!title || !content) {
+            return res
+                .status(400)
+                .json({ msg: "Title and content are required" });
+        }
+
+        try {
+            const newPost = new Post({
+                title,
+                content,
+                tag,
+                author: req.user._id,
+                postImg: req.file ? req.file.path : null,
+            });
+
+            const savedPost = await newPost.save();
+            res.status(201).json(savedPost);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ msg: "Server error" });
+        }
     }
-
-    try {
-        const newPost = new Post({
-            title,
-            content,
-            tag,
-            author: req.user._id,
-            postImg: req.file ? req.file.path : null
-        });
-
-        const savedPost = await newPost.save();
-        res.status(201).json(savedPost);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server error' });
-    }
-});
-
+);
 
 // 게시글 목록 불러오기
 /**
@@ -95,31 +101,31 @@ router.post('/', ensureAuthenticated, upload.single('postImg'), async (req, res)
  *       500:
  *         description: Server error
  */
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
     const page = parseInt(req.query.page) || 1; // 페이지 번호, 기본값 1
     const limit = parseInt(req.query.limit) || 10; // 페이지당 항목 수, 기본값 10
 
     try {
         const posts = await Post.find()
-            .populate('author', 'name profilePic') // 작성자 이름과 프로필 사진을 가져오기 위해 populate 사용
+            .populate("author", "name profilePic") // 작성자 이름과 프로필 사진을 가져오기 위해 populate 사용
             .sort({ createdAt: -1 }) // 새롭게 작성된 글부터 정렬
-            .select('shortId title tag author postImg createdAt updatedAt') // 필요한 필드 선택
+            .select("shortId title tag author postImg createdAt updatedAt") // 필요한 필드 선택
             .skip((page - 1) * limit) // 건너뛸 문서 수
             .limit(limit) // 가져올 문서 수
             .lean(); // lean 메서드를 사용하여 일반 자바스크립트 객체로 변환
 
         // 작성자 이름과 프로필 사진만 포함하는 형태로 변환
-        const transformedPosts = posts.map(post => ({
+        const transformedPosts = posts.map((post) => ({
             shortId: post.shortId,
             title: post.title,
             tag: post.tag,
             author: {
                 name: post.author.name,
-                profilePic: post.author.profilePic
+                profilePic: post.author.profilePic,
             },
             postImg: post.postImg,
             createdAt: post.createdAt,
-            updatedAt: post.updatedAt
+            updatedAt: post.updatedAt,
         }));
 
         // 전체 게시글 수를 계산하여 페이지네이션 정보 포함
@@ -129,11 +135,11 @@ router.get('/', async (req, res) => {
         res.status(200).json({
             currentPage: page,
             totalPages: totalPages,
-            posts: transformedPosts
+            posts: transformedPosts,
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
@@ -159,20 +165,20 @@ router.get('/', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/:shortId', async (req, res) => {
+router.get("/:shortId", async (req, res) => {
     const { shortId } = req.params;
 
     try {
         const post = await Post.findOne({ shortId })
-            .populate('author', 'name profilePic') // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+            .populate("author", "name profilePic") // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
             .populate({
-                path: 'comments.author',
-                select: 'name profilePic' // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+                path: "comments.author",
+                select: "name profilePic", // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
             })
             .lean();
 
         if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+            return res.status(404).json({ msg: "Post not found" });
         }
 
         const detailedPost = {
@@ -182,27 +188,27 @@ router.get('/:shortId', async (req, res) => {
             tag: post.tag,
             author: {
                 name: post.author.name,
-                profilePic: post.author.profilePic
+                profilePic: post.author.profilePic,
             },
             postImg: post.postImg,
-            comments: post.comments.map(comment => ({
+            comments: post.comments.map((comment) => ({
                 _id: comment._id,
                 author: {
                     name: comment.author.name,
-                    profilePic: comment.author.profilePic
+                    profilePic: comment.author.profilePic,
                 },
                 content: comment.content,
                 createdAt: comment.createdAt,
-                updatedAt: comment.updatedAt
+                updatedAt: comment.updatedAt,
             })),
             createdAt: post.createdAt,
-            updatedAt: post.updatedAt
+            updatedAt: post.updatedAt,
         };
 
         res.status(200).json(detailedPost);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
@@ -251,41 +257,49 @@ router.get('/:shortId', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put('/:shortId', ensureAuthenticated, upload.single('postImg'), async (req, res) => {
-    const { shortId } = req.params;
-    const { title, content, tag } = req.body;
+router.put(
+    "/:shortId",
+    ensureAuthenticated,
+    upload.single("postImg"),
+    async (req, res) => {
+        const { shortId } = req.params;
+        const { title, content, tag } = req.body;
 
-    if (!title || !content) {
-        return res.status(400).json({ msg: 'Title and content are required' });
-    }
-
-    try {
-        const post = await Post.findOne({ shortId });
-
-        if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+        if (!title || !content) {
+            return res
+                .status(400)
+                .json({ msg: "Title and content are required" });
         }
 
-        // 작성자와 현재 로그인한 사용자가 동일한지 확인
-        if (post.author.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ msg: 'You are not authorized to edit this post' });
+        try {
+            const post = await Post.findOne({ shortId });
+
+            if (!post) {
+                return res.status(404).json({ msg: "Post not found" });
+            }
+
+            // 작성자와 현재 로그인한 사용자가 동일한지 확인
+            if (post.author.toString() !== req.user._id.toString()) {
+                return res
+                    .status(403)
+                    .json({ msg: "You are not authorized to edit this post" });
+            }
+
+            // 게시글 수정
+            post.title = title;
+            post.content = content;
+            post.tag = tag;
+            post.postImg = req.file ? req.file.path : post.postImg; // 이미지 업데이트
+            post.updatedAt = Date.now(); // 수정한 시간 기록
+
+            const updatedPost = await post.save();
+            res.status(200).json(updatedPost);
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ msg: "Server error" });
         }
-
-        // 게시글 수정
-        post.title = title;
-        post.content = content;
-        post.tag = tag;
-        post.postImg = req.file ? req.file.path : post.postImg; // 이미지 업데이트
-        post.updatedAt = Date.now(); // 수정한 시간 기록
-
-        const updatedPost = await post.save();
-        res.status(200).json(updatedPost);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ msg: 'Server error' });
     }
-});
-
+);
 
 // 게시글 삭제
 /**
@@ -311,30 +325,32 @@ router.put('/:shortId', ensureAuthenticated, upload.single('postImg'), async (re
  *       500:
  *         description: Server error
  */
-router.delete('/:shortId', ensureAuthenticated, async (req, res) => {
+router.delete("/:shortId", ensureAuthenticated, async (req, res) => {
     const { shortId } = req.params;
 
     try {
         const post = await Post.findOne({ shortId });
 
         if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+            return res.status(404).json({ msg: "Post not found" });
         }
 
         // 작성자와 현재 로그인한 사용자가 동일한지 확인
         if (post.author.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ msg: 'You are not authorized to delete this post' });
+            return res
+                .status(403)
+                .json({ msg: "You are not authorized to delete this post" });
         }
 
         await Post.deleteOne({ shortId });
-        res.status(200).json({ msg: 'Post deleted successfully' });
+        res.status(200).json({ msg: "Post deleted successfully" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
 // 댓글 라우트 포함
-router.use('/:postId/comments', commentRoutes);
+router.use("/:postId/comments", commentRoutes);
 
 module.exports = router;

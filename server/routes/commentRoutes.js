@@ -1,7 +1,7 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router({ mergeParams: true });
-const Post = require('../models/postSchema');
-const { ensureAuthenticated } = require('../middlewares/checklogin');
+const Post = require("../models/postSchema");
+const { ensureAuthenticated } = require("../middlewares/checklogin");
 
 /**
  * @swagger
@@ -45,24 +45,24 @@ const { ensureAuthenticated } = require('../middlewares/checklogin');
  *       500:
  *         description: Server error
  */
-router.post('/', ensureAuthenticated, async (req, res) => {
+router.post("/", ensureAuthenticated, async (req, res) => {
     const { postId } = req.params;
     const { content } = req.body;
 
     if (!content) {
-        return res.status(400).json({ msg: 'Content is required' });
+        return res.status(400).json({ msg: "Content is required" });
     }
 
     try {
         const post = await Post.findOne({ shortId: postId });
 
         if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+            return res.status(404).json({ msg: "Post not found" });
         }
 
         const newComment = {
             author: req.user._id,
-            content: content
+            content: content,
         };
 
         post.comments.push(newComment);
@@ -71,7 +71,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
         res.status(201).json(post.comments);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
@@ -111,21 +111,23 @@ router.post('/', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
     const { postId } = req.params;
 
     try {
-        const post = await Post.findOne({ shortId: postId })
-            .populate('comments.author', 'name profilePic');
+        const post = await Post.findOne({ shortId: postId }).populate(
+            "comments.author",
+            "name profilePic"
+        );
 
         if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+            return res.status(404).json({ msg: "Post not found" });
         }
 
         res.status(200).json(post.comments);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
@@ -172,30 +174,32 @@ router.get('/', async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.put('/:commentId', ensureAuthenticated, async (req, res) => {
+router.put("/:commentId", ensureAuthenticated, async (req, res) => {
     const { postId, commentId } = req.params;
     const { content } = req.body;
 
     if (!content) {
-        return res.status(400).json({ msg: 'Content is required' });
+        return res.status(400).json({ msg: "Content is required" });
     }
 
     try {
         const post = await Post.findOne({ shortId: postId });
 
         if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+            return res.status(404).json({ msg: "Post not found" });
         }
 
         const comment = post.comments.id(commentId);
 
         if (!comment) {
-            return res.status(404).json({ msg: 'Comment not found' });
+            return res.status(404).json({ msg: "Comment not found" });
         }
 
         // 작성자와 현재 로그인한 사용자가 동일한지 확인
         if (comment.author.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ msg: 'You are not authorized to edit this comment' });
+            return res
+                .status(403)
+                .json({ msg: "You are not authorized to edit this comment" });
         }
 
         comment.content = content;
@@ -205,7 +209,7 @@ router.put('/:commentId', ensureAuthenticated, async (req, res) => {
         res.status(200).json(comment);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
@@ -239,35 +243,37 @@ router.put('/:commentId', ensureAuthenticated, async (req, res) => {
  *       500:
  *         description: Server error
  */
-router.delete('/:commentId', ensureAuthenticated, async (req, res) => {
+router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
     const { postId, commentId } = req.params;
 
     try {
         const post = await Post.findOne({ shortId: postId });
 
         if (!post) {
-            return res.status(404).json({ msg: 'Post not found' });
+            return res.status(404).json({ msg: "Post not found" });
         }
 
         const comment = post.comments.id(commentId);
 
         if (!comment) {
-            return res.status(404).json({ msg: 'Comment not found' });
+            return res.status(404).json({ msg: "Comment not found" });
         }
 
         // 작성자와 현재 로그인한 사용자가 동일한지 확인
         if (comment.author.toString() !== req.user._id.toString()) {
-            return res.status(403).json({ msg: 'You are not authorized to delete this comment' });
+            return res
+                .status(403)
+                .json({ msg: "You are not authorized to delete this comment" });
         }
 
         // 댓글 삭제
         post.comments.pull(commentId);
         await post.save();
 
-        res.status(200).json({ msg: 'Comment deleted successfully' });
+        res.status(200).json({ msg: "Comment deleted successfully" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ msg: 'Server error' });
+        res.status(500).json({ msg: "Server error" });
     }
 });
 
