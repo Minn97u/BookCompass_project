@@ -17,8 +17,6 @@ const postRoutes = require("./routes/postRoutes");
 const mypageRoutes = require("./routes/mypageRoutes");
 const libraryRoutes = require("./routes/libraryRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
-const libraryLocationRoutes = require("./routes/libraryLocationRoutes");
-const parkLocationRoutes = require("./routes/parkLocationRoutes");
 const errorHandler = require("./middlewares/errorHandler");
 
 // MongoDB Atlas 연결 설정
@@ -39,14 +37,13 @@ mongoose
 
 // CORS 설정 추가
 const corsOptions = {
-    origin: 'http://localhost:3000', // 클라이언트 도메인 명시
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    origin: "http://localhost:3000", // 클라이언트 도메인 명시
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // withCredentials 지원
-    allowedHeaders: 'Content-Type,Authorization'
-  };
+    allowedHeaders: "Content-Type,Authorization",
+};
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
-
+app.options("*", cors(corsOptions));
 
 // 미들웨어 설정
 app.use("/static", express.static(path.join(__dirname, "static")));
@@ -65,8 +62,8 @@ app.use(
         }),
         cookie: {
             maxAge: 30 * 60 * 1000, //30분
-            secure: false, 
-            httpOnly: true
+            secure: false,
+            httpOnly: true,
         },
     })
 );
@@ -87,8 +84,6 @@ app.use("/api/posts", postRoutes);
 app.use("/api/mypage", mypageRoutes);
 app.use("/api/libraries", libraryRoutes);
 app.use("/api/reviews", reviewRoutes);
-app.use("/api/library-locations", libraryLocationRoutes);
-app.use("/api/park-locations", parkLocationRoutes);
 
 // 모든 요청에 대해 index.html 파일을 반환
 app.get("*", (req, res) => {
