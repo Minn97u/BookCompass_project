@@ -115,19 +115,19 @@ router.post('/register', async (req, res, next) => {
  *         description: Invalid credentials
  */
 router.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', (err, user) => {
         if (err) {
             return next(err);
         }
         if (!user) {
-            return res.status(400).json({ msg: info.message });
+            return res.status(400).json({ msg: "로그인 실패" });
         }
 
         req.logIn(user, err => {
             if (err) {
                 return next(err);
             }
-            res.status(200).json({ msg: 'Logged in successfully', user: { id: user._id, name: user.name, email: user.email, region: user.region } });
+            res.status(200).json({ msg: '로그인 성공' });
         });
     })(req, res, next);
 });
