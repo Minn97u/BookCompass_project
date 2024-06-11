@@ -31,6 +31,7 @@ const Board = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [posts, setPosts] = useState([]);
+  const [userName, setUserName] = useState(localStorage.getItem('userName'));
 
   // const pagesToShow = 5;
   const itemsPerPage = 10;
@@ -374,6 +375,12 @@ const Board = () => {
               <ModalDate>
                 {new Date(selectedItem.createdAt).toLocaleString()}
               </ModalDate>
+              {userName === selectedItem.author.name && (
+                <ActionButtons>
+                  <TextButton onClick={handleEditClick}>수정</TextButton>
+                  <TextButton onClick={handleDeleteClick}>삭제</TextButton>
+                </ActionButtons>
+              )}
               <ModalAuthor>{selectedItem.author.name}</ModalAuthor>
             </ModalHeader>
             <HrLine />
@@ -392,10 +399,6 @@ const Board = () => {
               <CommentSection>
                 <FlexContainer>
                   <h3>댓글</h3>
-                  <ActionButtons>
-                    <TextButton onClick={handleEditClick}>수정</TextButton>
-                    <TextButton onClick={handleDeleteClick}>삭제</TextButton>
-                  </ActionButtons>
                 </FlexContainer>
                 <CommentInput
                   placeholder='내용을 입력해 주세요.'
@@ -475,6 +478,10 @@ const BoardContent = styled.div`
   gap: 1.25rem;
   width: 100%;
   box-sizing: border-box;
+
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
+  }
 `;
 
 const BoardItem = styled.div`
@@ -666,8 +673,9 @@ const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 0.625rem;
-  margin-top: 1.25rem;
   height: 1.5rem;
+  margin-top: 0.5rem;
+  margin-left: 1.25rem;
 `;
 
 const TextButton = styled.span`
