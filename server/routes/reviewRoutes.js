@@ -10,7 +10,15 @@ router.get("/", async (req, res, next) => {
         const reviews = await Review.find()
             .populate("user")
             .populate("library");
-        res.json(reviews);
+
+        const formattedReviews = reviews.map((review) => ({
+            user: review.user.name,
+            rating: review.rating,
+            comment: review.comment,
+            date: review.createdAt,
+        }));
+
+        res.json(formattedReviews);
     } catch (error) {
         next(error);
     }
@@ -55,14 +63,18 @@ router.post("/", ensureAuthenticated, async (req, res, next) => {
     }
 });
 
-// 리뷰 삭제
-router.delete("/:reviewId", ensureAuthenticated, async (req, res, next) => {
+// 리뷰 수정
+router.put("/:reviewId", ensureAuthenticated, async (req, res, next) => {
     try {
         const { reviewId } = req.params;
+        const { rating, comment } = req.body;
+
         const review = await Review.findById(reviewId);
 
         if (review) {
-            await review.remove();
+            review.rating = rating;
+            review.comment = comment;
+            await review.save();
 
             // 도서관의 평균 별점 업데이트
             const reviews = await Review.find({ library: review.library });
@@ -72,7 +84,7 @@ router.delete("/:reviewId", ensureAuthenticated, async (req, res, next) => {
 
             await Library.findByIdAndUpdate(review.library, { averageRating });
 
-            res.status(200).send("리뷰를 삭제했습니다.");
+            res.json(review);
         } else {
             res.status(404).send("리뷰를 찾을 수 없습니다.");
         }
