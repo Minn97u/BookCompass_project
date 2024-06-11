@@ -69,10 +69,26 @@ export const deletePosts = async (shortId) => {
 
 export const postComments = async (data, shortId) => {
   try {
-    const res = await axios.post(`${baseURL}/api/posts/${shortId}`, data, {
+    const res = await axios.post(
+      `${baseURL}/api/posts/${shortId}/comments`,
+      data,
+      {
+        withCredentials: true
+      }
+    );
+    console.log('게시 완료', res);
+    return res.data;
+  } catch (error) {
+    console.error('게시 오류', error);
+    throw error;
+  }
+};
+
+export const deleteComments = async (shortId, commentId) => {
+  try {
+    const res = await axios.delete(`${baseURL}/api/posts/${shortId}/comments`, {
       withCredentials: true
     });
-    console.log('게시 완료', res);
     return res.data;
   } catch (error) {
     console.error('게시 오류', error);

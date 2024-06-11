@@ -15,7 +15,8 @@ import {
   postPosts,
   updatePosts,
   deletePosts,
-  postComments
+  postComments,
+  deleteComments
 } from '../../api/BoardApi.js';
 
 const Board = () => {
@@ -35,20 +36,19 @@ const Board = () => {
 
   // const pagesToShow = 5;
   const itemsPerPage = 10;
+  const fetchItems = async (page = currentPage) => {
+    try {
+      const res = await getPosts(page, itemsPerPage);
+      setCurrentPage(res.currentPage);
+      setTotalPages(res.totalPages);
+      setPosts(res.posts);
+      console.log('게시글', posts);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const res = await getPosts(currentPage, itemsPerPage);
-        setCurrentPage(res.currentPage);
-        setTotalPages(res.totalPages);
-        setPosts(res.posts);
-        console.log('게시글', posts);
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      }
-    };
-
     fetchItems();
   }, [currentPage]);
 
@@ -128,9 +128,9 @@ const Board = () => {
       if (selectedFile) {
         formData.append('postImg', selectedFile);
       }
-      console.log(selectedFile);
       const response = await postPosts(formData);
       console.log('Post submitted successfully:', response.data);
+      await fetchItems();
       closeModal();
     } catch (error) {
       console.error('Error submitting post:', error);
@@ -160,6 +160,7 @@ const Board = () => {
         }
         const response = await updatePosts(formData, selectedItem.shortId);
         console.log('Post edited successfully:', response.data);
+        await fetchItems();
         closeModal();
       } catch (error) {
         console.error('Error editing post:', error);
@@ -172,6 +173,7 @@ const Board = () => {
       try {
         const response = await deletePosts(selectedItem.shortId);
         console.log('삭제 완료', response.data);
+        await fetchItems();
         closeModal();
       } catch (error) {
         console.error('삭제 오류', error);
@@ -179,20 +181,47 @@ const Board = () => {
     }
   };
 
-  const handleCommentSubmit = async (shortId) => {
-    try {
-      const data = {
-        content: commentText
+  const handleCommentSubmit = async () => {
+    if (selectedItem) {
+      const newComment = {
+        content: commentText,
+        author: { name: userName } // 현재 사용자 이름을 사용, 실제 구현에 따라 다를 수 있음
       };
-      const response = await postComments(data, shortId);
-      console.log('Comment submitted successfully:', response.data);
-    } catch (error) {
-      console.error('Error submitting comment:', error);
+
+      // 먼저 클라이언트 상태에 댓글 추가
+      const updatedComments = [...selectedItem.comments, newComment];
+      setSelectedItem({ ...selectedItem, comments: updatedComments });
+      setCommentText('');
+
+      try {
+        // 서버에 댓글 데이터 전송
+        const data = { content: commentText };
+        await postComments(data, selectedItem.shortId);
+        console.log('Comment submitted successfully');
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+        setSelectedItem({ ...selectedItem, comments: selectedItem.comments });
+      }
     }
   };
 
   const handleCommentInputChange = (e) => {
     setCommentText(e.target.value);
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    if (selectedItem) {
+      try {
+        await deleteComments(selectedItem.shortId, commentId);
+        const updatedComments = selectedItem.comments.filter(
+          (comment) => comment.shortId !== commentId
+        );
+        setSelectedItem({ ...selectedItem, comments: updatedComments });
+        console.log('댓글 삭제 완료');
+      } catch (error) {
+        console.error('댓글 삭제 오류', error);
+      }
+    }
   };
 
   // const totalPages = Math.ceil(items.length / itemsPerPage);
@@ -405,7 +434,9 @@ const Board = () => {
                   value={commentText}
                   onChange={handleCommentInputChange}
                 />
-                <CommentButton onClick={handleCommentSubmit}>
+                <CommentButton
+                  onClick={() => handleCommentSubmit(selectedItem.shortId)}
+                >
                   등록
                 </CommentButton>
                 <CommentList>
@@ -417,6 +448,13 @@ const Board = () => {
                       <CommentContent>
                         <strong>{comment.author.name}</strong>
                         <p>{comment.content}</p>
+                        {/* {userName === comment.author.name && (
+                          <TextButton
+                            onClick={() => handleCommentDelete(comment.shortId)}
+                          >
+                            삭제
+                          </TextButton>
+                        )} */}
                       </CommentContent>
                     </CommentItem>
                   ))}
