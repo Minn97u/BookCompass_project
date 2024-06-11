@@ -127,7 +127,9 @@ router.post('/login', (req, res, next) => {
             if (err) {
                 return next(err);
             }
-            res.status(200).json({ msg: '로그인 성공' });
+            res.status(200).json({ msg: '로그인 성공',  user: { 
+                id: user._id, name: user.name, email: user.email, region: user.region 
+            }});
         });
     })(req, res, next);
 });
