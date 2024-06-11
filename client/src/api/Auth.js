@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3001';
+const baseURL = 'http://localhost:5000';
 import axios from 'axios';
 
 export const postLogin = async (data) => {
@@ -35,8 +35,8 @@ export const postSignup = async (data) => {
 
 export const getGoogleSignup = async () => {
   try {
-    await axios.get(`${baseURL}/api/google/callback`);
-    console.log('구글 회원가입 완료');
+    const res = await axios.get(`${baseURL}/api/google/callback`);
+    console.log('구글 회원가입 완료', res);
   } catch (error) {
     console.error('구글 회원가입 오류:', error);
     throw error;
@@ -45,8 +45,8 @@ export const getGoogleSignup = async () => {
 
 export const getLogout = async () => {
   try {
-    await axios.get(`${baseURL}/api/logout`);
-    console.log('로그아웃 완료');
+    const res = await axios.get(`${baseURL}/api/logout`);
+    console.log('로그아웃 완료', res);
   } catch (error) {
     console.error('로그아웃 오류:', error);
     throw error;
@@ -82,6 +82,17 @@ export const postChangePassword = async (data) => {
     return res;
   } catch (error) {
     console.error('비밀번호 변경 오류:', error);
+    throw error;
+  }
+};
+
+export const getUserInfo = async () => {
+  try {
+    const res = await axios.get(`${baseURL}/api/additional-info`);
+    console.log('유저 정보 조회 완료', res);
+    return res;
+  } catch (error) {
+    console.error('유저 정보 조회 오류:', error);
     throw error;
   }
 };

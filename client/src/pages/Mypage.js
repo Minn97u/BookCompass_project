@@ -13,6 +13,7 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
+import { getUserInfo } from '../api/Auth';
 
 const Mypage = () => {
   const [name, setName] = useState('이름');
@@ -31,8 +32,20 @@ const Mypage = () => {
   };
 
   useEffect(() => {
-    const user = localStorage.getItem('userId');
-    console.log(user);
+    const fetchUserInfo = async () => {
+      try {
+        const res = await getUserInfo();
+        const userInfo = res.data;
+        console.log(userInfo);
+        // setName(userInfo.name);
+        // setEmail(userInfo.email);
+        // setDescription(userInfo.description);
+      } catch (error) {
+        console.error('유저 정보 조회 오류:', error);
+      }
+    };
+
+    fetchUserInfo();
   }, []);
 
   return (

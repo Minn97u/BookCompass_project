@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import Districts from '../auth/Districts';
 import SignUpDistrict from '../auth/SignUpDistrict';
+import { postUserInfo } from '../../api/Auth';
 
 const EditInfo = ({
   region,
@@ -10,6 +11,19 @@ const EditInfo = ({
   setFoundAnswer,
   location
 }) => {
+  const handleEditUserInfo = async () => {
+    const data = {
+      region: location,
+      favoriteAuthor: foundAnswer
+    };
+    try {
+      const res = await postUserInfo(data);
+      console.log('유저 정보 편집 성공:', res);
+    } catch (error) {
+      console.error('유저 정보 편집 실패:', error);
+    }
+  };
+
   return (
     <EditInfoContainer>
       <SubTitle>개인 정보</SubTitle>
@@ -31,7 +45,7 @@ const EditInfo = ({
             onChange={(e) => setFoundAnswer(e.target.value)}
           />
         </InputBox>
-        <EditBtn>수정</EditBtn>
+        <EditBtn onClick={handleEditUserInfo}>수정</EditBtn>
       </InfoBox>
     </EditInfoContainer>
   );
