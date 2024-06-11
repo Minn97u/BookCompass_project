@@ -22,6 +22,8 @@ const LoginForm = ({ setFormType, onClose }) => {
       console.log('로그인 성공:', res);
       localStorage.setItem('userId', res.data.user.id);
       localStorage.setItem('userName', res.data.user.name);
+      localStorage.setItem('userRegion', res.data.user.region);
+      localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
       onClose();
       window.location.href = '/';
     } catch (error) {
