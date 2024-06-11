@@ -39,13 +39,14 @@ mongoose
 
 // CORS 설정 추가
 const corsOptions = {
-    origin: "http://localhost:3001", // 클라이언트 URL
-    credentials: true,
-};
-
+    origin: 'http://localhost:3000', // 클라이언트 도메인 명시
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // withCredentials 지원
+    allowedHeaders: 'Content-Type,Authorization'
+  };
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-app.use(cors());
 
 // 미들웨어 설정
 app.use("/static", express.static(path.join(__dirname, "static")));
@@ -63,8 +64,9 @@ app.use(
             collectionName: "sessions",
         }),
         cookie: {
-            maxAge: 180 * 60 * 1000, // 3시간
-            sameSite: "none",
+            maxAge: 30 * 60 * 1000, //30분
+            secure: false, 
+            httpOnly: true
         },
     })
 );
