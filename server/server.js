@@ -11,7 +11,14 @@ const MongoStore = require("connect-mongo");
 
 const app = express();
 //라우트
-const routes = require("./routes");
+const parkRoutes = require("./routes/parkRoutes");
+const authRoutes = require("./routes/authRoutes");
+const postRoutes = require("./routes/postRoutes");
+const mypageRoutes = require("./routes/mypageRoutes");
+const libraryRoutes = require("./routes/libraryRoutes");
+const reviewRoutes = require("./routes/reviewRoutes");
+const libraryLocationRoutes = require("./routes/libraryLocationRoutes");
+const parkLocationRoutes = require("./routes/parkLocationRoutes");
 const errorHandler = require("./middlewares/errorHandler");
 
 // MongoDB Atlas 연결 설정
@@ -31,6 +38,13 @@ mongoose
     });
 
 // CORS 설정 추가
+const corsOptions = {
+    origin: "http://localhost:3001", // 클라이언트 URL
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 app.use(cors());
 
 // 미들웨어 설정
@@ -48,7 +62,10 @@ app.use(
             mongoUrl: `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/TEST`,
             collectionName: "sessions",
         }),
-        cookie: { maxAge: 180 * 60 * 1000 }, // 3시간
+        cookie: {
+            maxAge: 180 * 60 * 1000, // 3시간
+            sameSite: "none",
+        },
     })
 );
 app.use(passport.initialize());
@@ -62,7 +79,14 @@ app.use(express.static(path.join(__dirname, "../client/public")));
 
 // 라우트 설정
 
-app.use("/api", routes);
+app.use("/api/parks", parkRoutes);
+app.use("/api", authRoutes);
+app.use("/api/posts", postRoutes);
+app.use("/api/mypage", mypageRoutes);
+app.use("/api/libraries", libraryRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/library-locations", libraryLocationRoutes);
+app.use("/api/park-locations", parkLocationRoutes);
 
 // 모든 요청에 대해 index.html 파일을 반환
 app.get("*", (req, res) => {
