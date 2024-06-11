@@ -21,6 +21,7 @@ const LoginForm = ({ setFormType, onClose }) => {
       const res = await postLogin(data);
       console.log('로그인 성공:', res);
       localStorage.setItem('userId', res.data.user.id);
+      localStorage.setItem('userName', res.data.user.name);
       onClose();
       window.location.href = '/';
     } catch (error) {

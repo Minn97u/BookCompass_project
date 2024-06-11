@@ -13,7 +13,7 @@ const EditInfo = ({
 }) => {
   const handleEditUserInfo = async () => {
     const data = {
-      region: location,
+      region: region || location,
       favoriteAuthor: foundAnswer
     };
     try {

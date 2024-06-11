@@ -16,9 +16,7 @@ function Button({ children, isActive, onClick }) {
 function Navbar() {
   const [activeButton, setActiveButton] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    !!localStorage.getItem('userId')
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     setIsLoggedIn(!!localStorage.getItem('userId'));
@@ -38,22 +36,22 @@ function Navbar() {
     setShowModal(true);
   };
 
-  // const handleLogoutClick = async () => {
-  //   try {
-  //     await getLogout();
-  //     setIsLoggedIn(false);
-  //     localStorage.removeItem('userId');
-  //     window.location.href = '/';
-  //   } catch (error) {
-  //     console.error('로그아웃 오류:', error);
-  //   }
-  // };
-
-  const handleLogoutClick = () => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('userId');
-    window.location.href = '/';
+  const handleLogoutClick = async () => {
+    try {
+      await getLogout();
+      setIsLoggedIn(false);
+      localStorage.removeItem('userId');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+    }
   };
+
+  // const handleLogoutClick = () => {
+  //   setIsLoggedIn(false);
+  //   localStorage.removeItem('userId');
+  //   window.location.href = '/';
+  // };
 
   const handleCloseModal = () => {
     setShowModal(false);
