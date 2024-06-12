@@ -8,12 +8,13 @@ const Park = require("./models/parkSchema");
 dotenv.config();
 
 mongoose.connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PWD}@cluster0.wnsz2zq.mongodb.net/${process.env.DB_NAME}`,
+    `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/TEST1`,
     { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
 // CSV 파일 필드 매핑 함수 (도서관)
 const mapLibraryFields = (data) => ({
+    id: data["도서관ID"],
     name: data["도서관명"],
     district: data["구명"],
     address: data["주소"],
@@ -52,6 +53,11 @@ const insertLibraryData = () => {
             })
             .on("end", async () => {
                 try {
+                    // 기존 데이터 삭제
+                    await Library.deleteMany({});
+                    console.log("기존 도서관 데이터가 삭제되었습니다.");
+
+                    // 새로운 데이터 삽입
                     await Library.insertMany(results);
                     console.log("도서관 데이터가 성공적으로 삽입되었습니다.");
                     resolve();
@@ -67,7 +73,7 @@ const insertLibraryData = () => {
 const insertParkData = () => {
     return new Promise((resolve, reject) => {
         const results = [];
-        fs.createReadStream("./data/park.csv")
+        fs.createReadStream("./data/parks.csv")
             .pipe(csv())
             .on("data", (data) => {
                 const mappedData = mapParkFields(data);
@@ -79,6 +85,11 @@ const insertParkData = () => {
             })
             .on("end", async () => {
                 try {
+                    // 기존 데이터 삭제
+                    await Park.deleteMany({});
+                    console.log("기존 공원 데이터가 삭제되었습니다.");
+
+                    // 새로운 데이터 삽입
                     await Park.insertMany(results);
                     console.log("공원 데이터가 성공적으로 삽입되었습니다.");
                     resolve();

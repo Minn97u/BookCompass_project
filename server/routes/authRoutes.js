@@ -10,19 +10,13 @@ const sendMail = require('../utils/sendmail');
  * @swagger
  * tags:
  *   name: Auth
- *   description: Authentication endpoints
+ *   description: Auth endpoints
  */
 
-router.get('/check-login', (req, res) => {
-    if (req.isAuthenticated()) {
-        res.status(200).json({ loggedIn: true, user: req.user });
-    } else {
-        res.status(200).json({ loggedIn: false });
-    }
-});
+//회원가입
 /**
  * @swagger
- * /auth/register:
+ * /api/register:
  *   post:
  *     summary: Register a new user
  *     tags: [Auth]
@@ -32,6 +26,12 @@ router.get('/check-login', (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *               - region
+ *               - favoriteAuthor
  *             properties:
  *               name:
  *                 type: string
@@ -43,19 +43,11 @@ router.get('/check-login', (req, res) => {
  *                 type: string
  *               favoriteAuthor:
  *                 type: string
- *             required:
- *               - name
- *               - email
- *               - password
- *               - region
- *               - favoriteAuthor
  *     responses:
  *       201:
  *         description: User registered successfully
  *       400:
- *         description: Bad request
- *       500:
- *         description: Server error
+ *         description: Input validation error or email already exists
  */
 router.post('/register', async (req, res, next) => {
     const { name, email, password, region, favoriteAuthor } = req.body;
@@ -63,7 +55,7 @@ router.post('/register', async (req, res, next) => {
 
     // 입력값 검증
     if (!name || !email || !password || !region || !favoriteAuthor) {
-        errors.push({ msg: 'Please enter all fields' });
+        errors.push({ msg: '모두 입력해 주세요' });
     }
 
     if (errors.length > 0) {
@@ -73,7 +65,7 @@ router.post('/register', async (req, res, next) => {
     try {
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
-            return res.status(400).json({ msg: 'Email already exists' });
+            return res.status(400).json({ msg: '해당 이메일로 가입한 회원이 이미 존재합니다' });
         }
 
         // 비밀번호 해시화
@@ -89,17 +81,18 @@ router.post('/register', async (req, res, next) => {
         });
 
         await newUser.save();
-        res.status(201).json({ msg: 'User registered successfully' });
+        res.status(201).json({ msg: '회원가입이 완료되었습니다' });
     } catch (err) {
         next(err);  // 에러를 전역 에러 핸들러로 전달
     }
 });
 
+// 로그인 라우트
 /**
  * @swagger
- * /auth/login:
+ * /api/login:
  *   post:
- *     summary: Login a user
+ *     summary: Log in a user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -107,70 +100,94 @@ router.post('/register', async (req, res, next) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
+ *               - password
  *             properties:
  *               email:
  *                 type: string
  *               password:
  *                 type: string
- *             required:
- *               - email
- *               - password
  *     responses:
  *       200:
  *         description: Logged in successfully
  *       400:
- *         description: Bad request
- *       500:
- *         description: Server error
+ *         description: Invalid credentials
  */
-
-// 로그인 라우트
 router.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', (err, user) => {
         if (err) {
             return next(err);
         }
         if (!user) {
-            return res.status(400).json({ msg: info.message });
+            return res.status(400).json({ msg: "로그인 실패" });
         }
 
         req.logIn(user, err => {
             if (err) {
                 return next(err);
             }
-            res.status(200).json({ msg: 'Logged in successfully', user: { id: user._id, name: user.name, email: user.email, region: user.region } });
+            res.status(200).json({ msg: '로그인 성공',  user: { 
+                id: user._id, name: user.name, email: user.email, region: user.region, favoriteAuthor: user.favoriteAuthor
+            }});
         });
     })(req, res, next);
 });
 
+
+// 로그아웃 라우트
 /**
  * @swagger
- * /auth/logout:
+ * /api/logout:
  *   get:
- *     summary: Logout a user
+ *     summary: Log out a user
  *     tags: [Auth]
  *     responses:
  *       200:
- *         description: Logged out successfully
+ *         description: 로그아웃 되었습니다
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: 로그아웃 되었습니다
  *       500:
- *         description: Server error
+ *         description: 로그아웃 실패 또는 세션 삭제에 실패했습니다
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 msg:
+ *                   type: string
+ *                   example: 로그아웃 실패했습니다
+ *                 error:
+ *                   type: string
+ *                   example: 세션 삭제에 실패했습니다
  */
-
-// 로그아웃 라우트
 router.get('/logout', ensureAuthenticated, (req, res) => {
     req.logout(err => {
         if (err) {
-            return res.status(500).json({ msg: 'Logout failed' });
+            return res.status(500).json({ msg: '로그아웃 실패했습니다' });
         }
-        res.status(200).json({ msg: 'Logged out successfully' });
+        req.session.destroy(err => {
+            if (err) {
+                return res.status(500).json({ msg: '세션 삭제에 실패했습니다', error: err });
+            }
+            res.clearCookie('connect.sid'); // 세션 쿠키 삭제
+            return res.status(200).json({ msg: '로그아웃 되었습니다' });
+        });
     });
 });
 
+// 비밀번호 초기화 라우트
 /**
  * @swagger
- * /auth/reset-password:
+ * /api/reset-password:
  *   post:
- *     summary: Reset user password
+ *     summary: Reset a user's password
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -178,34 +195,31 @@ router.get('/logout', ensureAuthenticated, (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - email
  *             properties:
  *               email:
  *                 type: string
- *             required:
- *               - email
  *     responses:
  *       200:
  *         description: Password reset successfully
- *       400:
- *         description: Please use social login to access your account
  *       404:
  *         description: User not found
  *       500:
  *         description: Server error
  */
-// 비밀번호 초기화 라우트
 router.post('/reset-password', async (req, res) => {
     const { email } = req.body;
     try {
         const user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
+            return res.status(404).json({ msg: '해당 이메일로 가입한 유저를 찾을 수 없습니다' });
         }
 
         // 소셜 로그인 회원인지 확인
         if (user.password === null) {
-            return res.status(400).json({ msg: 'Please use social login to access your account' });
+            return res.status(400).json({ msg: '소셜로그인을 진행해 주세요' });
         }
 
         // 비밀번호 초기화 로직
@@ -219,7 +233,7 @@ router.post('/reset-password', async (req, res) => {
         // 이메일로 새로운 비밀번호 전송
         await sendMail(user.email, 'Password Reset', `Your new password is: ${newPassword}`);
 
-        res.status(200).json({ msg: 'Password has been reset. Please check your email for the new password.' });
+        res.status(200).json({ msg: '비밀번호가 초기화 되었습니다. 이메일 주소로 전송된 메일을 확인해 주세요' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: 'Server error' });
@@ -227,11 +241,12 @@ router.post('/reset-password', async (req, res) => {
 });
 
 
+// 비밀번호 변경 라우트
 /**
  * @swagger
- * /auth/change-password:
+ * /api/change-password:
  *   post:
- *     summary: Change user password
+ *     summary: Change the current user's password
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -239,42 +254,47 @@ router.post('/reset-password', async (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
  *             properties:
  *               currentPassword:
  *                 type: string
  *               newPassword:
  *                 type: string
- *             required:
- *               - currentPassword
- *               - newPassword
  *     responses:
  *       200:
  *         description: Password changed successfully
  *       400:
- *         description: Bad request
+ *         description: Invalid current password or input validation error
  *       404:
  *         description: User not found
  *       500:
  *         description: Server error
  */
-// 비밀번호 변경 라우트
 router.post('/change-password', ensureAuthenticated, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
     
+
     if (!currentPassword || !newPassword) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
+        return res.status(400).json({ msg: '모두 입력해 주세요' });
     }
 
     try {
         const user = await User.findById(req.user.id);
         if (!user) {
-            return res.status(404).json({ msg: 'User not found' });
+            return res.status(404).json({ msg: '유저를 찾을 수 없습니다' });
+        }
+
+        // 소셜 로그인 회원인지 확인
+        if (user.password === null) {
+            return res.status(400).json({ msg: '소셜회원은 비밀번호를 변경할 수 없습니다' });
         }
 
         // 기존 비밀번호 확인
         const isMatch = await bcrypt.compare(currentPassword, user.password);
         if (!isMatch) {
-            return res.status(400).json({ msg: 'Current password is incorrect' });
+            return res.status(403).json({ msg: '기존 비밀번호를 확인해 주세요' });
         }
 
         // 새로운 비밀번호 해시화
@@ -285,60 +305,48 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
         user.password = hashedPassword;
         await user.save();
 
-        res.status(200).json({ msg: 'Password changed successfully' });
+        res.status(200).json({ msg: '비밀번호가 변경되었습니다' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: 'Server error' });
     }
 });
 
-// Google OAuth 라우트 추가
+//구글 로그인
 /**
  * @swagger
- * /auth/google:
+ * /api/google:
  *   get:
- *     summary: Login with Google
+ *     summary: Authenticate with Google
  *     tags: [Auth]
  *     responses:
  *       302:
- *         description: Redirects to Google for authentication
+ *         description: Redirect to Google for authentication
  */
 router.get('/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 /**
  * @swagger
- * /auth/google/callback:
+ * /api/google/callback:
  *   get:
- *     summary: Google OAuth callback
+ *     summary: Google authentication callback
  *     tags: [Auth]
- *     parameters:
- *       - in: query
- *         name: code
- *         schema:
- *           type: string
- *         required: true
- *         description: The authorization code returned by Google
  *     responses:
  *       302:
- *         description: Redirects to home on successful authentication
- *       401:
- *         description: Redirects to login on failed authentication
+ *         description: Redirect based on authentication result
  */
 router.get('/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     (req, res) => {
-        if (req.authInfo && req.authInfo.needAdditionalInfo) {
-            return res.redirect('/auth/additional-info');
-        }
-        res.redirect('/');
+        res.json({ message: 'Login successful', user: req.user });
     }
 );
 /**
  * @swagger
- * /auth/additional-info:
+ * /api/additional-info:
  *   post:
- *     summary: Add additional information for Google authenticated users
+ *     summary: Add additional information for the user
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -346,19 +354,19 @@ router.get('/google/callback',
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - region
+ *               - favoriteAuthor
  *             properties:
  *               region:
  *                 type: string
  *               favoriteAuthor:
  *                 type: string
- *             required:
- *               - region
- *               - favoriteAuthor
  *     responses:
  *       200:
  *         description: Information added successfully
  *       400:
- *         description: Bad request
+ *         description: Input validation error
  *       500:
  *         description: Server error
  */
@@ -366,7 +374,7 @@ router.post('/additional-info', ensureAuthenticated, async (req, res) => {
     const { region, favoriteAuthor } = req.body;
 
     if (!region || !favoriteAuthor) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
+        return res.status(400).json({ msg: '모두 입력해 주세요' });
     }
 
     try {
@@ -375,22 +383,32 @@ router.post('/additional-info', ensureAuthenticated, async (req, res) => {
         user.favoriteAuthor = favoriteAuthor;
         await user.save();
 
-        res.status(200).json({ msg: 'Information added successfully' });
+        res.status(200).json({ msg: '정보가 추가되었습니다' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: 'Server error' });
     }
 });
-// 추가 정보 입력 페이지 렌더링
-router.get('/additional-info', ensureAuthenticated, (req, res) => {
-    res.render('additional-info');
-});
+// /**
+//  * @swagger
+//  * /api/additional-info:
+//  *   get:
+//  *     summary: Render additional info page
+//  *     tags: [Auth]
+//  *     responses:
+//  *       200:
+//  *         description: Page rendered successfully
+//  */
+// router.get('/additional-info', ensureAuthenticated, (req, res) => {
+//     res.render('additional-info');
+// });
 
+//이메일 찾기
 /**
  * @swagger
- * /auth/find-email:
+ * /api/find-email:
  *   post:
- *     summary: Find user's email
+ *     summary: Find user email
  *     tags: [Auth]
  *     requestBody:
  *       required: true
@@ -398,6 +416,10 @@ router.get('/additional-info', ensureAuthenticated, (req, res) => {
  *         application/json:
  *           schema:
  *             type: object
+ *             required:
+ *               - name
+ *               - region
+ *               - favoriteAuthor
  *             properties:
  *               name:
  *                 type: string
@@ -405,13 +427,21 @@ router.get('/additional-info', ensureAuthenticated, (req, res) => {
  *                 type: string
  *               favoriteAuthor:
  *                 type: string
- *             required:
- *               - name
- *               - region
- *               - favoriteAuthor
  *     responses:
  *       200:
- *         description: Email found successfully
+ *         description: Email found and masked
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   email:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
  *       404:
  *         description: User not found
  *       500:
@@ -444,12 +474,42 @@ router.post('/find-email', async (req, res) => {
         res.status(500).json({ msg: 'Server error' });
     }
 });
+//로그인 확인
 
-// 보호된 라우트 예시
-// router.get('/protected', checklogin, (req, res) => {
-//     res.status(200).json({ msg: 'This is a protected route' });
-// });
-
-
+/**
+ * @swagger
+ * /status:
+ *   get:
+ *     summary: Check login status
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: User is logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 loggedIn:
+ *                   type: boolean
+ *                   example: true
+ *       401:
+ *         description: User is not logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 loggedIn:
+ *                   type: boolean
+ *                   example: false
+ */
+router.get('/status', async (req, res) => {
+    if (req.isAuthenticated()) {
+      res.status(200).json({ loggedIn: true });
+    } else {
+      res.status(401).json({ loggedIn: false });
+    }
+});
 
 module.exports = router;
