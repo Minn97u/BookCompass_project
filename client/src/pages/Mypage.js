@@ -23,6 +23,21 @@ const Mypage = () => {
   const [initialFormType, setInitialFormType] = useState('로그인');
   const navigate = useNavigate();
 
+  const writeList = [
+    { title: '제목', date: '24-06-10' },
+    { title: '제목', date: '24-06-10' },
+    { title: '제목', date: '24-06-10' },
+    { title: '제목', date: '24-06-10' },
+    { title: '제목', date: '24-06-10' }
+  ];
+
+  const bookMarkList = [
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
+  ];
+
   const handleSettingClick = () => {
     navigate('/mypage/edit');
   };
@@ -65,22 +80,17 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList title='제목' date='2024-06-05' />}
+          component={<WriteList datas={writeList} />}
         />
         <MypageBox
           icon={CommentIcon}
           title='내가 쓴 댓글'
-          component={<WriteList title='제목' date='2024-06-05' />}
+          component={<WriteList datas={writeList} />}
         />
         <MypageBox
           icon={BookMark}
           title='즐겨찾기 장소'
-          component={
-            <BookMarkList
-              title='성동구립성수도서관'
-              location='서울 성동구 뚝섬로1길 43 성수문화복지회관 7층'
-            />
-          }
+          component={<BookMarkList datas={bookMarkList} />}
           mapIcon={MapIcon}
         />
         <MypageBox
@@ -119,8 +129,8 @@ const ProfileConatiner = styled.div`
 `;
 
 const ProfileImg = styled.img`
-  width: 7rem;
-  margin: 75px 0px 8px 0px;
+  width: 8.8rem;
+  margin: 75px 0px 5px 0px;
   border-radius: 50%;
 `;
 

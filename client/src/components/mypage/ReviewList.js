@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as StarIcon } from '../../assets/icons/StarIcon.svg';
 import { ReactComponent as EmptyStarIcon } from '../../assets/icons/EmptyStar.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
+import DeleteModal from '../common/DeleteModal';
 
 const ReviewList = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const ratings = [1, 3, 5];
   const reviewComments = [
     '책이 아주 많진 않지만 읽을 만한 책은 제법 있고, 분위기 좋습니다. 휴식이 필요할 때 여기오면 힐링 그 자체입니다.',
@@ -12,8 +15,16 @@ const ReviewList = () => {
     '리뷰 예시'
   ];
 
+  const handleDeleteBtn = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   return (
-    <div>
+    <>
       {ratings.map((rating, index) => (
         <ReviewGroup key={index}>
           <StarContainer>
@@ -28,13 +39,18 @@ const ReviewList = () => {
           <TextContainer>
             <ReviewText>{reviewComments[index]}</ReviewText>
             <DeleteWrite>
-              <DeleteIconImg src={DeleteIcon} alt='delete-icon' />
+              <DeleteIconImg
+                src={DeleteIcon}
+                alt='delete-icon'
+                onClick={handleDeleteBtn}
+              />
             </DeleteWrite>
           </TextContainer>
           {ratings.length > 1 && index !== ratings.length - 1 && <Hr />}
         </ReviewGroup>
       ))}
-    </div>
+      {modalOpen && <DeleteModal onClose={closeModal} />}
+    </>
   );
 };
 

@@ -14,7 +14,7 @@ const EditInfo = ({ region, setRegion, foundAnswer, setFoundAnswer }) => {
     try {
       const res = await postUserInfo(data);
       console.log('유저 정보 편집 성공:', res);
-      setEditText('성공!');
+      setEditText('완료!');
       setTimeout(() => {
         setEditText('수정');
       }, 1000);

@@ -46,7 +46,7 @@ const EditProfile = ({
 
       const res = await putProfileInfo(formData);
       console.log('프로필 편집 성공', res);
-      setEditText('성공!');
+      setEditText('완료!');
       setTimeout(() => {
         setEditText('수정');
       }, 1000);
@@ -126,16 +126,16 @@ const EditImgBox = styled.div`
 
 const ProfileImgWrapper = styled.div`
   position: relative;
-  width: 6.5rem;
-  height: 6.5rem;
+  width: 7rem;
+  height: 7rem;
   border: 1px solid #dfdfdf;
   border-radius: 50%;
   cursor: pointer;
-  margin-right: 50px;
+  margin-right: 40px;
   box-sizing: border-box;
 
-  &:hover {
-    border: 2px solid #afafaf;
+  &:hover img {
+    filter: brightness(0.7);
   }
 
   &:hover::after {
@@ -145,6 +145,7 @@ const ProfileImgWrapper = styled.div`
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
+    z-index: 1; /* 텍스트가 이미지 위에 보이도록 설정 */
   }
 `;
 
