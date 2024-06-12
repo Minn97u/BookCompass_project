@@ -21,7 +21,7 @@ router.get('/profile', ensureAuthenticated, async (req, res, next) => {
   }
 });
 
-// 프로필 사진 업로드
+// 프로필 편집 및 사진 업로드
 router.put(
   '/profile',
   ensureAuthenticated,
