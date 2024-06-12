@@ -1,10 +1,10 @@
 const baseURL = 'http://localhost:5000';
 import axios from 'axios';
 
-export const getPosts = async (page, limit) => {
+export const getPosts = async (page, limit, tag = '') => {
   try {
     const res = await axios.get(
-      `${baseURL}/api/posts?page=${page}&limit=${limit}`
+      `${baseURL}/api/posts?page=${page}&limit=${limit}&tag=${tag}`
     );
     console.log('게시목록 로드 완료', res.data);
     return res.data;

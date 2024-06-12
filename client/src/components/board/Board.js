@@ -38,9 +38,9 @@ const Board = () => {
 
   // const pagesToShow = 5;
   const itemsPerPage = 10;
-  const fetchItems = async (page = currentPage) => {
+  const fetchItems = async (page = currentPage, tag = activeTag) => {
     try {
-      const res = await getPosts(page, itemsPerPage);
+      const res = await getPosts(page, itemsPerPage, tag === '전체' ? '' : tag);
       setCurrentPage(res.currentPage);
       setTotalPages(res.totalPages);
       setPosts(res.posts);
@@ -52,10 +52,11 @@ const Board = () => {
 
   useEffect(() => {
     fetchItems();
-  }, [currentPage]);
+  }, [currentPage, activeTag]);
 
   const handleTagClick = (tag) => {
     setActiveTag(tag);
+    setCurrentPage(1);
   };
 
   const openModal = async (item) => {
@@ -93,7 +94,11 @@ const Board = () => {
 
   const handlePageClick = async (pageNumber) => {
     try {
-      const response = await getPosts(pageNumber, itemsPerPage);
+      const response = await getPosts(
+        pageNumber,
+        itemsPerPage,
+        activeTag === '전체' ? '' : activeTag
+      );
       setCurrentPage(pageNumber);
       setTotalPages(response.totalPages);
       setPosts(response.posts);
