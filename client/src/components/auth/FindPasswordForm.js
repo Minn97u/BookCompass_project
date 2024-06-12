@@ -12,12 +12,12 @@ const FindPasswordForm = ({ setFormType }) => {
       email
     };
     try {
-      const response = await postFindPassword(data);
-      console.log('비밀번호 찾기 성공', response);
+      const res = await postFindPassword(data);
+      console.log('비밀번호 찾기 성공', res);
       setEmailError('임시 비밀번호가 전송되었습니다.');
     } catch (error) {
       console.error('비밀번호 찾기 실패:', error);
-      const status = error.response?.status;
+      const status = error.res?.status;
       if (status === 404) {
         setEmailError('가입되지 않은 이메일입니다.');
       } else if (status === 400) {
