@@ -12,8 +12,8 @@ const EditProfile = ({
 }) => {
   const [profileImgFile, setProfileImgFile] = useState(profileImg);
   const [editText, setEditText] = useState('수정');
+  const [formData, setFormData] = useState(new FormData());
   const imageInput = useRef();
-  // const formData = new formData();
 
   const handleImageUploadClick = () => {
     imageInput.current.click();
@@ -21,15 +21,12 @@ const EditProfile = ({
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         const imgUrl = reader.result;
         setProfileImg(imgUrl);
-
-        // formData.append('profilePic', file);
-        // formData.append('name', name);
-        // formData.append('profileMsg', description);
         console.log('url', imgUrl);
       };
 
@@ -39,13 +36,21 @@ const EditProfile = ({
 
   const handleEditProfileInfo = async () => {
     try {
-      console.log('작업중');
-      // const res = await putProfileInfo(formData);
-      // console.log('프로필 편집 성공', res);
-      // setEditText('성공!');
-      // setTimeout(() => {
-      //   setEditText('수정');
-      // }, 1000);
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('profileMsg', description);
+
+      const file = imageInput.current.files[0];
+      if (file) {
+        formData.append('profilePic', file);
+      }
+
+      const res = await putProfileInfo(formData);
+      console.log('프로필 편집 성공', res);
+      setEditText('성공!');
+      setTimeout(() => {
+        setEditText('수정');
+      }, 1000);
     } catch (error) {
       console.error('프로필 편집 실패:', error);
     }

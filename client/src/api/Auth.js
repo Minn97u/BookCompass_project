@@ -14,6 +14,19 @@ export const postLogin = async (data) => {
   }
 };
 
+export const getLoginStatus = async () => {
+  try {
+    const res = await axios.get(`${baseURL}/api/status`, {
+      withCredentials: true
+    });
+    console.log('로그인 상태 확인', res);
+    return res;
+  } catch (error) {
+    console.error('로그인 상태 확인 오류:', error);
+    throw error;
+  }
+};
+
 export const getGoogleLogin = async () => {
   try {
     const res = await axios.get(`${baseURL}/api/google`, {

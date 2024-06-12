@@ -7,11 +7,17 @@ const Review = require('../models/reviewSchema');
 const { ensureAuthenticated } = require('../middlewares/checklogin');
 const upload = require('../middlewares/upload');
 
-// 유저 프로필 정보 가져오기
-router.get('/profile', ensureAuthenticated, async (req, res, next) => {
+// 프로필 편집
+router.put('/profile', ensureAuthenticated, async (req, res, next) => {
   try {
+    const { name, profileMsg, profilePic, favoriteAuthor } = req.body;
     const userId = req.user._id; // 인증된 사용자 ID 가져오기
-    const user = await User.findById(userId).select('-password'); // 비밀번호 필드 제외하고 유저 정보 가져오기
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { name, profileMsg, profilePic, favoriteAuthor },
+      { new: true }
+    );
 
     if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
     res.json(user);
@@ -20,27 +26,21 @@ router.get('/profile', ensureAuthenticated, async (req, res, next) => {
   }
 });
 
-// 프로필 편집 및 사진 업로드
+// 프로필 사진 업로드
 router.put(
-  '/profile',
+  '/profilePicture',
   ensureAuthenticated,
-  upload.single('profilePic'),
+  upload.single('profilePicture'),
   async (req, res, next) => {
     try {
-      const { name, profileMsg, favoriteAuthor } = req.body;
       const userId = req.user._id; // 인증된 사용자 ID 가져오기
+      const profilePic = `/uploads/${req.file.filename}`;
 
-      // 업데이트할 데이터를 객체로 생성
-      const updateData = { name, profileMsg, favoriteAuthor };
-
-      // 프로필 사진이 존재하면 updateData에 추가
-      if (req.file) {
-        updateData.profilePic = `/uploads/${req.file.filename}`;
-      }
-
-      const user = await User.findByIdAndUpdate(userId, updateData, {
-        new: true,
-      });
+      const user = await User.findByIdAndUpdate(
+        userId,
+        { profilePic },
+        { new: true }
+      );
 
       if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
       res.json(user);

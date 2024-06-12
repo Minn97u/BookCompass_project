@@ -36,7 +36,10 @@ const Mypage = () => {
     try {
       const res = await getProfileInfo();
       console.log('프로필 가져오기:', res);
-      setProfileImg(res.data.profilePic);
+
+      const img = `../client/public${res.data.profilePic}`;
+      setProfileImg(img);
+      console.log(img);
       setName(res.data.name);
       setEmail(res.data.email);
       setDescription(res.data.profileMsg);

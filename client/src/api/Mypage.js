@@ -17,7 +17,10 @@ export const getProfileInfo = async () => {
 export const putProfileInfo = async (data) => {
   try {
     const res = await axios.put(`${baseURL}/api/mypage/profile`, data, {
-      withCredentials: true
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
     });
     console.log('프로필 수정 완료', res);
     return res;
