@@ -7,9 +7,7 @@ const { ensureAuthenticated } = require("../middlewares/checklogin");
 // 모든 도서관 정보 조회
 router.get("/", async (req, res, next) => {
     try {
-        const libraries = await Library.find().select(
-            "-_id name district address phone url hours holidays latitude longitude"
-        );
+        const libraries = await Library.find().select("-_id");
         res.json(libraries);
     } catch (error) {
         next(error);
