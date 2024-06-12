@@ -50,6 +50,7 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 app.use("/uploads", express.static(path.join(__dirname, "../client/public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 // 세션 설정
 app.use(
     session({
@@ -77,7 +78,6 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.static(path.join(__dirname, "../client/public")));
 
 // 라우트 설정
-
 app.use("/api/parks", parkRoutes);
 app.use("/api", authRoutes);
 app.use("/api/posts", postRoutes);
