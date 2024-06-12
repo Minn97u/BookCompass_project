@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import MypageBox from '../components/mypage/MypageBox';
@@ -6,18 +6,19 @@ import AuthModal from '../components/auth/AuthModal';
 import WriteList from '../components/mypage/WriteList';
 import BookMarkList from '../components/mypage/BookMarkList';
 import ReviewList from '../components/mypage/ReviewList';
-import ProfileIcon from '../assets/icons/ProfileIcon.svg';
 import SettingIcon from '../assets/icons/SettingIcon.svg';
 import WriteListIcon from '../assets/icons/WriteListIcon.svg';
 import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
+import { getProfileInfo } from '../api/Mypage';
 
 const Mypage = () => {
-  const [name, setName] = useState('이름');
-  const [email, setEmail] = useState('aaa@naver.com');
-  const [description, setDescription] = useState('내용을 추가하세요.');
+  const [profileImg, setProfileImg] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [description, setDescription] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [initialFormType, setInitialFormType] = useState('로그인');
   const navigate = useNavigate();
@@ -30,10 +31,27 @@ const Mypage = () => {
     setShowModal(false);
   };
 
+  const fetchProfileInfo = async () => {
+    try {
+      const res = await getProfileInfo();
+      const img = res.data.profilePic;
+      setProfileImg(img);
+      setName(res.data.name);
+      setEmail(res.data.email);
+      setDescription(res.data.profileMsg);
+    } catch (error) {
+      console.error('프로필 가져오기 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, []);
+
   return (
     <Container>
       <ProfileConatiner>
-        <ProfileImg src={ProfileIcon} alt='profile'></ProfileImg>
+        <ProfileImg src={profileImg} alt='profile'></ProfileImg>
         <UserName>{name}</UserName>
         <UserEmail>{email}</UserEmail>
         <UserDescription>{description}</UserDescription>
@@ -103,6 +121,7 @@ const ProfileConatiner = styled.div`
 const ProfileImg = styled.img`
   width: 7rem;
   margin: 75px 0px 8px 0px;
+  border-radius: 50%;
 `;
 
 const UserName = styled.p`
@@ -113,8 +132,8 @@ const UserName = styled.p`
 
 const UserEmail = styled.p`
   font-size: 1rem;
-  color: #565656;
-  margin-top: -20px;
+  color: #787878;
+  margin-top: -15px;
 `;
 
 const UserDescription = styled.p`

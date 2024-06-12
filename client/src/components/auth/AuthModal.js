@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import DefaultModal from '../common/DefaultModal';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
-
 import FindEmailForm from './FindEmailForm';
 import FindPasswordForm from './FindPasswordForm';
+import ChangePasswordForm from './ChangePasswordForm';
 
 const AuthFunnel = {
   LOGIN: '로그인',
@@ -21,13 +21,15 @@ const AuthModal = ({ onClose, initialFormType }) => {
   const renderForm = () => {
     switch (formType) {
       case AuthFunnel.LOGIN:
-        return <LoginForm setFormType={setFormType} />;
+        return <LoginForm setFormType={setFormType} onClose={onClose} />;
       case AuthFunnel.SIGNUP:
         return <SignUpForm setFormType={setFormType} />;
       case AuthFunnel.FINDID:
         return <FindEmailForm setFormType={setFormType} />;
       case AuthFunnel.FINDPW:
         return <FindPasswordForm setFormType={setFormType} />;
+      case AuthFunnel.CHANGEPW:
+        return <ChangePasswordForm setFormType={setFormType} />;
       default:
         return null;
     }

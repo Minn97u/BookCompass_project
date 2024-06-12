@@ -6,7 +6,7 @@ import GoogleIcon from '../../assets/icons/GoogleLogo.svg';
 import { LongInput } from '../common/LongInput';
 import { postLogin, getGoogleLogin } from '../../api/Auth';
 
-const LoginForm = ({ setFormType }) => {
+const LoginForm = ({ setFormType, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -18,8 +18,14 @@ const LoginForm = ({ setFormType }) => {
       password: password
     };
     try {
-      const response = await postLogin(data);
-      console.log('로그인 성공:', response);
+      const res = await postLogin(data);
+      console.log('로그인 성공:', res);
+      localStorage.setItem('userId', res.data.user.id);
+      localStorage.setItem('userName', res.data.user.name);
+      localStorage.setItem('userRegion', res.data.user.region);
+      localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      onClose();
+      window.location.href = '/';
     } catch (error) {
       console.error('로그인 실패:', error);
       setLoginError('아이디 또는 비밀번호가 일치하지 않습니다.');
