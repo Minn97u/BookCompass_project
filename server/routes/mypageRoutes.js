@@ -6,18 +6,13 @@ const Comment = require('../models/commentSchema');
 const Review = require('../models/reviewSchema');
 const { ensureAuthenticated } = require('../middlewares/checklogin');
 const upload = require('../middlewares/upload');
+const path = require('path');
 
-// 프로필 편집
-router.put('/profile', ensureAuthenticated, async (req, res, next) => {
+// 유저 프로필 정보 가져오기
+router.get('/profile', ensureAuthenticated, async (req, res, next) => {
   try {
-    const { name, profileMsg, profilePic, favoriteAuthor } = req.body;
     const userId = req.user._id; // 인증된 사용자 ID 가져오기
-
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { name, profileMsg, profilePic, favoriteAuthor },
-      { new: true }
-    );
+    const user = await User.findById(userId).select('-password'); // 비밀번호 필드 제외하고 유저 정보 가져오기
 
     if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
     res.json(user);
@@ -28,22 +23,59 @@ router.put('/profile', ensureAuthenticated, async (req, res, next) => {
 
 // 프로필 사진 업로드
 router.put(
-  '/profilePicture',
+  '/profile',
   ensureAuthenticated,
-  upload.single('profilePicture'),
+  upload.single('profilePic'),
   async (req, res, next) => {
     try {
+      const { name, profileMsg } = req.body;
       const userId = req.user._id; // 인증된 사용자 ID 가져오기
-      const profilePic = `/uploads/${req.file.filename}`;
 
-      const user = await User.findByIdAndUpdate(
-        userId,
-        { profilePic },
-        { new: true }
-      );
+      // 업데이트할 데이터를 객체로 생성
+      const updateData = { name, profileMsg };
+
+      // 프로필 사진이 존재하면 updateData에 추가
+      if (req.file) {
+        const filePath = path.join(
+          __dirname,
+          '..',
+          'client',
+          'public',
+          'uploads',
+          req.file.filename
+        );
+        updateData.profilePic = `/uploads/${req.file.filename}`;
+      }
+
+      const user = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+      });
 
       if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
       res.json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+// 프로필 사진 가져오기
+router.get(
+  '/uploads/:filename',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(
+        __dirname,
+        '..',
+        'client',
+        'public',
+        'uploads',
+        filename
+      );
+
+      res.sendFile(filePath);
     } catch (error) {
       next(error);
     }

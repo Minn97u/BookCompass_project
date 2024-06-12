@@ -6,7 +6,6 @@ import AuthModal from '../components/auth/AuthModal';
 import WriteList from '../components/mypage/WriteList';
 import BookMarkList from '../components/mypage/BookMarkList';
 import ReviewList from '../components/mypage/ReviewList';
-import ProfileIcon from '../assets/icons/ProfileIcon.svg';
 import SettingIcon from '../assets/icons/SettingIcon.svg';
 import WriteListIcon from '../assets/icons/WriteListIcon.svg';
 import CommentIcon from '../assets/icons/CommentIcon.svg';
@@ -35,11 +34,8 @@ const Mypage = () => {
   const fetchProfileInfo = async () => {
     try {
       const res = await getProfileInfo();
-      console.log('프로필 가져오기:', res);
-
-      const img = `../client/public${res.data.profilePic}`;
+      const img = res.data.profilePic;
       setProfileImg(img);
-      console.log(img);
       setName(res.data.name);
       setEmail(res.data.email);
       setDescription(res.data.profileMsg);

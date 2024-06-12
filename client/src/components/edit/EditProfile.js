@@ -27,7 +27,6 @@ const EditProfile = ({
       reader.onloadend = () => {
         const imgUrl = reader.result;
         setProfileImg(imgUrl);
-        console.log('url', imgUrl);
       };
 
       reader.readAsDataURL(file);
