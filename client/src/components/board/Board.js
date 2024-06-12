@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Modal from 'react-modal';
 import { ReactComponent as UserIcon } from '../../assets/icons/usericon.svg';
@@ -32,6 +32,8 @@ const Board = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [posts, setPosts] = useState([]);
+
+  // eslint-disable-next-line
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
 
   // const pagesToShow = 5;
@@ -82,8 +84,9 @@ const Board = () => {
   };
 
   const handlePicAddIconClick = (event) => {
-    const file = event.target.files[0];
-    if (file) {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
       setSelectedFile(file);
     }
   };
@@ -115,8 +118,12 @@ const Board = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
+  const fileInputRef = useRef(null);
+
   const handleFileInputClick = () => {
-    document.getElementById('fileInput').click();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
   };
 
   const handlePostSubmit = async () => {
@@ -131,6 +138,7 @@ const Board = () => {
       const response = await postPosts(formData);
       console.log('Post submitted successfully:', response.data);
       await fetchItems();
+      setSelectedFile(null);
       closeModal();
     } catch (error) {
       console.error('Error submitting post:', error);
@@ -161,6 +169,7 @@ const Board = () => {
         const response = await updatePosts(formData, selectedItem.shortId);
         console.log('Post edited successfully:', response.data);
         await fetchItems();
+        setSelectedFile(null);
         closeModal();
       } catch (error) {
         console.error('Error editing post:', error);
@@ -209,12 +218,27 @@ const Board = () => {
     setCommentText(e.target.value);
   };
 
+  // const handleCommentDelete = async (commentId) => {
+  //   if (selectedItem) {
+  //     try {
+  //       await deleteComments(selectedItem.shortId, selectedItem.comments._id);
+  //       const updatedComments = selectedItem.comments.filter(
+  //         (comment) => comment.shortId !== commentId
+  //       );
+  //       setSelectedItem({ ...selectedItem, comments: updatedComments });
+  //       console.log('댓글 삭제 완료');
+  //     } catch (error) {
+  //       console.error('댓글 삭제 오류', error);
+  //     }
+  //   }
+  // };
+
   const handleCommentDelete = async (commentId) => {
     if (selectedItem) {
       try {
         await deleteComments(selectedItem.shortId, commentId);
         const updatedComments = selectedItem.comments.filter(
-          (comment) => comment.shortId !== commentId
+          (comment) => comment._id !== commentId
         );
         setSelectedItem({ ...selectedItem, comments: updatedComments });
         console.log('댓글 삭제 완료');
@@ -260,7 +284,7 @@ const Board = () => {
               <Image
                 src={
                   item.postImg
-                    ? `./${item.postImg}`
+                    ? `uploads/${item.postImg.split('uploads\\')[1]}`
                     : './No_image_available.png'
                 }
                 alt={item.title}
@@ -336,7 +360,11 @@ const Board = () => {
                     </Button>
                   </BoardTags>
                   <PicAddIcon onClick={handleFileInputClick} />
-                  <FileInput id='fileInput' onChange={handlePicAddIconClick} />
+                  <FileInput
+                    id='fileInput'
+                    ref={fileInputRef}
+                    onChange={handlePicAddIconClick}
+                  />
                   {selectedFile ? selectedFile.name : <></>}
                 </BoardTagsContainer>
                 <ContentTextArea
@@ -383,7 +411,13 @@ const Board = () => {
                       같이 해요
                     </Button>
                   </BoardTags>
-                  <PicAddIcon onClick={handlePicAddIconClick} />
+                  <PicAddIcon onClick={handleFileInputClick} />
+                  <FileInput
+                    id='fileInput'
+                    ref={fileInputRef}
+                    onChange={handlePicAddIconClick}
+                  />
+                  {selectedFile ? selectedFile.name : <></>}
                 </BoardTagsContainer>
                 <ContentTextArea
                   placeholder='내용을 입력해 주세요.'
@@ -415,10 +449,10 @@ const Board = () => {
             <HrLine />
             <ModalBody>
               <div>
-                <Image
+                <PostImage
                   src={
                     selectedItem.postImg
-                      ? `./${selectedItem.postImg}`
+                      ? `uploads/${selectedItem.postImg.split('uploads\\')[1]}`
                       : './No_image_available.png'
                   }
                   alt={selectedItem.title}
@@ -448,13 +482,13 @@ const Board = () => {
                       <CommentContent>
                         <strong>{comment.author.name}</strong>
                         <p>{comment.content}</p>
-                        {/* {userName === comment.author.name && (
+                        {userName === comment.author.name && (
                           <TextButton
-                            onClick={() => handleCommentDelete(comment.shortId)}
+                            onClick={() => handleCommentDelete(comment._id)}
                           >
                             삭제
                           </TextButton>
-                        )} */}
+                        )}
                       </CommentContent>
                     </CommentItem>
                   ))}
@@ -532,27 +566,40 @@ const BoardItem = styled.div`
   background: white;
   color: #543d20;
   cursor: pointer;
-  height: auto;
   box-sizing: border-box;
   &.placeholder {
     border: 0.063rem dashed #ddd;
   }
 `;
 
+const ImageContainer = styled.div`
+  width: 100%;
+  padding-top: 75%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.625rem;
+  margin-bottom: 0.625rem;
+`;
+
 const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+`;
+
+const PostImage = styled.img`
   width: 100%;
   max-width: 20rem;
   height: auto;
   object-fit: contain;
   cursor: pointer;
-`;
-
-const ImageContainer = styled.div`
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.625rem;
-  margin-bottom: 0.625rem;
 `;
 
 const Text = styled.p`
