@@ -47,7 +47,10 @@ app.options("*", cors(corsOptions));
 
 // 미들웨어 설정
 app.use("/static", express.static(path.join(__dirname, "static")));
-app.use("/uploads", express.static(path.join(__dirname, "../client/public/uploads")));
+app.use(
+    "/uploads",
+    express.static(path.join(__dirname, "../client/public/uploads"))
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // 세션 설정

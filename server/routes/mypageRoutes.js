@@ -69,6 +69,7 @@ router.get(
             const filePath = path.join(
                 __dirname,
                 "..",
+                "..",
                 "client",
                 "public",
                 "uploads",
