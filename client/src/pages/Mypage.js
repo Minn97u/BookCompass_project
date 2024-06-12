@@ -13,12 +13,13 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
-import { getUserInfo } from '../api/Auth';
+import { getProfileInfo } from '../api/Mypage';
 
 const Mypage = () => {
-  const [name, setName] = useState('이름');
-  const [email, setEmail] = useState('aaa@naver.com');
-  const [description, setDescription] = useState('내용을 추가하세요.');
+  const [profileImg, setProfileImg] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [description, setDescription] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [initialFormType, setInitialFormType] = useState('로그인');
   const navigate = useNavigate();
@@ -31,27 +32,27 @@ const Mypage = () => {
     setShowModal(false);
   };
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const res = await getUserInfo();
-        const userInfo = res.data;
-        console.log(userInfo);
-        // setName(userInfo.name);
-        // setEmail(userInfo.email);
-        // setDescription(userInfo.description);
-      } catch (error) {
-        console.error('유저 정보 조회 오류:', error);
-      }
-    };
+  const fetchProfileInfo = async () => {
+    try {
+      const res = await getProfileInfo();
+      console.log('프로필 가져오기:', res);
+      setProfileImg(res.data.profilePic);
+      setName(res.data.name);
+      setEmail(res.data.email);
+      setDescription(res.data.profileMsg);
+    } catch (error) {
+      console.error('프로필 가져오기 실패:', error);
+    }
+  };
 
-    fetchUserInfo();
+  useEffect(() => {
+    fetchProfileInfo();
   }, []);
 
   return (
     <Container>
       <ProfileConatiner>
-        <ProfileImg src={ProfileIcon} alt='profile'></ProfileImg>
+        <ProfileImg src={profileImg} alt='profile'></ProfileImg>
         <UserName>{name}</UserName>
         <UserEmail>{email}</UserEmail>
         <UserDescription>{description}</UserDescription>
@@ -121,6 +122,7 @@ const ProfileConatiner = styled.div`
 const ProfileImg = styled.img`
   width: 7rem;
   margin: 75px 0px 8px 0px;
+  border-radius: 50%;
 `;
 
 const UserName = styled.p`
@@ -131,8 +133,8 @@ const UserName = styled.p`
 
 const UserEmail = styled.p`
   font-size: 1rem;
-  color: #565656;
-  margin-top: -20px;
+  color: #787878;
+  margin-top: -15px;
 `;
 
 const UserDescription = styled.p`

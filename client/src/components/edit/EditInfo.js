@@ -1,16 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Districts from '../auth/Districts';
 import SignUpDistrict from '../auth/SignUpDistrict';
 import { postUserInfo } from '../../api/Auth';
 
-const EditInfo = ({
-  region,
-  setRegion,
-  foundAnswer,
-  setFoundAnswer,
-  location
-}) => {
+const EditInfo = ({ region, setRegion, foundAnswer, setFoundAnswer }) => {
+  const [editText, setEditText] = useState('수정');
   const handleEditUserInfo = async () => {
     const data = {
       region: region || location,
@@ -19,6 +14,12 @@ const EditInfo = ({
     try {
       const res = await postUserInfo(data);
       console.log('유저 정보 편집 성공:', res);
+      setEditText('성공!');
+      setTimeout(() => {
+        setEditText('수정');
+      }, 1000);
+      localStorage.setItem('userRegion', data.region);
+      localStorage.setItem('favoriteAuthor', data.favoriteAuthor);
     } catch (error) {
       console.error('유저 정보 편집 실패:', error);
     }
@@ -32,7 +33,6 @@ const EditInfo = ({
         <InputBox>
           <SignUpDistrict
             options={Districts}
-            location={location}
             selectedOption={region}
             setSelectedOption={setRegion}
           />
@@ -45,7 +45,7 @@ const EditInfo = ({
             onChange={(e) => setFoundAnswer(e.target.value)}
           />
         </InputBox>
-        <EditBtn onClick={handleEditUserInfo}>수정</EditBtn>
+        <EditBtn onClick={handleEditUserInfo}>{editText}</EditBtn>
       </InfoBox>
     </EditInfoContainer>
   );

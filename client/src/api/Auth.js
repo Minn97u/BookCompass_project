@@ -20,6 +20,7 @@ export const getGoogleLogin = async () => {
       withCredentials: true
     });
     console.log('구글 로그인 완료', res);
+    return res;
   } catch (error) {
     console.error('구글 로그인 오류:', error);
     throw error;
@@ -45,6 +46,7 @@ export const getGoogleSignup = async () => {
       withCredentials: true
     });
     console.log('구글 회원가입 완료', res);
+    return res;
   } catch (error) {
     console.error('구글 회원가입 오류:', error);
     throw error;
@@ -57,6 +59,7 @@ export const getLogout = async () => {
       withCredentials: true
     });
     console.log('로그아웃 완료', res);
+    return res;
   } catch (error) {
     console.error('로그아웃 오류:', error);
     throw error;

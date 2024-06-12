@@ -41,6 +41,10 @@ function Navbar() {
       await getLogout();
       setIsLoggedIn(false);
       localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRegion');
+      localStorage.removeItem('favoriteAuthor');
+      setIsLoggedIn(false);
       window.location.href = '/';
     } catch (error) {
       console.error('로그아웃 오류:', error);
