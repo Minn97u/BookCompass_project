@@ -8,6 +8,7 @@ const parkSchema = new mongoose.Schema({
     phone: { type: String },
     latitude: { type: Number },
     longitude: { type: Number },
+    averageRating: { type: Number, default: 0 },
 });
 
 const Park = mongoose.model("Park", parkSchema);

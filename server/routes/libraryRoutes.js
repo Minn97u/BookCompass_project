@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Library = require("../models/librarySchema");
+const User = require("../models/userSchema");
 const { ensureAuthenticated } = require("../middlewares/checklogin");
 
 // 모든 도서관 정보 조회
@@ -15,21 +16,30 @@ router.get("/", async (req, res, next) => {
     }
 });
 
-// 특정 도서관 정보 조회 (평균 별점 포함)
+// 특정 도서관 정보 조회 (리뷰 및 평균 별점 포함)
 router.get("/:libraryId", async (req, res, next) => {
     try {
         const { libraryId } = req.params;
-        const library = await Library.findById(libraryId);
+        const library = await Library.findById(libraryId).select(
+            "name district address phone url hours holidays latitude longitude averageRating"
+        );
 
         if (!library) {
             return res.status(404).send("도서관을 찾을 수 없습니다.");
         }
 
-        res.json(library);
+        const reviews = await Review.find({ library: libraryId });
+
+        res.json({
+            ...library._doc,
+            reviews,
+        });
     } catch (error) {
         next(error);
     }
 });
+
+module.exports = router;
 
 // 도서관 찜하기
 router.post(
