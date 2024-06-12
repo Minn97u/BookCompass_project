@@ -1,7 +1,14 @@
 require("dotenv").config();
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const path = require("path");
+const cors = require("cors"); // CORS 미들웨어 추가
+const session = require("express-session");
+const passport = require("./passport");
+const { swaggerUi, swaggerSpec } = require("./swagger");
+const MongoStore = require("connect-mongo");
 const path = require("path");
 const cors = require("cors"); // CORS 미들웨어 추가
 const session = require("express-session");
@@ -96,5 +103,6 @@ app.use(errorHandler);
 // 서버 시작
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
     console.log(`Server is running on port ${PORT}`);
 });
