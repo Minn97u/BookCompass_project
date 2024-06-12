@@ -6,19 +6,7 @@ const Comment = require("../models/commentSchema");
 const Review = require("../models/reviewSchema");
 const { ensureAuthenticated } = require("../middlewares/checklogin");
 const upload = require("../middlewares/upload");
-
-// 유저 프로필 이미지 가져오기
-router.get("/profilePic", ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id; // 인증된 사용자 ID 가져오기
-        const user = await User.findById(userId).select("profilePic"); // 프로필 사진 필드만 선택하여 가져오기
-
-        if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
-        res.json({ profilePic: user.profilePic });
-    } catch (error) {
-        next(error);
-    }
-});
+const path = require("path");
 
 // 유저 프로필 정보 가져오기
 router.get("/profile", ensureAuthenticated, async (req, res, next) => {
@@ -65,6 +53,29 @@ router.put(
 
             if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
             res.json(user);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+// 프로필 사진 가져오기
+router.get(
+    "/uploads/:filename",
+    ensureAuthenticated,
+    async (req, res, next) => {
+        try {
+            const filename = req.params.filename;
+            const filePath = path.join(
+                __dirname,
+                "..",
+                "client",
+                "public",
+                "uploads",
+                filename
+            );
+
+            res.sendFile(filePath);
         } catch (error) {
             next(error);
         }
