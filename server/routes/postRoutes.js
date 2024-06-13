@@ -174,10 +174,10 @@ router.get("/:shortId", async (req, res) => {
 
     try {
         const post = await Post.findOne({ shortId })
-            .populate("author", "name profilePic") // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+            .populate("author.id", "name profilePic") // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
             .populate({
-                path: "comments.author",
-                select: "name profilePic", // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+                path: "comments",
+                populate: { path: "author", select: "name profilePic" }, // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
             })
             .lean();
 
