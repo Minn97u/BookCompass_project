@@ -4,12 +4,12 @@ import Districts from '../auth/Districts';
 import SignUpDistrict from '../auth/SignUpDistrict';
 import { postUserInfo } from '../../api/Auth';
 
-const EditInfo = ({ region, setRegion, foundAnswer, setFoundAnswer }) => {
+const EditInfo = ({ myInfo, setMyInfo }) => {
   const [editText, setEditText] = useState('수정');
   const handleEditUserInfo = async () => {
     const data = {
-      region: region || location,
-      favoriteAuthor: foundAnswer
+      region: myInfo.region || '',
+      favoriteAuthor: myInfo.foundAnswer
     };
     try {
       const res = await postUserInfo(data);
@@ -33,16 +33,20 @@ const EditInfo = ({ region, setRegion, foundAnswer, setFoundAnswer }) => {
         <InputBox>
           <SignUpDistrict
             options={Districts}
-            selectedOption={region}
-            setSelectedOption={setRegion}
+            selectedOption={myInfo.region}
+            setSelectedOption={(region) =>
+              setMyInfo((prev) => ({ ...prev, region }))
+            }
           />
           <Label>아이디 찾기 질문 - 좋아하는 작가 이름은?</Label>
           <AnswerInput
             label='아이디 찾기 질문'
             type='text'
-            placeholder={foundAnswer}
-            value={foundAnswer}
-            onChange={(e) => setFoundAnswer(e.target.value)}
+            placeholder={myInfo.foundAnswer}
+            value={myInfo.foundAnswer}
+            onChange={(e) =>
+              setMyInfo((prev) => ({ ...prev, foundAnswer: e.target.value }))
+            }
           />
         </InputBox>
         <EditBtn onClick={handleEditUserInfo}>{editText}</EditBtn>

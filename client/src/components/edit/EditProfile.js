@@ -2,17 +2,8 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { putProfileInfo } from '../../api/Mypage';
 
-const EditProfile = ({
-  profileImg,
-  setProfileImg,
-  name,
-  setName,
-  description,
-  setDescription
-}) => {
-  const [profileImgFile, setProfileImgFile] = useState(profileImg);
+const EditProfile = ({ profile, setProfile }) => {
   const [editText, setEditText] = useState('수정');
-  const [formData, setFormData] = useState(new FormData());
   const imageInput = useRef();
 
   const handleImageUploadClick = () => {
@@ -26,7 +17,7 @@ const EditProfile = ({
       const reader = new FileReader();
       reader.onloadend = () => {
         const imgUrl = reader.result;
-        setProfileImg(imgUrl);
+        setProfile((prev) => ({ ...prev, profileImg: imgUrl }));
       };
 
       reader.readAsDataURL(file);
@@ -36,8 +27,8 @@ const EditProfile = ({
   const handleEditProfileInfo = async () => {
     try {
       const formData = new FormData();
-      formData.append('name', name);
-      formData.append('profileMsg', description);
+      formData.append('name', profile.name);
+      formData.append('profileMsg', profile.description);
 
       const file = imageInput.current.files[0];
       if (file) {
@@ -62,7 +53,7 @@ const EditProfile = ({
       <ProfileContainer>
         <EditImgBox>
           <ProfileImgWrapper onClick={handleImageUploadClick}>
-            <ProfileImg src={profileImg} alt='edit-profile-img' />
+            <ProfileImg src={profile.profileImg} alt='edit-profile-img' />
           </ProfileImgWrapper>
           <FileInput
             type='file'
@@ -77,16 +68,20 @@ const EditProfile = ({
             label='이름'
             type='name'
             placeholder='이름 입력'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={profile.name}
+            onChange={(e) =>
+              setProfile((prev) => ({ ...prev, name: e.target.value }))
+            }
           />
           <Label>소개</Label>
           <IntroInput
             label='소개'
             type='text'
             placeholder='소개 입력'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={profile.description}
+            onChange={(e) =>
+              setProfile((prev) => ({ ...prev, description: e.target.value }))
+            }
           />
         </InputConatiner>
         <EditBtn onClick={handleEditProfileInfo}>{editText}</EditBtn>

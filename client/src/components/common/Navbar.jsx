@@ -85,7 +85,7 @@ function Navbar() {
                 isActive={activeButton === 'library'}
                 onClick={() => handleButtonClick('library')}
               >
-                도서관찾기
+                도서관 찾기
               </Button>
             </Link>
             <Link to={'/board'}>
@@ -131,13 +131,13 @@ const NavbarWrapper = styled.div`
   box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
   border-bottom: 1px solid #e7e7e7; /* 더 얇은 선 */
   margin: 0; /* 모든 마진 제거 */
-  padding: 25px 0px 35px 0px;
+  padding: 20px 0px 30px 0px;
 `;
 
 const NavbarContainer = styled.div`
   display: flex;
   align-items: center;
-  margin: 10px 70px;
+  margin: 10px 50px 10px 70px;
 `;
 
 const LogoContainer = styled(Link)`
@@ -170,7 +170,7 @@ const NavButton = styled.button`
 
 const ButtonContainer = styled.div`
   display: flex;
-  margin-top: 20px;
+  margin-top: 32px;
 `;
 
 export default Navbar;

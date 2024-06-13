@@ -15,21 +15,16 @@ import MapIcon from '../assets/icons/MapIcon.svg';
 import { getProfileInfo, getMyPosts, getMyComments } from '../api/Mypage';
 
 const Mypage = () => {
-  const [profileImg, setProfileImg] = useState('');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [description, setDescription] = useState('');
+  const [myInfo, setMyInfo] = useState({
+    profileImg: '',
+    name: '',
+    email: '',
+    description: ''
+  });
   const [showModal, setShowModal] = useState(false);
-  const [initialFormType, setInitialFormType] = useState('로그인');
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
   const navigate = useNavigate();
-
-  const writeList = [
-    { title: '제목', date: '24-06-10' },
-    { title: '제목', date: '24-06-10' },
-    { title: '제목', date: '24-06-10' }
-  ];
 
   const bookMarkList = [
     { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
@@ -48,11 +43,14 @@ const Mypage = () => {
   const fetchProfileInfo = async () => {
     try {
       const res = await getProfileInfo();
-      const img = res.data.profilePic;
-      setProfileImg(img);
-      setName(res.data.name);
-      setEmail(res.data.email);
-      setDescription(res.data.profileMsg);
+      const { profilePic, name, email, profileMsg } = res.data;
+
+      setMyInfo({
+        profileImg: profilePic,
+        name,
+        email,
+        description: profileMsg
+      });
     } catch (error) {
       console.error('프로필 가져오기 실패:', error);
     }
@@ -81,7 +79,18 @@ const Mypage = () => {
   const fetchMyComments = async () => {
     try {
       const res = await getMyComments();
-      console.log('내가 쓴 댓글', res);
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item._id,
+          title: item.content,
+          date: localDate
+        };
+      });
+      setCommentDatas(datas);
+      console.log('내가 쓴 댓글', datas);
     } catch (error) {
       console.error('내가 쓴 댓글 실패:', error);
     }
@@ -106,10 +115,10 @@ const Mypage = () => {
   return (
     <Container>
       <ProfileConatiner>
-        <ProfileImg src={profileImg} alt='profile'></ProfileImg>
-        <UserName>{name}</UserName>
-        <UserEmail>{email}</UserEmail>
-        <UserDescription>{description}</UserDescription>
+        <ProfileImg src={myInfo.profileImg} alt='profile'></ProfileImg>
+        <UserName>{myInfo.name}</UserName>
+        <UserEmail>{myInfo.email}</UserEmail>
+        <UserDescription>{myInfo.description}</UserDescription>
         <SettingBtn
           src={SettingIcon}
           alt='setting'
@@ -120,12 +129,20 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList datas={postDatas} type={'post'} />}
+          component={
+            <WriteList datas={postDatas} type={'post'} setList={setPostDatas} />
+          }
         />
         <MypageBox
           icon={CommentIcon}
           title='내가 쓴 댓글'
-          component={<WriteList datas={writeList} type={'comment'} />}
+          component={
+            <WriteList
+              datas={commentDatas}
+              type={'comment'}
+              setList={setCommentDatas}
+            />
+          }
         />
         <MypageBox
           icon={BookMark}

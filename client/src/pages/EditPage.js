@@ -6,13 +6,15 @@ import AuthModal from '../components/auth/AuthModal';
 import { getProfileInfo } from '../api/Mypage';
 
 const EditPage = () => {
-  const [profileImg, setProfileImg] = useState('');
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [foundAnswer, setFoundAnswer] = useState(
-    localStorage.getItem('favoriteAuthor')
-  );
-  const [region, setRegion] = useState(localStorage.getItem('userRegion'));
+  const [myProfile, setMyProfile] = useState({
+    profileImg: '',
+    name: '',
+    description: ''
+  });
+  const [myInfo, setMyInfo] = useState({
+    foundAnswer: localStorage.getItem('favoriteAuthor'),
+    region: localStorage.getItem('userRegion')
+  });
   const [modalVisible, setModalVisible] = useState(false);
   const [formType, setFormType] = useState(null);
 
@@ -25,9 +27,12 @@ const EditPage = () => {
     try {
       const res = await getProfileInfo();
       console.log('프로필 가져오기:', res);
-      setProfileImg(res.data.profilePic);
-      setName(res.data.name);
-      setDescription(res.data.profileMsg);
+      const { profilePic, name, profileMsg } = res.data;
+      setMyProfile({
+        profileImg: profilePic,
+        name,
+        description: profileMsg
+      });
     } catch (error) {
       console.error('프로필 가져오기 실패:', error);
     }
@@ -41,21 +46,8 @@ const EditPage = () => {
     <Container>
       <EditBox>
         <Title>기본 정보 수정</Title>
-        <EditProfile
-          profileImg={profileImg}
-          setProfileImg={setProfileImg}
-          name={name}
-          setName={setName}
-          description={description}
-          setDescription={setDescription}
-        />
-        <EditInfo
-          region={region}
-          setRegion={setRegion}
-          foundAnswer={foundAnswer}
-          setFoundAnswer={setFoundAnswer}
-          location={location}
-        />
+        <EditProfile profile={myProfile} setProfile={setMyProfile} />
+        <EditInfo myInfo={myInfo} setMyInfo={setMyInfo} />
         <Hr />
         <EditAccount>
           <TextButton onClick={handlePasswordChangeClick}>

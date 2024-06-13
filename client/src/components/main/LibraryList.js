@@ -55,6 +55,7 @@ const LibraryInfo = styled.div`
   display: flex;
   text-align: left;
   flex-direction: column;
+  width: 80%;
 `;
 
 const LibraryName = styled.span`
@@ -76,5 +77,5 @@ const LibraryAddress = styled.span`
   line-height: 16px;
   color: #545454;
   text-align: left;
-  margin: 5px 0;
+  margin-top: 2px;
 `;

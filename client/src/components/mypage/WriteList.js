@@ -3,10 +3,9 @@ import styled from 'styled-components';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const WriteList = ({ datas, type }) => {
+const WriteList = ({ datas, type, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
-  const [writeDatas, setWriteDatas] = useState(datas);
 
   const closeModal = () => {
     setModalOpen(false);
@@ -14,12 +13,14 @@ const WriteList = ({ datas, type }) => {
   };
 
   const handleDeleteBtn = (listid) => {
+    console.log('리스트 아이디', listid);
     setCurrentId(listid);
     setModalOpen(true);
   };
 
-  const handleDeleteConfirm = (postId) => {
-    setWriteDatas(writeDatas.filter((data) => data.postid !== postId));
+  const handleDeleteConfirm = (id) => {
+    console.log(id);
+    setList(datas.filter((data) => data.id !== id));
     closeModal();
   };
 
