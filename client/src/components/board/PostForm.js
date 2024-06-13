@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as PicAddIcon } from '../../assets/icons/picaddbutton.svg';
+import TagButtons from './TagButtons';
 
 const PostForm = ({
   title,
@@ -27,26 +28,7 @@ const PostForm = ({
           />
           <HrLine />
           <BoardTagsContainer>
-            <BoardTags>
-              <Button
-                isActive={tag === '잡담'}
-                onClick={() => onTagChange('잡담')}
-              >
-                잡담
-              </Button>
-              <Button
-                isActive={tag === '추천 장소'}
-                onClick={() => onTagChange('추천 장소')}
-              >
-                추천 장소
-              </Button>
-              <Button
-                isActive={tag === '같이 해요'}
-                onClick={() => onTagChange('같이 해요')}
-              >
-                같이 해요
-              </Button>
-            </BoardTags>
+            <TagButtons activeTag={tag} handleTagClick={onTagChange} />
             <PicAddIcon onClick={onFileInputClick} />
             <FileInput
               id='fileInput'
@@ -126,13 +108,15 @@ const BoardTagsContainer = styled.div`
   margin-bottom: 1.25rem;
 `;
 
-const BoardTags = styled.div`
-  display: flex;
-  justify-content: flex-start;
-
-  & > *:not(:first-child) {
-    margin-left: 1rem;
-  }
+const ContentTextArea = styled.textarea`
+  width: 100%;
+  padding: 0.625rem;
+  margin-bottom: 0.625rem;
+  border-radius: 0.325rem;
+  border: 0.5px solid #ddd;
+  box-sizing: border-box;
+  height: 20rem;
+  resize: none;
 `;
 
 const Button = styled.button`
@@ -145,17 +129,6 @@ const Button = styled.button`
   font-size: 0.875rem;
   margin-right: 0.325rem;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const ContentTextArea = styled.textarea`
-  width: 100%;
-  padding: 0.625rem;
-  margin-bottom: 0.625rem;
-  border-radius: 0.325rem;
-  border: 0.5px solid #ddd;
-  box-sizing: border-box;
-  height: 20rem;
-  resize: none;
 `;
 
 const CommentButton = styled(Button)`

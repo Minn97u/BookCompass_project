@@ -20,13 +20,25 @@ import {
 } from '../../api/BoardApi.js';
 
 const Board = () => {
-  const [activeTag, setActiveTag] = useState('전체');
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isEditing, setIsEditing] = useState(false);
-  const [totalPages, setTotalPages] = useState(0);
-  const [posts, setPosts] = useState([]);
+  const [state, setState] = useState({
+    activeTag: '전체',
+    modalIsOpen: false,
+    selectedItem: null,
+    currentPage: 1,
+    isEditing: false,
+    totalPages: 0,
+    posts: []
+  });
+
+  const {
+    activeTag,
+    modalIsOpen,
+    selectedItem,
+    currentPage,
+    isEditing,
+    totalPages,
+    posts
+  } = state;
 
   // eslint-disable-next-line
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
@@ -44,9 +56,12 @@ const Board = () => {
   const fetchItems = async (page = currentPage, tag = activeTag) => {
     try {
       const res = await getPosts(page, itemsPerPage, tag === '전체' ? '' : tag);
-      setCurrentPage(res.currentPage);
-      setTotalPages(res.totalPages);
-      setPosts(res.posts);
+      setState((prevState) => ({
+        ...prevState,
+        currentPage: res.currentPage,
+        totalPages: res.totalPages,
+        posts: res.posts
+      }));
       console.log('게시글', res.posts);
     } catch (error) {
       console.error('Error fetching items:', error);
@@ -58,32 +73,44 @@ const Board = () => {
   }, [currentPage, activeTag]);
 
   const handleTagClick = (tag) => {
-    setActiveTag(tag);
-    setCurrentPage(1);
+    setState((prevState) => ({
+      ...prevState,
+      activeTag: tag,
+      currentPage: 1
+    }));
   };
 
   const openModal = async (item) => {
     try {
       const res = await viewPosts(item.shortId);
-      setSelectedItem(res);
-      setModalIsOpen(true);
-      setIsEditing(false);
+      setState((prevState) => ({
+        ...prevState,
+        selectedItem: res,
+        modalIsOpen: true,
+        isEditing: false
+      }));
     } catch (error) {
       console.error('Error opening modal:', error);
     }
   };
 
   const closeModal = () => {
-    setModalIsOpen(false);
-    setSelectedItem(null);
-    setIsEditing(false);
+    setState((prevState) => ({
+      ...prevState,
+      modalIsOpen: false,
+      selectedItem: null,
+      isEditing: false
+    }));
     reset();
   };
 
   const handleWriteIconClick = () => {
-    setSelectedItem(null);
+    setState((prevState) => ({
+      ...prevState,
+      selectedItem: null,
+      modalIsOpen: true
+    }));
     reset({ title: '', content: '', tag: '잡담', selectedFile: null });
-    setModalIsOpen(true);
   };
 
   const handlePicAddIconClick = (event) => {
@@ -103,7 +130,10 @@ const Board = () => {
   };
 
   const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
+    setState((prevState) => ({
+      ...prevState,
+      currentPage: pageNumber
+    }));
   };
 
   const onSubmit = async (data) => {
@@ -130,8 +160,11 @@ const Board = () => {
     setValue('title', selectedItem.title);
     setValue('content', selectedItem.content);
     setValue('tag', selectedItem.tag);
-    setIsEditing(true);
-    setModalIsOpen(true);
+    setState((prevState) => ({
+      ...prevState,
+      isEditing: true,
+      modalIsOpen: true
+    }));
   };
 
   const handleDeleteClick = async () => {
@@ -155,7 +188,10 @@ const Board = () => {
       };
 
       const updatedComments = [...selectedItem.comments, newComment];
-      setSelectedItem({ ...selectedItem, comments: updatedComments });
+      setState((prevState) => ({
+        ...prevState,
+        selectedItem: { ...selectedItem, comments: updatedComments }
+      }));
       setValue('commentText', '');
 
       try {
@@ -164,7 +200,10 @@ const Board = () => {
         console.log('Comment submitted successfully');
       } catch (error) {
         console.error('Error submitting comment:', error);
-        setSelectedItem({ ...selectedItem, comments: selectedItem.comments });
+        setState((prevState) => ({
+          ...prevState,
+          selectedItem: { ...selectedItem, comments: selectedItem.comments }
+        }));
       }
     }
   };
@@ -176,7 +215,10 @@ const Board = () => {
         const updatedComments = selectedItem.comments.filter(
           (comment) => comment._id !== commentId
         );
-        setSelectedItem({ ...selectedItem, comments: updatedComments });
+        setState((prevState) => ({
+          ...prevState,
+          selectedItem: { ...selectedItem, comments: updatedComments }
+        }));
         console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
