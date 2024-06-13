@@ -27,6 +27,19 @@ export const getMyPosts = async () => {
   }
 };
 
+export const deleteMyPost = async (id) => {
+  try {
+    const res = await axios.delete(`${baseURL}/api/mypage/myPosts/${id}`, {
+      withCredentials: true
+    });
+    console.log('내가 쓴 글 삭제 완료', res);
+    return res;
+  } catch (error) {
+    console.error('내가 쓴 글 삭제 오류:', error);
+    throw error;
+  }
+};
+
 export const getMyComments = async () => {
   try {
     const res = await axios.get(`${baseURL}/api/mypage/myComments`, {
@@ -36,6 +49,19 @@ export const getMyComments = async () => {
     return res;
   } catch (error) {
     console.error('내가 쓴 댓글 조회 오류:', error);
+    throw error;
+  }
+};
+
+export const deleteMyComment = async (id) => {
+  try {
+    const res = await axios.delete(`${baseURL}/api/mypage/myComments/${id}`, {
+      withCredentials: true
+    });
+    console.log('내가 쓴 댓글 삭제 완료', res);
+    return res;
+  } catch (error) {
+    console.error('내가 쓴 댓글 삭제 오류:', error);
     throw error;
   }
 };

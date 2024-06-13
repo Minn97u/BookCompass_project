@@ -5,10 +5,12 @@ import { ReactComponent as UserIcon } from '../../assets/icons/usericon.svg';
 import { ReactComponent as CloseIcon } from '../../assets/icons/closebutton.svg';
 import { ReactComponent as WriteIcon } from '../../assets/icons/writebutton.svg';
 import { ReactComponent as PicAddIcon } from '../../assets/icons/picaddbutton.svg';
-import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
-import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
-import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
-import { ReactComponent as DoubleArrowRight } from '../../assets/icons/doublearrowright.svg';
+// import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
+// import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
+// import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
+// import { ReactComponent as DoubleArrowRight } from '../../assets/icons/doublearrowright.svg';
+import Pagination from './Pagination';
+
 import {
   getPosts,
   viewPosts,
@@ -92,36 +94,36 @@ const Board = () => {
     }
   };
 
-  const handlePageClick = async (pageNumber) => {
-    try {
-      const response = await getPosts(
-        pageNumber,
-        itemsPerPage,
-        activeTag === '전체' ? '' : activeTag
-      );
-      setCurrentPage(pageNumber);
-      setTotalPages(response.totalPages);
-      setPosts(response.posts);
-    } catch (error) {
-      console.error('Error fetching items:', error);
-    }
-  };
+  // const handlePageClick = async (pageNumber) => {
+  //   try {
+  //     const response = await getPosts(
+  //       pageNumber,
+  //       itemsPerPage,
+  //       activeTag === '전체' ? '' : activeTag
+  //     );
+  //     setCurrentPage(pageNumber);
+  //     setTotalPages(response.totalPages);
+  //     setPosts(response.posts);
+  //   } catch (error) {
+  //     console.error('Error fetching items:', error);
+  //   }
+  // };
 
-  const handleFirstPageClick = () => {
-    setCurrentPage(1);
-  };
+  // const handleFirstPageClick = () => {
+  //   setCurrentPage(1);
+  // };
 
-  const handleLastPageClick = () => {
-    setCurrentPage(totalPages);
-  };
+  // const handleLastPageClick = () => {
+  //   setCurrentPage(totalPages);
+  // };
 
-  const handlePrevPageClick = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
+  // const handlePrevPageClick = () => {
+  //   setCurrentPage((prev) => Math.max(prev - 1, 1));
+  // };
 
-  const handleNextPageClick = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
-  };
+  // const handleNextPageClick = () => {
+  //   setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  // };
 
   const fileInputRef = useRef(null);
 
@@ -129,6 +131,10 @@ const Board = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
   };
 
   const handlePostSubmit = async () => {
@@ -285,27 +291,11 @@ const Board = () => {
         ))}
       </BoardContent>
       <PaginationContainer>
-        <PaginationButton onClick={handleFirstPageClick}>
-          <DoubleArrowLeft />
-        </PaginationButton>
-        <PaginationButton onClick={handlePrevPageClick}>
-          <ArrowLeft />
-        </PaginationButton>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <PaginationButton
-            key={index + 1}
-            isActive={currentPage === index + 1}
-            onClick={() => handlePageClick(index + 1)}
-          >
-            {index + 1}
-          </PaginationButton>
-        ))}
-        <PaginationButton onClick={handleNextPageClick}>
-          <ArrowRight />
-        </PaginationButton>
-        <PaginationButton onClick={handleLastPageClick}>
-          <DoubleArrowRight />
-        </PaginationButton>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </PaginationContainer>
       <Modal
         isOpen={modalIsOpen}

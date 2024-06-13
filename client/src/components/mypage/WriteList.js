@@ -3,22 +3,31 @@ import styled from 'styled-components';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const WriteList = ({ datas }) => {
+const WriteList = ({ datas, type }) => {
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleDeleteBtn = () => {
-    setModalOpen(true);
-  };
+  const [currentId, setCurrentId] = useState(null);
+  const [writeDatas, setWriteDatas] = useState(datas);
 
   const closeModal = () => {
     setModalOpen(false);
+    setCurrentId(null);
+  };
+
+  const handleDeleteBtn = (listid) => {
+    setCurrentId(listid);
+    setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (postId) => {
+    setWriteDatas(writeDatas.filter((data) => data.postid !== postId));
+    closeModal();
   };
 
   return (
     <>
       <ListContainer>
         {datas.map((data) => (
-          <ListGroup key={data.postid}>
+          <ListGroup key={data.id}>
             <List>
               <TextBox>
                 <Title>{data.title}</Title>
@@ -28,7 +37,7 @@ const WriteList = ({ datas }) => {
                 <DeleteIconImg
                   src={DeleteIcon}
                   alt='delete-icon'
-                  onClick={handleDeleteBtn}
+                  onClick={() => handleDeleteBtn(data.id)}
                 />
               </DeleteWrite>
             </List>
@@ -38,7 +47,14 @@ const WriteList = ({ datas }) => {
           </ListGroup>
         ))}
       </ListContainer>
-      {modalOpen && <DeleteModal onClose={closeModal} />}
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeModal}
+          id={currentId}
+          type={type}
+          deleteSuccess={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };

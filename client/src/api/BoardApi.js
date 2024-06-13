@@ -1,4 +1,4 @@
-const baseURL = 'http://localhost:3001';
+const baseURL = 'http://localhost:3000';
 import axios from 'axios';
 
 export const getPosts = async (page, limit, tag = '') => {

@@ -66,7 +66,7 @@ const Mypage = () => {
         const localDate = createAt.toLocaleString();
 
         return {
-          postid: item.shortId,
+          id: item.shortId,
           title: item.title,
           date: localDate
         };
@@ -88,9 +88,19 @@ const Mypage = () => {
   };
 
   useEffect(() => {
-    fetchProfileInfo();
-    fetchMyPosts();
-    fetchMyComments();
+    const fetchAllData = async () => {
+      try {
+        await Promise.all([
+          fetchProfileInfo(),
+          fetchMyPosts(),
+          fetchMyComments()
+        ]);
+      } catch (error) {
+        console.error('데이터 가져오기 실패:', error);
+      }
+    };
+
+    fetchAllData();
   }, []);
 
   return (
@@ -110,12 +120,12 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList datas={postDatas} />}
+          component={<WriteList datas={postDatas} type={'post'} />}
         />
         <MypageBox
           icon={CommentIcon}
           title='내가 쓴 댓글'
-          component={<WriteList datas={writeList} />}
+          component={<WriteList datas={writeList} type={'comment'} />}
         />
         <MypageBox
           icon={BookMark}

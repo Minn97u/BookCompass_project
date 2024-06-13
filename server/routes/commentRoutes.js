@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const Post = require("../models/postSchema");
+const Comment = require("../models/commentSchema");
 const { ensureAuthenticated } = require("../middlewares/checklogin");
 
 /**
@@ -60,15 +61,16 @@ router.post("/", ensureAuthenticated, async (req, res) => {
             return res.status(404).json({ msg: "Post not found" });
         }
 
-        const newComment = {
+        const newComment = new Comment({
             author: req.user._id,
             content: content,
-        };
+        });
 
-        post.comments.push(newComment);
+        await newComment.save();
+        post.comments.push(newComment._id);
         await post.save();
 
-        res.status(201).json(post.comments);
+        res.status(201).json(newComment);
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: "Server error" });
@@ -189,7 +191,7 @@ router.put("/:commentId", ensureAuthenticated, async (req, res) => {
             return res.status(404).json({ msg: "Post not found" });
         }
 
-        const comment = post.comments.id(commentId);
+        const comment = await Comment.findById(commentId);
 
         if (!comment) {
             return res.status(404).json({ msg: "Comment not found" });
@@ -253,7 +255,7 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
             return res.status(404).json({ msg: "Post not found" });
         }
 
-        const comment = post.comments.id(commentId);
+        const comment = await Comment.findById(commentId);
 
         if (!comment) {
             return res.status(404).json({ msg: "Comment not found" });
@@ -267,6 +269,7 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
         }
 
         // 댓글 삭제
+        await comment.remove();
         post.comments.pull(commentId);
         await post.save();
 
