@@ -55,7 +55,7 @@ router.post("/", ensureAuthenticated, async (req, res) => {
     }
 
     try {
-        const post = await Post.findById(postId);
+        const post = await Post.findOne({ shortId: postId });
 
         if (!post) {
             return res.status(404).json({ msg: "Post not found" });
@@ -117,7 +117,7 @@ router.get("/", async (req, res) => {
     const { postId } = req.params;
 
     try {
-        const post = await Post.findById(postId).populate(
+        const post = await Post.findOne({ shortId: postId }).populate(
             "comments.author",
             "name profilePic"
         );
