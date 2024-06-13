@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: MyPage
+ *   description: 마이페이지 관리
+ */
+
 const express = require("express");
 const router = express.Router();
 const User = require("../models/userSchema");
@@ -8,7 +15,18 @@ const { ensureAuthenticated } = require("../middlewares/checklogin");
 const upload = require("../middlewares/upload");
 const path = require("path");
 
-// 유저 프로필 정보 가져오기
+/**
+ * @swagger
+ * /mypage/profile:
+ *   get:
+ *     summary: 유저 프로필 정보 가져오기
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 유저 프로필 정보 반환
+ */
 router.get("/profile", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id; // 인증된 사용자 ID 가져오기
@@ -21,7 +39,32 @@ router.get("/profile", ensureAuthenticated, async (req, res, next) => {
     }
 });
 
-// 프로필 편집 및 사진 업로드
+/**
+ * @swagger
+ * /mypage/profile:
+ *   put:
+ *     summary: 프로필 편집 및 사진 업로드
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               profileMsg:
+ *                 type: string
+ *               profilePic:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: 유저 프로필 정보 반환
+ */
 router.put(
     "/profile",
     ensureAuthenticated,
@@ -59,7 +102,25 @@ router.put(
     }
 );
 
-// 프로필 사진 가져오기
+/**
+ * @swagger
+ * /mypage/uploads/{filename}:
+ *   get:
+ *     summary: 프로필 사진 가져오기
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: filename
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 파일 이름
+ *     responses:
+ *       200:
+ *         description: 프로필 사진 반환
+ */
 router.get(
     "/uploads/:filename",
     ensureAuthenticated,
@@ -83,7 +144,18 @@ router.get(
     }
 );
 
-// 내가 쓴 글 목록 조회
+/**
+ * @swagger
+ * /mypage/myPosts:
+ *   get:
+ *     summary: 내가 쓴 글 목록 조회
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 내가 쓴 글 목록 반환
+ */
 router.get("/myPosts", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
@@ -95,7 +167,38 @@ router.get("/myPosts", ensureAuthenticated, async (req, res, next) => {
     }
 });
 
-// 내가 쓴 댓글 목록 조회
+/**
+ * @swagger
+ * /mypage/myPosts/{postId}:
+ *   delete:
+ *     summary: 내가 쓴 글 삭제
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 글 ID
+ *     responses:
+ *       200:
+ *         description: 글을 삭제했습니다.
+ */
+
+/**
+ * @swagger
+ * /mypage/myComments:
+ *   get:
+ *     summary: 내가 쓴 댓글 목록 조회
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 내가 쓴 댓글 목록 반환
+ */
 router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
@@ -107,7 +210,80 @@ router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
     }
 });
 
-// 찜해둔 도서관 목록
+/**
+ * @swagger
+ * /mypage/myComments/{commentId}:
+ *   delete:
+ *     summary: 내가 쓴 댓글 삭제
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: commentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 댓글 ID
+ *     responses:
+ *       200:
+ *         description: 댓글을 삭제했습니다.
+ */
+router.delete(
+    "/myComments/:commentId",
+    ensureAuthenticated,
+    async (req, res, next) => {
+        try {
+            const { commentId } = req.params;
+            const userId = req.user._id;
+
+            const comment = await Comment.findOneAndDelete({
+                _id: commentId,
+                author: userId,
+            });
+            if (!comment)
+                return res.status(404).send("댓글을 찾을 수 없습니다.");
+
+            res.status(200).send("댓글을 삭제했습니다.");
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+router.delete(
+    "/myPosts/:postId",
+    ensureAuthenticated,
+    async (req, res, next) => {
+        try {
+            const { postId } = req.params;
+            const userId = req.user._id;
+
+            const post = await Post.findOneAndDelete({
+                _id: postId,
+                author: userId,
+            });
+            if (!post) return res.status(404).send("글을 찾을 수 없습니다.");
+
+            res.status(200).send("글을 삭제했습니다.");
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * @swagger
+ * /mypage/favoriteLibrariesList:
+ *   get:
+ *     summary: 찜해둔 도서관 목록
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 찜해둔 도서관 목록 반환
+ */
 router.get(
     "/favoriteLibrariesList",
     ensureAuthenticated,
@@ -125,7 +301,27 @@ router.get(
     }
 );
 
-// 찜한 도서관 삭제
+/**
+ * @swagger
+ * /mypage/favoriteLibraries:
+ *   delete:
+ *     summary: 찜한 도서관 삭제
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               libraryId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 도서관을 삭제했습니다.
+ */
 router.delete(
     "/favoriteLibraries",
     ensureAuthenticated,
@@ -147,7 +343,83 @@ router.delete(
     }
 );
 
-// 내가 쓴 리뷰 목록 조회
+/**
+ * @swagger
+ * /mypage/favoriteParksList:
+ *   get:
+ *     summary: 찜해둔 공원 목록
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 찜해둔 공원 목록 반환
+ */
+router.get(
+    "/favoriteParksList",
+    ensureAuthenticated,
+    async (req, res, next) => {
+        try {
+            const userId = req.user._id; // 인증된 사용자 ID 가져오기
+            const user = await User.findById(userId).populate("favoriteParks");
+            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
+            res.json(user.favoriteParks);
+        } catch (error) {
+            next(error);
+        }
+    }
+);
+
+/**
+ * @swagger
+ * /mypage/favoriteParks:
+ *   delete:
+ *     summary: 찜한 공원 삭제
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               libraryId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 공원을 삭제했습니다.
+ */
+router.delete("/favoriteParks", ensureAuthenticated, async (req, res, next) => {
+    try {
+        const userId = req.user._id; // 인증된 사용자 ID 가져오기
+        const { parkId } = req.body; // 클라이언트로부터 받아온 공원 ID
+        const user = await User.findById(userId);
+        if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
+
+        user.favoriteParks = user.favoriteParks.filter(
+            (id) => id.toString() !== parkId
+        );
+        await user.save();
+        res.status(200).send("공원을 삭제했습니다.");
+    } catch (error) {
+        next(error);
+    }
+});
+
+/**
+ * @swagger
+ * /mypage/myReviews:
+ *   get:
+ *     summary: 내가 쓴 리뷰 목록 조회
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: 내가 쓴 리뷰 목록 반환
+ */
 router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
@@ -159,7 +431,25 @@ router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
     }
 });
 
-// 내가 쓴 리뷰 삭제
+/**
+ * @swagger
+ * /mypage/myReviews/{reviewId}:
+ *   delete:
+ *     summary: 내가 쓴 리뷰 삭제
+ *     tags: [MyPage]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: reviewId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 리뷰 ID
+ *     responses:
+ *       200:
+ *         description: 리뷰를 삭제했습니다.
+ */
 router.delete(
     "/myReviews/:reviewId",
     ensureAuthenticated,
