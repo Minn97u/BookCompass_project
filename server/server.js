@@ -82,14 +82,6 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use(express.static(path.join(__dirname, '../client/public')));
 
 // 라우트 설정
-<<<<<<< HEAD
-app.use("/api/parks", parkRoutes);
-app.use("/api", authRoutes);
-app.use("/api/posts", postRoutes);
-app.use("/api/mypage", mypageRoutes);
-app.use("/api/libraries", libraryRoutes);
-app.use("/api/reviews", reviewRoutes);
-=======
 
 app.use('/api/parks', parkRoutes);
 app.use('/api', authRoutes);
@@ -97,7 +89,6 @@ app.use('/api/posts', postRoutes);
 app.use('/api/mypage', mypageRoutes);
 app.use('/api/libraries', libraryRoutes);
 app.use('/api/reviews', reviewRoutes);
->>>>>>> 802886375480af23bdb7b7868b2b91f2079bfe2f
 
 // 모든 요청에 대해 index.html 파일을 반환
 app.get('*', (req, res) => {
