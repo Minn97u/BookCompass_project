@@ -81,7 +81,18 @@ const Mypage = () => {
   const fetchMyComments = async () => {
     try {
       const res = await getMyComments();
-      console.log('내가 쓴 댓글', res);
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item._id,
+          title: item.content,
+          date: localDate
+        };
+      });
+      setCommentDatas(datas);
+      console.log('내가 쓴 댓글', datas);
     } catch (error) {
       console.error('내가 쓴 댓글 실패:', error);
     }
@@ -120,12 +131,20 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList datas={postDatas} type={'post'} />}
+          component={
+            <WriteList datas={postDatas} type={'post'} setList={setPostDatas} />
+          }
         />
         <MypageBox
           icon={CommentIcon}
           title='내가 쓴 댓글'
-          component={<WriteList datas={writeList} type={'comment'} />}
+          component={
+            <WriteList
+              datas={commentDatas}
+              type={'comment'}
+              setList={setCommentDatas}
+            />
+          }
         />
         <MypageBox
           icon={BookMark}
