@@ -21,7 +21,7 @@ const Mypage = () => {
   const [description, setDescription] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [initialFormType, setInitialFormType] = useState('로그인');
-  const [postDatas, setWriteDatas] = useState([]);
+  const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
   const navigate = useNavigate();
 
@@ -71,7 +71,7 @@ const Mypage = () => {
           date: localDate
         };
       });
-      setWriteDatas(datas);
+      setPostDatas(datas);
       console.log('내가 쓴 글', datas);
     } catch (error) {
       console.error('내가 쓴 글 실패:', error);
@@ -139,12 +139,7 @@ const Mypage = () => {
           component={<ReviewList />}
         />
       </MypageContainer>
-      {showModal && (
-        <AuthModal
-          onClose={handleCloseModal}
-          initialFormType={initialFormType}
-        />
-      )}
+      {showModal && <AuthModal onClose={handleCloseModal} />}
     </Container>
   );
 };

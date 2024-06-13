@@ -192,11 +192,11 @@ router.delete(
     ensureAuthenticated,
     async (req, res, next) => {
         try {
-            const { postId } = req.params;
+            const { postId } = req.params; // shortId
             const userId = req.user._id;
 
             const post = await Post.findOneAndDelete({
-                _id: postId,
+                shortId: postId,
                 "author.id": userId,
             });
             if (!post) {
