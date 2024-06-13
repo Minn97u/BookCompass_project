@@ -231,6 +231,7 @@ router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
         const comments = await Comment.find({ author: userId });
+        console.log(comments);
 
         res.json(comments);
     } catch (error) {
@@ -266,7 +267,7 @@ router.delete(
             const userId = req.user._id;
 
             const comment = await Comment.findOneAndDelete({
-                shortId: commentId,
+                _id: commentId,
                 author: userId,
             });
             if (!comment)
