@@ -266,7 +266,7 @@ router.delete(
             const userId = req.user._id;
 
             const comment = await Comment.findOneAndDelete({
-                _id: commentId,
+                shortId: commentId,
                 author: userId,
             });
             if (!comment)
@@ -274,6 +274,8 @@ router.delete(
 
             res.status(200).send("댓글을 삭제했습니다.");
         } catch (error) {
+            console.error("댓글 삭제 중 오류 발생:", error);
+            res.status(500).json({ message: "서버 오류로 삭제 못 했습니다." });
             next(error);
         }
     }
