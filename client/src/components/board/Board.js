@@ -223,21 +223,6 @@ const Board = () => {
     setCommentText(e.target.value);
   };
 
-  // const handleCommentDelete = async (commentId) => {
-  //   if (selectedItem) {
-  //     try {
-  //       await deleteComments(selectedItem.shortId, selectedItem.comments._id);
-  //       const updatedComments = selectedItem.comments.filter(
-  //         (comment) => comment.shortId !== commentId
-  //       );
-  //       setSelectedItem({ ...selectedItem, comments: updatedComments });
-  //       console.log('댓글 삭제 완료');
-  //     } catch (error) {
-  //       console.error('댓글 삭제 오류', error);
-  //     }
-  //   }
-  // };
-
   const handleCommentDelete = async (commentId) => {
     if (selectedItem) {
       try {
