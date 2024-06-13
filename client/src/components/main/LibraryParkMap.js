@@ -130,7 +130,7 @@ const LibraryParkMap = ({
 
   return (
     <div>
-      <div id='map' style={{ width: '100%', height: '510px' }}></div>
+      <div id='map' style={{ width: '100%', height: '100vh' }}></div>
     </div>
   );
 };
