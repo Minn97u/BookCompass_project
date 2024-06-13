@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     cb(null, `${Date.now()}${path.extname(file.originalname)}`); // 파일 이름 설정
-  }
+  },
 });
 
 // 파일 필터 설정
@@ -25,8 +25,8 @@ const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
   limits: {
-    fileSize: 1024 * 1024 * 5 // 파일 크기 제한: 5MB
-  }
+    fileSize: 1024 * 1024 * 5, // 파일 크기 제한: 5MB
+  },
 });
 
 module.exports = upload;

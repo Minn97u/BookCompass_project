@@ -1,15 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import EditInfo from '../components/edit/EditInfo';
 import EditProfile from '../components/edit/EditProfile';
 import AuthModal from '../components/auth/AuthModal';
+import { getProfileInfo } from '../api/Mypage';
 
 const EditPage = () => {
-  const [name, setName] = useState('나경윤');
-  const [description, setDescription] = useState('내용을 추가하세요.');
-  const [foundAnswer, setFoundAnswer] = useState('김초엽');
-  const [region, setRegion] = useState('');
-  const location = '광진구';
+  const [profileImg, setProfileImg] = useState('');
+  const [name, setName] = useState('');
+  const [description, setDescription] = useState('');
+  const [foundAnswer, setFoundAnswer] = useState(
+    localStorage.getItem('favoriteAuthor')
+  );
+  const [region, setRegion] = useState(localStorage.getItem('userRegion'));
   const [modalVisible, setModalVisible] = useState(false);
   const [formType, setFormType] = useState(null);
 
@@ -18,11 +21,29 @@ const EditPage = () => {
     setModalVisible(true);
   };
 
+  const fetchProfileInfo = async () => {
+    try {
+      const res = await getProfileInfo();
+      console.log('프로필 가져오기:', res);
+      setProfileImg(res.data.profilePic);
+      setName(res.data.name);
+      setDescription(res.data.profileMsg);
+    } catch (error) {
+      console.error('프로필 가져오기 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfileInfo();
+  }, []);
+
   return (
     <Container>
       <EditBox>
         <Title>기본 정보 수정</Title>
         <EditProfile
+          profileImg={profileImg}
+          setProfileImg={setProfileImg}
           name={name}
           setName={setName}
           description={description}

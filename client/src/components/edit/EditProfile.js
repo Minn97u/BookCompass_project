@@ -1,16 +1,76 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
-import EditImg from '../../assets/icons/EditImg.svg';
+import { putProfileInfo } from '../../api/Mypage';
 
-const EditProfile = ({ name, setName, description, setDescription }) => {
+const EditProfile = ({
+  profileImg,
+  setProfileImg,
+  name,
+  setName,
+  description,
+  setDescription
+}) => {
+  const [profileImgFile, setProfileImgFile] = useState(profileImg);
+  const [editText, setEditText] = useState('수정');
+  const [formData, setFormData] = useState(new FormData());
+  const imageInput = useRef();
+
+  const handleImageUploadClick = () => {
+    imageInput.current.click();
+  };
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const imgUrl = reader.result;
+        setProfileImg(imgUrl);
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditProfileInfo = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('profileMsg', description);
+
+      const file = imageInput.current.files[0];
+      if (file) {
+        formData.append('profilePic', file);
+      }
+
+      const res = await putProfileInfo(formData);
+      console.log('프로필 편집 성공', res);
+      setEditText('완료!');
+      setTimeout(() => {
+        setEditText('수정');
+      }, 1000);
+    } catch (error) {
+      console.error('프로필 편집 실패:', error);
+    }
+  };
+
   return (
     <EditProfileContainer>
       <SubTitle>프로필</SubTitle>
       <Hr />
       <ProfileContainer>
-        <EditProfileImg>
-          <img src={EditImg} alt='edit-profile-img' />
-        </EditProfileImg>
+        <EditImgBox>
+          <ProfileImgWrapper onClick={handleImageUploadClick}>
+            <ProfileImg src={profileImg} alt='edit-profile-img' />
+          </ProfileImgWrapper>
+          <FileInput
+            type='file'
+            accept='.jpg, .jpeg, .png'
+            ref={imageInput}
+            onChange={handleImageUpload}
+          />
+        </EditImgBox>
         <InputConatiner>
           <Label>이름</Label>
           <NameInput
@@ -29,7 +89,7 @@ const EditProfile = ({ name, setName, description, setDescription }) => {
             onChange={(e) => setDescription(e.target.value)}
           />
         </InputConatiner>
-        <EditBtn>수정</EditBtn>
+        <EditBtn onClick={handleEditProfileInfo}>{editText}</EditBtn>
       </ProfileContainer>
     </EditProfileContainer>
   );
@@ -57,17 +117,46 @@ const Hr = styled.hr`
   margin-top: -5px;
 `;
 
-const EditProfileImg = styled.button`
+const EditImgBox = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 6rem;
-  height: 6rem;
-  background-color: #ffffff;
+`;
+
+const ProfileImgWrapper = styled.div`
+  position: relative;
+  width: 7rem;
+  height: 7rem;
   border: 1px solid #dfdfdf;
   border-radius: 50%;
   cursor: pointer;
-  margin-right: 50px;
+  margin-right: 40px;
+  box-sizing: border-box;
+
+  &:hover img {
+    filter: brightness(0.7);
+  }
+
+  &:hover::after {
+    content: '편집';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    z-index: 1; /* 텍스트가 이미지 위에 보이도록 설정 */
+  }
+`;
+
+const ProfileImg = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+`;
+
+const FileInput = styled.input`
+  display: none;
 `;
 
 const InputConatiner = styled.div`

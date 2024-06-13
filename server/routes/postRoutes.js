@@ -95,6 +95,11 @@ router.post(
  *         schema:
  *           type: integer
  *         description: Number of posts per page
+ *       - in: query
+ *         name: tag
+ *         schema:
+ *           type: string
+ *         description: Tag name
  *     responses:
  *       200:
  *         description: A list of posts
@@ -104,9 +109,14 @@ router.post(
 router.get("/", async (req, res) => {
     const page = parseInt(req.query.page) || 1; // 페이지 번호, 기본값 1
     const limit = parseInt(req.query.limit) || 10; // 페이지당 항목 수, 기본값 10
+    const tag = req.query.tag;
 
     try {
-        const posts = await Post.find()
+        let query = {};
+        if(tag) {
+            query.tag = tag;
+        }
+        const posts = await Post.find(query)
             .populate("author", "name profilePic") // 작성자 이름과 프로필 사진을 가져오기 위해 populate 사용
             .sort({ createdAt: -1 }) // 새롭게 작성된 글부터 정렬
             .select("shortId title tag author postImg createdAt updatedAt") // 필요한 필드 선택
@@ -129,7 +139,7 @@ router.get("/", async (req, res) => {
         }));
 
         // 전체 게시글 수를 계산하여 페이지네이션 정보 포함
-        const totalPosts = await Post.countDocuments();
+        const totalPosts = await Post.countDocuments(query);
         const totalPages = Math.ceil(totalPosts / limit);
 
         res.status(200).json({

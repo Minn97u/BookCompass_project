@@ -6,11 +6,10 @@ import ModalReviewContainer from './ModalReviewContainer'; // ReviewContainer를
 import ArchiveAddIconSrc from '../../assets/icons/ArchiveAdd.svg';
 import ArchiveAddedIconSrc from '../../assets/icons/ArchivePreAddIcon.svg';
 
-const Modal = ({ isOpen, closeModal, library }) => {
+const Modal = ({ isOpen, closeModal, place }) => {
   const [archiveAdded, setArchiveAdded] = useState(false);
 
   const handleArchiveButtonClick = () => {
-    // 현재 상태의 반대로 변경
     setArchiveAdded(!archiveAdded);
   };
 
@@ -22,32 +21,31 @@ const Modal = ({ isOpen, closeModal, library }) => {
         <CloseButton onClick={closeModal}>
           <img src={CloseIcon} alt='CloseIcon' />
         </CloseButton>
-        <LibraryNameContainer>
+        <PlaceNameContainer>
           <LibraryIcon src={BookIcon} alt='BookIcon' />
-          <LibraryName>{library['도서관명']}</LibraryName>
-          <DistrictName>{library['구명']}</DistrictName>
-        </LibraryNameContainer>
-        <LibraryAddress>
-          {library['주소']}
+          <PlaceName>{place.name || '도서관 이름 없음'}</PlaceName>
+          <DistrictName>{place.district || '구 이름 없음'}</DistrictName>
+        </PlaceNameContainer>
+        <PlaceAddress>
+          {place.address || '주소 없음'}
           <ArchiveAddButton onClick={handleArchiveButtonClick}>
             <img
               src={archiveAdded ? ArchiveAddedIconSrc : ArchiveAddIconSrc}
               alt='ArchiveIcon'
             />
           </ArchiveAddButton>
-        </LibraryAddress>
-        <LibraryOperatingHours>
-          <OperatingHoursLabel>운영시간</OperatingHoursLabel>
-          {library['운영시간']}
-        </LibraryOperatingHours>
-        <LibraryPhone>{library['전화번호']}</LibraryPhone>
-        <LibraryURL
-          href={library['홈페이지 URL']}
+        </PlaceAddress>
+        <PlaceOperatingHours>
+          {place.hours || '운영시간 정보 없음'}
+        </PlaceOperatingHours>
+        <PlacePhone>{place.phone || '전화번호 없음'}</PlacePhone>
+        <PlaceURL
+          href={place.url || '#'}
           target='_blank'
           rel='noopener noreferrer'
         >
-          {library['홈페이지 URL']}
-        </LibraryURL>
+          {place.url || '홈페이지 URL 없음'}
+        </PlaceURL>
         <ModalReviewContainer rating={4} /> {/* ReviewContainer를 사용 */}
       </ModalContent>
     </ModalContainer>
@@ -101,7 +99,7 @@ const ArchiveAddButton = styled.button`
   cursor: pointer;
 `;
 
-const LibraryNameContainer = styled.div`
+const PlaceNameContainer = styled.div`
   display: flex;
   align-items: center;
   margin-bottom: 10px; /* 아이콘과 이름 사이의 간격 조절 */
@@ -111,7 +109,7 @@ const LibraryIcon = styled.img`
   margin-right: 10px; /* 아이콘과 이름 사이의 간격 조절 */
 `;
 
-const LibraryName = styled.span`
+const PlaceName = styled.span`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 600;
@@ -131,7 +129,7 @@ const DistrictName = styled.span`
   right: 4rem;
 `;
 
-const LibraryAddress = styled.div`
+const PlaceAddress = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -146,7 +144,7 @@ const LibraryAddress = styled.div`
   color: #191619;
 `;
 
-const LibraryOperatingHours = styled.div`
+const PlaceOperatingHours = styled.div`
   margin-top: 10px;
   font-family: 'Inter';
   font-style: normal;
@@ -155,15 +153,11 @@ const LibraryOperatingHours = styled.div`
   line-height: 18px;
   color: #191619;
   display: flex;
+  text-align: left;
   align-items: center;
 `;
 
-const OperatingHoursLabel = styled.span`
-  font-weight: bold;
-  margin-right: 5px;
-`;
-
-const LibraryPhone = styled.p`
+const PlacePhone = styled.p`
   margin-top: 10px;
   font-family: 'Inter';
   font-style: normal;
@@ -173,7 +167,7 @@ const LibraryPhone = styled.p`
   color: #191619;
 `;
 
-const LibraryURL = styled.a`
+const PlaceURL = styled.a`
   font-family: 'Inter';
   font-style: normal;
   font-weight: 400;
