@@ -9,7 +9,7 @@ const CommentSection = ({
   handleCommentSubmit,
   handleCommentDelete
 }) => {
-  const { register, handleSubmit, setValue } = useForm();
+  const { register, handleSubmit } = useForm();
 
   return (
     <CommentSectionContainer>

@@ -7,7 +7,7 @@ import { ReactComponent as WriteIcon } from '../../assets/icons/writebutton.svg'
 import Pagination from './Pagination';
 import TagButtons from './TagButtons';
 import PostList from './PostList';
-import CommentSection from './CommentSection';
+import ModalContent from './ModalContent';
 
 import {
   getPosts,
@@ -25,18 +25,18 @@ const Board = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
   const [posts, setPosts] = useState([]);
 
   // eslint-disable-next-line
-const [userName, setUserName] = useState(localStorage.getItem('userName'));
+  const [userName, setUserName] = useState(localStorage.getItem('userName'));
   const { handleSubmit, setValue, reset, watch } = useForm({
     defaultValues: {
       title: '',
       content: '',
       tag: '잡담',
-      commentText: ''
+      commentText: '',
+      selectedFile: null
     }
   });
 
@@ -82,7 +82,7 @@ const [userName, setUserName] = useState(localStorage.getItem('userName'));
 
   const handleWriteIconClick = () => {
     setSelectedItem(null);
-    reset({ title: '', content: '', tag: '잡담' });
+    reset({ title: '', content: '', tag: '잡담', selectedFile: null });
     setModalIsOpen(true);
   };
 
@@ -90,7 +90,7 @@ const [userName, setUserName] = useState(localStorage.getItem('userName'));
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setSelectedFile(file);
+      setValue('selectedFile', file);
     }
   };
 
@@ -112,15 +112,14 @@ const [userName, setUserName] = useState(localStorage.getItem('userName'));
       formData.append('title', data.title);
       formData.append('content', data.content);
       formData.append('tag', data.tag);
-      if (selectedFile) {
-        formData.append('postImg', selectedFile);
+      if (data.selectedFile) {
+        formData.append('postImg', data.selectedFile);
       }
       const response = isEditing
         ? await updatePosts(formData, selectedItem.shortId)
         : await postPosts(formData);
       console.log('Post submitted successfully:', response.data);
       await fetchItems();
-      setSelectedFile(null);
       closeModal();
     } catch (error) {
       console.error('Error submitting post:', error);
@@ -212,7 +211,7 @@ const [userName, setUserName] = useState(localStorage.getItem('userName'));
             fileInputRef={fileInputRef}
             onFileInputClick={handleFileInputClick}
             onFileChange={handlePicAddIconClick}
-            selectedFile={selectedFile}
+            selectedFile={watch('selectedFile')}
           />
         ) : isEditing ? (
           <PostForm
@@ -226,44 +225,17 @@ const [userName, setUserName] = useState(localStorage.getItem('userName'));
             fileInputRef={fileInputRef}
             onFileInputClick={handleFileInputClick}
             onFileChange={handlePicAddIconClick}
-            selectedFile={selectedFile}
+            selectedFile={watch('selectedFile')}
           />
         ) : (
-          <ModalContent>
-            <ModalHeader>
-              <ModalTitle>{selectedItem.title}</ModalTitle>
-              <ModalDate>
-                {new Date(selectedItem.createdAt).toLocaleString()}
-              </ModalDate>
-              {userName === selectedItem.author.name && (
-                <ActionButtons>
-                  <TextButton onClick={handleEditClick}>수정</TextButton>
-                  <TextButton onClick={handleDeleteClick}>삭제</TextButton>
-                </ActionButtons>
-              )}
-              <ModalAuthor>{selectedItem.author.name}</ModalAuthor>
-            </ModalHeader>
-
-            <ModalBody>
-              <div>
-                <PostImage
-                  src={
-                    selectedItem.postImg
-                      ? `uploads/${selectedItem.postImg.split('/public')[1]}`
-                      : './No_image_available.png'
-                  }
-                  alt={selectedItem.title}
-                />
-                <Text>{selectedItem.content}</Text>
-              </div>
-              <CommentSection
-                selectedItem={selectedItem}
-                userName={userName}
-                handleCommentSubmit={handleCommentSubmit}
-                handleCommentDelete={handleCommentDelete}
-              />
-            </ModalBody>
-          </ModalContent>
+          <ModalContent
+            selectedItem={selectedItem}
+            userName={userName}
+            handleEditClick={handleEditClick}
+            handleDeleteClick={handleDeleteClick}
+            handleCommentSubmit={handleCommentSubmit}
+            handleCommentDelete={handleCommentDelete}
+          />
         )}
       </CustomModal>
     </BoardContainer>
@@ -284,83 +256,10 @@ const BoardTagsContainer = styled.div`
   margin-bottom: 1.25rem;
 `;
 
-const ModalContent = styled.div`
-  background: white;
-  padding: 1.25rem;
-  width: 94%;
-  max-width: 60rem;
-  height: auto;
-  max-height: 80vh;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  position: relative;
-`;
-
 const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 1.25rem;
-`;
-
-const ModalHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.25rem;
-`;
-
-const ModalTitle = styled.h2`
-  font-size: 1.5rem;
-  margin: 0;
-`;
-
-const ModalDate = styled.div`
-  font-size: 0.875rem;
-  color: #888;
-  margin-left: 0.65rem;
-`;
-
-const ModalAuthor = styled.div`
-  font-size: 0.875rem;
-  color: #191619;
-  margin-left: auto;
-  font-weight: bold;
-`;
-
-const ModalBody = styled.div`
-  display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-`;
-
-const TextButton = styled.span`
-  color: gray;
-  cursor: pointer;
-  font-size: 0.875rem;
-`;
-
-const ActionButtons = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.625rem;
-  height: 1.5rem;
-  margin-top: 0.5rem;
-  margin-left: 1.25rem;
-`;
-
-const PostImage = styled.img`
-  width: 100%;
-  max-width: 20rem;
-  height: auto;
-  object-fit: contain;
-  cursor: pointer;
-`;
-
-const Text = styled.p`
-  white-space: pre-wrap;
-  word-wrap: break-word;
 `;
 
 export default Board;
