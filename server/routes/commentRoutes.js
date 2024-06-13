@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 const Post = require("../models/postSchema");
+const Comment = require("../models/commentSchema");
 const { ensureAuthenticated } = require("../middlewares/checklogin");
 
 /**

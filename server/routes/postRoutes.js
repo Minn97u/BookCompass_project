@@ -64,7 +64,11 @@ router.post(
                 title,
                 content,
                 tag,
-                author: req.user._id,
+                author: {
+                    id: req.user._id,
+                    name: req.user.name,
+                    profilePic: req.user.profilePic,
+                },
                 postImg: req.file ? req.file.path : null,
             });
 

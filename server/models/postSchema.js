@@ -18,9 +18,9 @@ const PostSchema = new Schema(
             default: "free",
         },
         author: {
-            type: Schema.Types.ObjectId,
-            ref: "User",
-            required: true,
+            id: { type: Schema.Types.ObjectId, ref: "User", required: true },
+            name: { type: String, required: true },
+            profilePic: { type: String, required: true },
         },
         postImg: {
             type: String,
