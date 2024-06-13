@@ -117,7 +117,7 @@ router.get("/", async (req, res) => {
 
     try {
         let query = {};
-        if(tag) {
+        if (tag) {
             query.tag = tag;
         }
         const posts = await Post.find(query)
@@ -291,9 +291,12 @@ router.put(
             if (!post) {
                 return res.status(404).json({ msg: "Post not found" });
             }
+            // 로그 추가
+            console.log("Post author ID:", post.author.id);
+            console.log("Current user ID:", req.user._id);
 
             // 작성자와 현재 로그인한 사용자가 동일한지 확인
-            if (post.author.toString() !== req.user._id.toString()) {
+            if (post.author.id.toString() !== req.user._id.toString()) {
                 return res
                     .status(403)
                     .json({ msg: "You are not authorized to edit this post" });
@@ -350,7 +353,7 @@ router.delete("/:shortId", ensureAuthenticated, async (req, res) => {
         }
 
         // 작성자와 현재 로그인한 사용자가 동일한지 확인
-        if (post.author.toString() !== req.user._id.toString()) {
+        if (post.author.id.toString() !== req.user._id.toString()) {
             return res
                 .status(403)
                 .json({ msg: "You are not authorized to delete this post" });

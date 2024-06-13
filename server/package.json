@@ -30,6 +30,7 @@
         "passport-google-oauth20": "^2.0.0",
         "passport-local": "^1.0.0",
         "python": "^0.0.4",
+        "shortid": "^2.2.16",
         "swagger-jsdoc": "^6.2.8",
         "swagger-ui-express": "^5.0.1"
     }
