@@ -20,7 +20,7 @@ const PostSchema = new Schema(
         author: {
             id: { type: Schema.Types.ObjectId, ref: "User", required: true },
             name: { type: String, required: true },
-            profilePic: { type: String, required: true },
+            profilePic: { type: String, required: false },
         },
         postImg: {
             type: String,
