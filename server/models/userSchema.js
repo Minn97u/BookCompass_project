@@ -10,7 +10,7 @@ const userSchema = new Schema({
     name: {
         type: String,
         required: true,
-    }, 
+    },
     password: {
         type: String,
         default: null, // Google 로그인 시에는 비밀번호가 null일 수 있습니다.

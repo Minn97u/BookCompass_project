@@ -17,8 +17,8 @@ const WriteList = ({ datas }) => {
   return (
     <>
       <ListContainer>
-        {datas.map((data, index) => (
-          <ListGroup key={index}>
+        {datas.map((data) => (
+          <ListGroup key={data.postid}>
             <List>
               <TextBox>
                 <Title>{data.title}</Title>
@@ -32,7 +32,9 @@ const WriteList = ({ datas }) => {
                 />
               </DeleteWrite>
             </List>
-            {datas.length > 1 && index !== datas.length - 1 && <Hr />}
+            {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
+              <Hr />
+            )}
           </ListGroup>
         ))}
       </ListContainer>
@@ -69,11 +71,11 @@ const TextBox = styled.div`
 const Title = styled.span`
   font-size: 1.2rem;
   color: #191619;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
 `;
 
 const Date = styled.span`
-  font-size: 0.9;
+  font-size: 0.9rem;
   color: #868686;
 `;
 

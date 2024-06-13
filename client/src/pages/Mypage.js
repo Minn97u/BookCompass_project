@@ -12,7 +12,7 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
-import { getProfileInfo } from '../api/Mypage';
+import { getProfileInfo, getMyPosts, getMyComments } from '../api/Mypage';
 
 const Mypage = () => {
   const [profileImg, setProfileImg] = useState('');
@@ -21,18 +21,17 @@ const Mypage = () => {
   const [description, setDescription] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [initialFormType, setInitialFormType] = useState('로그인');
+  const [postDatas, setWriteDatas] = useState([]);
+  const [commentDatas, setCommentDatas] = useState([]);
   const navigate = useNavigate();
 
   const writeList = [
-    { title: '제목', date: '24-06-10' },
-    { title: '제목', date: '24-06-10' },
     { title: '제목', date: '24-06-10' },
     { title: '제목', date: '24-06-10' },
     { title: '제목', date: '24-06-10' }
   ];
 
   const bookMarkList = [
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
     { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
     { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
     { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
@@ -59,8 +58,39 @@ const Mypage = () => {
     }
   };
 
+  const fetchMyPosts = async () => {
+    try {
+      const res = await getMyPosts();
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          postid: item.shortId,
+          title: item.title,
+          date: localDate
+        };
+      });
+      setWriteDatas(datas);
+      console.log('내가 쓴 글', datas);
+    } catch (error) {
+      console.error('내가 쓴 글 실패:', error);
+    }
+  };
+
+  const fetchMyComments = async () => {
+    try {
+      const res = await getMyComments();
+      console.log('내가 쓴 댓글', res);
+    } catch (error) {
+      console.error('내가 쓴 댓글 실패:', error);
+    }
+  };
+
   useEffect(() => {
     fetchProfileInfo();
+    fetchMyPosts();
+    fetchMyComments();
   }, []);
 
   return (
@@ -80,7 +110,7 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList datas={writeList} />}
+          component={<WriteList datas={postDatas} />}
         />
         <MypageBox
           icon={CommentIcon}

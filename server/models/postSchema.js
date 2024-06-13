@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const Schema = mongoose.Schema;
 const shortId = require("./types/short-id");
-const CommentSchema = require("./commentSchema"); // 댓글 스키마 추가
 
 const PostSchema = new Schema(
     {
@@ -27,12 +26,11 @@ const PostSchema = new Schema(
             type: String,
             default: null,
         },
-        comments: [CommentSchema], // 댓글 스키마를 서브 스키마로 추가
+        comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
     },
     {
         timestamps: true,
     }
 );
 
-const Post = mongoose.model("Post", PostSchema);
-module.exports = Post;
+module.exports = mongoose.model("Post", PostSchema);
