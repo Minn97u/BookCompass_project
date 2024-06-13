@@ -159,7 +159,7 @@ router.get(
 router.get("/myPosts", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const posts = await Post.find({ author: userId });
+        const posts = await Post.find({ "author.id": userId });
 
         res.json(posts);
     } catch (error) {
@@ -186,6 +186,34 @@ router.get("/myPosts", ensureAuthenticated, async (req, res, next) => {
  *       200:
  *         description: 글을 삭제했습니다.
  */
+
+router.delete(
+    "/myPosts/:postId",
+    ensureAuthenticated,
+    async (req, res, next) => {
+        try {
+            const { postId } = req.params;
+            const userId = req.user._id;
+
+            const post = await Post.findOneAndDelete({
+                _id: postId,
+                "author.id": userId,
+            });
+            if (!post) {
+                console.error(
+                    `Post not found: postId=${postId}, userId=${userId}`
+                );
+                return res.status(404).send("글을 찾을 수 없습니다.");
+            }
+
+            res.status(200).send("글을 삭제했습니다.");
+        } catch (error) {
+            console.error("게시글 삭제 중 오류 발생:", error);
+            res.status(500).json({ message: "서버 오류로 삭제 못 했습니다." });
+            next(error);
+        }
+    }
+);
 
 /**
  * @swagger
@@ -245,27 +273,6 @@ router.delete(
                 return res.status(404).send("댓글을 찾을 수 없습니다.");
 
             res.status(200).send("댓글을 삭제했습니다.");
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-router.delete(
-    "/myPosts/:postId",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const { postId } = req.params;
-            const userId = req.user._id;
-
-            const post = await Post.findOneAndDelete({
-                _id: postId,
-                author: userId,
-            });
-            if (!post) return res.status(404).send("글을 찾을 수 없습니다.");
-
-            res.status(200).send("글을 삭제했습니다.");
         } catch (error) {
             next(error);
         }

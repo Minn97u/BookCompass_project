@@ -12,7 +12,7 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
-import { getProfileInfo } from '../api/Mypage';
+import { getProfileInfo, getMyPosts, getMyComments } from '../api/Mypage';
 
 const Mypage = () => {
   const [profileImg, setProfileImg] = useState('');
@@ -21,7 +21,21 @@ const Mypage = () => {
   const [description, setDescription] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [initialFormType, setInitialFormType] = useState('로그인');
+  const [postDatas, setWriteDatas] = useState([]);
+  const [commentDatas, setCommentDatas] = useState([]);
   const navigate = useNavigate();
+
+  const writeList = [
+    { title: '제목', date: '24-06-10' },
+    { title: '제목', date: '24-06-10' },
+    { title: '제목', date: '24-06-10' }
+  ];
+
+  const bookMarkList = [
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
+  ];
 
   const handleSettingClick = () => {
     navigate('/mypage/edit');
@@ -44,8 +58,49 @@ const Mypage = () => {
     }
   };
 
+  const fetchMyPosts = async () => {
+    try {
+      const res = await getMyPosts();
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item.shortId,
+          title: item.title,
+          date: localDate
+        };
+      });
+      setWriteDatas(datas);
+      console.log('내가 쓴 글', datas);
+    } catch (error) {
+      console.error('내가 쓴 글 실패:', error);
+    }
+  };
+
+  const fetchMyComments = async () => {
+    try {
+      const res = await getMyComments();
+      console.log('내가 쓴 댓글', res);
+    } catch (error) {
+      console.error('내가 쓴 댓글 실패:', error);
+    }
+  };
+
   useEffect(() => {
-    fetchProfileInfo();
+    const fetchAllData = async () => {
+      try {
+        await Promise.all([
+          fetchProfileInfo(),
+          fetchMyPosts(),
+          fetchMyComments()
+        ]);
+      } catch (error) {
+        console.error('데이터 가져오기 실패:', error);
+      }
+    };
+
+    fetchAllData();
   }, []);
 
   return (
@@ -65,22 +120,17 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList title='제목' date='2024-06-05' />}
+          component={<WriteList datas={postDatas} type={'post'} />}
         />
         <MypageBox
           icon={CommentIcon}
           title='내가 쓴 댓글'
-          component={<WriteList title='제목' date='2024-06-05' />}
+          component={<WriteList datas={writeList} type={'comment'} />}
         />
         <MypageBox
           icon={BookMark}
           title='즐겨찾기 장소'
-          component={
-            <BookMarkList
-              title='성동구립성수도서관'
-              location='서울 성동구 뚝섬로1길 43 성수문화복지회관 7층'
-            />
-          }
+          component={<BookMarkList datas={bookMarkList} />}
           mapIcon={MapIcon}
         />
         <MypageBox
@@ -119,8 +169,8 @@ const ProfileConatiner = styled.div`
 `;
 
 const ProfileImg = styled.img`
-  width: 7rem;
-  margin: 75px 0px 8px 0px;
+  width: 8.8rem;
+  margin: 75px 0px 5px 0px;
   border-radius: 50%;
 `;
 

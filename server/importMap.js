@@ -8,7 +8,7 @@ const Park = require("./models/parkSchema");
 dotenv.config();
 
 mongoose.connect(
-    `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/TEST1`,
+    `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/TEST`,
     { useNewUrlParser: true, useUnifiedTopology: true }
 );
 

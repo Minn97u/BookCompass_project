@@ -38,6 +38,6 @@ const EmptyStar = styled(EmptyStarIcon)`
 `;
 
 const RatigText = styled.span`
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin-left: 12px;
 `;

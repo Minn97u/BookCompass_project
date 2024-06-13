@@ -1,18 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import Modal from 'react-modal';
 import { ReactComponent as UserIcon } from '../../assets/icons/usericon.svg';
 import { ReactComponent as CloseIcon } from '../../assets/icons/closebutton.svg';
 import { ReactComponent as WriteIcon } from '../../assets/icons/writebutton.svg';
 import { ReactComponent as PicAddIcon } from '../../assets/icons/picaddbutton.svg';
-import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
-import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
-import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
-import { ReactComponent as DoubleArrowRight } from '../../assets/icons/doublearrowright.svg';
+// import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
+// import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
+// import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
+// import { ReactComponent as DoubleArrowRight } from '../../assets/icons/doublearrowright.svg';
+import Pagination from './Pagination';
+
+import {
+  getPosts,
+  viewPosts,
+  postPosts,
+  updatePosts,
+  deletePosts,
+  postComments,
+  deleteComments
+} from '../../api/BoardApi.js';
 
 const Board = () => {
-  const [items, setItems] = useState([]);
   const [activeTag, setActiveTag] = useState('전체');
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -20,42 +29,47 @@ const Board = () => {
   const [newTitle, setNewTitle] = useState('');
   const [newContent, setNewContent] = useState('');
   const [isEditing, setIsEditing] = useState(false);
+  const [newPostTag, setNewPostTag] = useState('잡담');
+  const [commentText, setCommentText] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [totalPages, setTotalPages] = useState(0);
+  const [posts, setPosts] = useState([]);
+
+  // eslint-disable-next-line
+  const [userName, setUserName] = useState(localStorage.getItem('userName'));
+
+  // const pagesToShow = 5;
   const itemsPerPage = 10;
-  const pagesToShow = 5;
+  const fetchItems = async (page = currentPage, tag = activeTag) => {
+    try {
+      const res = await getPosts(page, itemsPerPage, tag === '전체' ? '' : tag);
+      setCurrentPage(res.currentPage);
+      setTotalPages(res.totalPages);
+      setPosts(res.posts);
+      console.log('게시글', posts);
+    } catch (error) {
+      console.error('Error fetching items:', error);
+    }
+  };
 
   useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const res = await axios.get(
-          'https://jsonplaceholder.typicode.com/posts'
-        );
-        const fetchedItems = res.data.map((post) => ({
-          id: post.id,
-          text: post.title,
-          body: post.body,
-          imgSrc: 'https://via.placeholder.com/150',
-          comments: [
-            { id: 1, author: '이름', text: '고양이 귀여워' },
-            { id: 2, author: '이름', text: '고양이 귀여워' }
-          ]
-        }));
-        setItems(fetchedItems);
-      } catch (error) {
-        console.error('Error fetching items:', error);
-      }
-    };
-
     fetchItems();
-  }, []);
+  }, [currentPage, activeTag]);
 
   const handleTagClick = (tag) => {
     setActiveTag(tag);
+    setCurrentPage(1);
   };
 
-  const openModal = (item) => {
-    setSelectedItem(item);
-    setModalIsOpen(true);
-    setIsEditing(false);
+  const openModal = async (item) => {
+    try {
+      const res = await viewPosts(item.shortId);
+      setSelectedItem(res);
+      setModalIsOpen(true);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error opening modal:', error);
+    }
   };
 
   const closeModal = () => {
@@ -68,43 +82,74 @@ const Board = () => {
     setSelectedItem(null);
     setNewTitle('');
     setNewContent('');
+    setNewPostTag('잡담');
     setModalIsOpen(true);
   };
 
-  const handlePicAddIconClick = () => {
-    return null;
+  const handlePicAddIconClick = (event) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setSelectedFile(file);
+    }
   };
 
-  const handlePageClick = (pageNumber) => {
+  // const handlePageClick = async (pageNumber) => {
+  //   try {
+  //     const response = await getPosts(
+  //       pageNumber,
+  //       itemsPerPage,
+  //       activeTag === '전체' ? '' : activeTag
+  //     );
+  //     setCurrentPage(pageNumber);
+  //     setTotalPages(response.totalPages);
+  //     setPosts(response.posts);
+  //   } catch (error) {
+  //     console.error('Error fetching items:', error);
+  //   }
+  // };
+
+  // const handleFirstPageClick = () => {
+  //   setCurrentPage(1);
+  // };
+
+  // const handleLastPageClick = () => {
+  //   setCurrentPage(totalPages);
+  // };
+
+  // const handlePrevPageClick = () => {
+  //   setCurrentPage((prev) => Math.max(prev - 1, 1));
+  // };
+
+  // const handleNextPageClick = () => {
+  //   setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  // };
+
+  const fileInputRef = useRef(null);
+
+  const handleFileInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
-  };
-
-  const handleFirstPageClick = () => {
-    setCurrentPage(1);
-  };
-
-  const handleLastPageClick = () => {
-    setCurrentPage(totalPages);
-  };
-
-  const handlePrevPageClick = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleNextPageClick = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   const handlePostSubmit = async () => {
     try {
-      const response = await axios.post(
-        'https://jsonplaceholder.typicode.com/posts',
-        {
-          title: newTitle,
-          content: newContent
-        }
-      );
+      const formData = new FormData();
+      formData.append('title', newTitle);
+      formData.append('content', newContent);
+      formData.append('tag', newPostTag);
+      if (selectedFile) {
+        formData.append('postImg', selectedFile);
+      }
+      const response = await postPosts(formData);
       console.log('Post submitted successfully:', response.data);
+      await fetchItems();
+      setSelectedFile(null);
       closeModal();
     } catch (error) {
       console.error('Error submitting post:', error);
@@ -113,9 +158,9 @@ const Board = () => {
 
   const handleEditClick = () => {
     console.log('edit clicked');
-    setNewTitle(selectedItem.text);
-    setNewContent(selectedItem.body);
-    console.log(newTitle);
+    setNewTitle(selectedItem.title);
+    setNewContent(selectedItem.content);
+    setNewPostTag(selectedItem.tag);
     setIsEditing(true);
     setModalIsOpen(true);
     console.log('edit clicked2');
@@ -125,14 +170,17 @@ const Board = () => {
   const handleEditSubmit = async () => {
     if (selectedItem) {
       try {
-        const response = await axios.put(
-          'https://jsonplaceholder.typicode.com/posts/1',
-          {
-            title: newTitle,
-            content: newContent
-          }
-        );
+        const formData = new FormData();
+        formData.append('title', newTitle);
+        formData.append('content', newContent);
+        formData.append('tag', newPostTag);
+        if (selectedFile) {
+          formData.append('postImg', selectedFile);
+        }
+        const response = await updatePosts(formData, selectedItem.shortId);
         console.log('Post edited successfully:', response.data);
+        await fetchItems();
+        setSelectedFile(null);
         closeModal();
       } catch (error) {
         console.error('Error editing post:', error);
@@ -141,40 +189,64 @@ const Board = () => {
   };
 
   const handleDeleteClick = async () => {
-    try {
-      const response = await axios.delete(
-        'https://jsonplaceholder.typicode.com/posts/1'
-      );
-      console.log('Post deleted successfully:', response.data);
-      closeModal();
-    } catch (error) {
-      console.error('Error deleting post:', error);
+    if (selectedItem) {
+      try {
+        const response = await deletePosts(selectedItem.shortId);
+        console.log('삭제 완료', response.data);
+        await fetchItems();
+        closeModal();
+      } catch (error) {
+        console.error('삭제 오류', error);
+      }
     }
   };
 
-  const handleCommentSubmit = async (postId, comment) => {
-    try {
-      const response = await axios.post(
-        `https://jsonplaceholder.typicode.com/posts/${postId}/comments`,
-        {
-          body: comment,
-          postId: postId
-        }
-      );
-      console.log('Comment submitted successfully:', response.data);
-    } catch (error) {
-      console.error('Error submitting comment:', error);
+  const handleCommentSubmit = async () => {
+    if (selectedItem) {
+      const newComment = {
+        content: commentText,
+        author: { name: userName } // 현재 사용자 이름을 사용, 실제 구현에 따라 다를 수 있음
+      };
+
+      // 먼저 클라이언트 상태에 댓글 추가
+      const updatedComments = [...selectedItem.comments, newComment];
+      setSelectedItem({ ...selectedItem, comments: updatedComments });
+      setCommentText('');
+
+      try {
+        // 서버에 댓글 데이터 전송
+        const data = { content: commentText };
+        await postComments(data, selectedItem.shortId);
+        console.log('Comment submitted successfully');
+      } catch (error) {
+        console.error('Error submitting comment:', error);
+        setSelectedItem({ ...selectedItem, comments: selectedItem.comments });
+      }
     }
   };
 
-  const paginatedItems = items.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const handleCommentInputChange = (e) => {
+    setCommentText(e.target.value);
+  };
 
-  const totalPages = Math.ceil(items.length / itemsPerPage);
-  const startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
-  const endPage = Math.min(totalPages, startPage + pagesToShow - 1);
+  const handleCommentDelete = async (commentId) => {
+    if (selectedItem) {
+      try {
+        await deleteComments(selectedItem.shortId, commentId);
+        const updatedComments = selectedItem.comments.filter(
+          (comment) => comment._id !== commentId
+        );
+        setSelectedItem({ ...selectedItem, comments: updatedComments });
+        console.log('댓글 삭제 완료');
+      } catch (error) {
+        console.error('댓글 삭제 오류', error);
+      }
+    }
+  };
+
+  // const totalPages = Math.ceil(items.length / itemsPerPage);
+  // const startPage = Math.max(1, currentPage - Math.floor(pagesToShow / 2));
+  // const endPage = Math.min(totalPages, startPage + pagesToShow - 1);
 
   return (
     <BoardContainer>
@@ -202,35 +274,28 @@ const Board = () => {
         <WriteIcon onClick={handleWriteIconClick} />
       </BoardTagsContainer>
       <BoardContent>
-        {paginatedItems.map((item) => (
-          <BoardItem key={item.id} onClick={() => openModal(item)}>
-            <Image src={item.imgSrc} alt={item.text} />
-            <Text>{item.text}</Text>
+        {posts.map((item) => (
+          <BoardItem key={item.shortId} onClick={() => openModal(item)}>
+            <ImageContainer>
+              <Image
+                src={
+                  item.postImg
+                    ? `uploads/${item.postImg.split('uploads\\')[1]}`
+                    : './No_image_available.png'
+                }
+                alt={item.title}
+              />
+            </ImageContainer>
+            <Text>{item.title}</Text>
           </BoardItem>
         ))}
       </BoardContent>
       <PaginationContainer>
-        <PaginationButton onClick={handleFirstPageClick}>
-          <DoubleArrowLeft />
-        </PaginationButton>
-        <PaginationButton onClick={handlePrevPageClick}>
-          <ArrowLeft />
-        </PaginationButton>
-        {Array.from({ length: endPage - startPage + 1 }, (_, index) => (
-          <PaginationButton
-            key={startPage + index}
-            isActive={currentPage === startPage + index}
-            onClick={() => handlePageClick(startPage + index)}
-          >
-            {startPage + index}
-          </PaginationButton>
-        ))}
-        <PaginationButton onClick={handleNextPageClick}>
-          <ArrowRight />
-        </PaginationButton>
-        <PaginationButton onClick={handleLastPageClick}>
-          <DoubleArrowRight />
-        </PaginationButton>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
       </PaginationContainer>
       <Modal
         isOpen={modalIsOpen}
@@ -256,19 +321,31 @@ const Board = () => {
                 <BoardTagsContainer>
                   <BoardTags>
                     <Button
-                      isActive={activeTag === '추천 장소'}
-                      onClick={() => handleTagClick('추천 장소')}
+                      isActive={newPostTag === '잡담'}
+                      onClick={() => setNewPostTag('잡담')}
+                    >
+                      잡담
+                    </Button>
+                    <Button
+                      isActive={newPostTag === '추천 장소'}
+                      onClick={() => setNewPostTag('추천 장소')}
                     >
                       추천 장소
                     </Button>
                     <Button
-                      isActive={activeTag === '같이 해요'}
-                      onClick={() => handleTagClick('같이 해요')}
+                      isActive={newPostTag === '같이 해요'}
+                      onClick={() => setNewPostTag('같이 해요')}
                     >
                       같이 해요
                     </Button>
                   </BoardTags>
-                  <PicAddIcon onClick={handlePicAddIconClick} />
+                  <PicAddIcon onClick={handleFileInputClick} />
+                  <FileInput
+                    id='fileInput'
+                    ref={fileInputRef}
+                    onChange={handlePicAddIconClick}
+                  />
+                  {selectedFile ? selectedFile.name : <></>}
                 </BoardTagsContainer>
                 <ContentTextArea
                   placeholder='내용을 입력해 주세요.'
@@ -289,30 +366,42 @@ const Board = () => {
               <CommentSection>
                 <TitleInput
                   placeholder='제목을 입력해 주세요.'
-                  value={selectedItem.text}
+                  value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                 />
                 <HrLine />
                 <BoardTagsContainer>
                   <BoardTags>
                     <Button
-                      isActive={activeTag === '추천 장소'}
-                      onClick={() => handleTagClick('추천 장소')}
+                      isActive={newPostTag === '잡담'}
+                      onClick={() => setNewPostTag('잡담')}
+                    >
+                      잡담
+                    </Button>
+                    <Button
+                      isActive={newPostTag === '추천 장소'}
+                      onClick={() => setNewPostTag('추천 장소')}
                     >
                       추천 장소
                     </Button>
                     <Button
-                      isActive={activeTag === '같이 해요'}
-                      onClick={() => handleTagClick('같이 해요')}
+                      isActive={newPostTag === '같이 해요'}
+                      onClick={() => setNewPostTag('같이 해요')}
                     >
                       같이 해요
                     </Button>
                   </BoardTags>
-                  <PicAddIcon onClick={handlePicAddIconClick} />
+                  <PicAddIcon onClick={handleFileInputClick} />
+                  <FileInput
+                    id='fileInput'
+                    ref={fileInputRef}
+                    onChange={handlePicAddIconClick}
+                  />
+                  {selectedFile ? selectedFile.name : <></>}
                 </BoardTagsContainer>
                 <ContentTextArea
                   placeholder='내용을 입력해 주세요.'
-                  value={selectedItem.body}
+                  value={newContent}
                   onChange={(e) => setNewContent(e.target.value)}
                 />
                 <CommentButton onClick={handleEditSubmit}>수정</CommentButton>
@@ -325,37 +414,61 @@ const Board = () => {
               <CloseIcon />
             </CloseButton>
             <ModalHeader>
-              <ModalTitle>{selectedItem.text}</ModalTitle>
-              <ModalDate>2024.06.03</ModalDate>
-              <ModalAuthor>작성자</ModalAuthor>
+              <ModalTitle>{selectedItem.title}</ModalTitle>
+              <ModalDate>
+                {new Date(selectedItem.createdAt).toLocaleString()}
+              </ModalDate>
+              {userName === selectedItem.author.name && (
+                <ActionButtons>
+                  <TextButton onClick={handleEditClick}>수정</TextButton>
+                  <TextButton onClick={handleDeleteClick}>삭제</TextButton>
+                </ActionButtons>
+              )}
+              <ModalAuthor>{selectedItem.author.name}</ModalAuthor>
             </ModalHeader>
             <HrLine />
             <ModalBody>
               <div>
-                <Image src={selectedItem.imgSrc} alt={selectedItem.text} />
-                <Text>{selectedItem.body}</Text>
+                <PostImage
+                  src={
+                    selectedItem.postImg
+                      ? `uploads/${selectedItem.postImg.split('uploads\\')[1]}`
+                      : './No_image_available.png'
+                  }
+                  alt={selectedItem.title}
+                />
+                <Text>{selectedItem.content}</Text>
               </div>
               <CommentSection>
                 <FlexContainer>
                   <h3>댓글</h3>
-                  <ActionButtons>
-                    <TextButton onClick={handleEditClick}>수정</TextButton>
-                    <TextButton onClick={handleDeleteClick}>삭제</TextButton>
-                  </ActionButtons>
                 </FlexContainer>
-                <CommentInput placeholder='내용을 입력해 주세요.' />
-                <CommentButton onClick={handleCommentSubmit}>
+                <CommentInput
+                  placeholder='내용을 입력해 주세요.'
+                  value={commentText}
+                  onChange={handleCommentInputChange}
+                />
+                <CommentButton
+                  onClick={() => handleCommentSubmit(selectedItem.shortId)}
+                >
                   등록
                 </CommentButton>
                 <CommentList>
                   {selectedItem.comments.map((comment) => (
-                    <CommentItem key={comment.id}>
+                    <CommentItem key={comment.shortId}>
                       <CommentAvatar>
                         <UserIcon />
                       </CommentAvatar>
                       <CommentContent>
-                        <strong>{comment.author}</strong>
-                        <Text>{comment.text}</Text>
+                        <strong>{comment.author.name}</strong>
+                        <p>{comment.content}</p>
+                        {userName === comment.author.name && (
+                          <TextButton
+                            onClick={() => handleCommentDelete(comment._id)}
+                          >
+                            삭제
+                          </TextButton>
+                        )}
                       </CommentContent>
                     </CommentItem>
                   ))}
@@ -413,11 +526,13 @@ const Button = styled.button`
 
 const BoardContent = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
 
-  @media (max-width: 767px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(5, 1fr);
   }
 `;
 
@@ -431,20 +546,40 @@ const BoardItem = styled.div`
   background: white;
   color: #543d20;
   cursor: pointer;
-
+  box-sizing: border-box;
   &.placeholder {
     border: 0.063rem dashed #ddd;
   }
 `;
 
-const Image = styled.img`
+const ImageContainer = styled.div`
   width: 100%;
-  height: auto;
-  max-width: 20em;
-  max-height: 20rem;
-  object-fit: cover;
+  padding-top: 75%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   border-radius: 0.625rem;
   margin-bottom: 0.625rem;
+`;
+
+const Image = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  cursor: pointer;
+`;
+
+const PostImage = styled.img`
+  width: 100%;
+  max-width: 20rem;
+  height: auto;
+  object-fit: contain;
+  cursor: pointer;
 `;
 
 const Text = styled.p`
@@ -603,8 +738,9 @@ const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 0.625rem;
-  margin-top: 1.25rem;
   height: 1.5rem;
+  margin-top: 0.5rem;
+  margin-left: 1.25rem;
 `;
 
 const TextButton = styled.span`
@@ -639,5 +775,9 @@ const customModalStyles = {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
   }
 };
+
+const FileInput = styled.input.attrs({ type: 'file' })`
+  display: none;
+`;
 
 export default Board;
