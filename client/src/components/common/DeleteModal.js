@@ -1,11 +1,30 @@
 import React from 'react';
 import styled from 'styled-components';
 import closebutton from '../../assets/icons/closebutton.svg';
+import { deleteMyPost, deleteMyComment } from '../../api/Mypage';
 
-const DeleteModal = ({ onClose }) => {
-  const handleDeleteBtn = () => {
-    window.location.reload();
+const DeleteType = {
+  POST: 'post',
+  COMMENT: 'comment',
+  PLACE: 'place',
+  REVIEW: 'review'
+};
+
+const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
+  const handleDeleteBtn = async () => {
+    try {
+      if (type === DeleteType.POST) {
+        await deleteMyPost(id);
+      } else if (type === DeleteType.COMMENT) {
+        await deleteMyComment(id);
+      }
+      deleteSuccess(id);
+      onClose();
+    } catch (error) {
+      console.error('삭제 실패:', error);
+    }
   };
+
   return (
     <>
       <ModalBack onClick={onClose}>

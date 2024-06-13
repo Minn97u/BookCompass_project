@@ -3,22 +3,31 @@ import styled from 'styled-components';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const WriteList = ({ datas }) => {
+const WriteList = ({ datas, type }) => {
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleDeleteBtn = () => {
-    setModalOpen(true);
-  };
+  const [currentId, setCurrentId] = useState(null);
+  const [writeDatas, setWriteDatas] = useState(datas);
 
   const closeModal = () => {
     setModalOpen(false);
+    setCurrentId(null);
+  };
+
+  const handleDeleteBtn = (listid) => {
+    setCurrentId(listid);
+    setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (postId) => {
+    setWriteDatas(writeDatas.filter((data) => data.postid !== postId));
+    closeModal();
   };
 
   return (
     <>
       <ListContainer>
-        {datas.map((data, index) => (
-          <ListGroup key={index}>
+        {datas.map((data) => (
+          <ListGroup key={data.id}>
             <List>
               <TextBox>
                 <Title>{data.title}</Title>
@@ -28,15 +37,24 @@ const WriteList = ({ datas }) => {
                 <DeleteIconImg
                   src={DeleteIcon}
                   alt='delete-icon'
-                  onClick={handleDeleteBtn}
+                  onClick={() => handleDeleteBtn(data.id)}
                 />
               </DeleteWrite>
             </List>
-            {datas.length > 1 && index !== datas.length - 1 && <Hr />}
+            {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
+              <Hr />
+            )}
           </ListGroup>
         ))}
       </ListContainer>
-      {modalOpen && <DeleteModal onClose={closeModal} />}
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeModal}
+          id={currentId}
+          type={type}
+          deleteSuccess={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };
@@ -69,11 +87,11 @@ const TextBox = styled.div`
 const Title = styled.span`
   font-size: 1.2rem;
   color: #191619;
-  padding-bottom: 2px;
+  padding-bottom: 4px;
 `;
 
 const Date = styled.span`
-  font-size: 0.9;
+  font-size: 0.9rem;
   color: #868686;
 `;
 

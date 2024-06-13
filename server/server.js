@@ -73,7 +73,7 @@ app.use(
     })
 );
 app.use(passport.initialize());
-app.use(passport.session()); 
+app.use(passport.session());
 
 // Swagger 설정
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -86,7 +86,7 @@ app.use(express.static(path.join(__dirname, "../client/public")));
 app.use("/api/parks", parkRoutes);
 app.use("/api", authRoutes);
 app.use("/api/posts", postRoutes);
-app.use("./api/comment", commentRoutes);
+app.use("/api/comment", commentRoutes);
 app.use("/api/mypage", mypageRoutes);
 app.use("/api/libraries", libraryRoutes);
 app.use("/api/reviews", reviewRoutes);

@@ -5,10 +5,7 @@ import { ReactComponent as UserIcon } from '../../assets/icons/usericon.svg';
 import { ReactComponent as CloseIcon } from '../../assets/icons/closebutton.svg';
 import { ReactComponent as WriteIcon } from '../../assets/icons/writebutton.svg';
 import { ReactComponent as PicAddIcon } from '../../assets/icons/picaddbutton.svg';
-// import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
-// import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
-// import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
-// import { ReactComponent as DoubleArrowRight } from '../../assets/icons/doublearrowright.svg';
+
 import Pagination from './Pagination';
 
 import {
@@ -280,7 +277,7 @@ const Board = () => {
               <Image
                 src={
                   item.postImg
-                    ? `uploads/${item.postImg.split('uploads\\')[1]}`
+                    ? `${item.postImg.split('/public')[1]}`
                     : './No_image_available.png'
                 }
                 alt={item.title}
@@ -432,7 +429,7 @@ const Board = () => {
                 <PostImage
                   src={
                     selectedItem.postImg
-                      ? `uploads/${selectedItem.postImg.split('uploads\\')[1]}`
+                      ? `${selectedItem.postImg.split('/public')[1]}`
                       : './No_image_available.png'
                   }
                   alt={selectedItem.title}
@@ -591,17 +588,6 @@ const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 1.25rem;
-`;
-
-const PaginationButton = styled.button`
-  background-color: ${(props) => (props.isActive ? '#543D20' : 'white')};
-  color: ${(props) => (props.isActive ? 'white' : '#8a5a2b')};
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 1.25rem;
-  cursor: pointer;
-  font-size: 0.875rem;
-  margin: 0 0.325rem;
 `;
 
 const ModalContent = styled.div`

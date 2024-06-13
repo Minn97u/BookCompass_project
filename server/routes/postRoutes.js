@@ -117,7 +117,7 @@ router.get("/", async (req, res) => {
 
     try {
         let query = {};
-        if(tag) {
+        if (tag) {
             query.tag = tag;
         }
         const posts = await Post.find(query)
@@ -187,7 +187,7 @@ router.get("/:shortId", async (req, res) => {
             .populate("author.id", "name profilePic") // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
             .populate({
                 path: "comments",
-                populate: { path: "author", select: "name profilePic"} // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+                populate: { path: "author", select: "name profilePic" }, // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
             })
             .lean();
 
@@ -291,9 +291,12 @@ router.put(
             if (!post) {
                 return res.status(404).json({ msg: "Post not found" });
             }
+            // 로그 추가
+            console.log("Post author ID:", post.author.id);
+            console.log("Current user ID:", req.user._id);
 
             // 작성자와 현재 로그인한 사용자가 동일한지 확인
-            if (post.author.toString() !== req.user._id.toString()) {
+            if (post.author.id.toString() !== req.user._id.toString()) {
                 return res
                     .status(403)
                     .json({ msg: "You are not authorized to edit this post" });
@@ -350,7 +353,7 @@ router.delete("/:shortId", ensureAuthenticated, async (req, res) => {
         }
 
         // 작성자와 현재 로그인한 사용자가 동일한지 확인
-        if (post.author.toString() !== req.user._id.toString()) {
+        if (post.author.id.toString() !== req.user._id.toString()) {
             return res
                 .status(403)
                 .json({ msg: "You are not authorized to delete this post" });
