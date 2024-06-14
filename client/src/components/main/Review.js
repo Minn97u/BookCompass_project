@@ -6,13 +6,15 @@ import BackIcon from '../../assets/icons/BackIcon.svg';
 import ReviewWrite from './ReviewWrite';
 import ReviewList from './ReviewList';
 
-const ModalReviewContainer = ({ rating }) => {
+const Review = ({ rating, placeId }) => {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
+  const [userId, setUserId] = useState(localStorage.getItem('userId'));
 
   const handleToggleReview = () => {
     setIsWriteReviewOpen(!isWriteReviewOpen);
     setIconImage(isWriteReviewOpen ? WriteReviewIcon : BackIcon);
+    console.log('userId:', userId);
   };
 
   return (
@@ -29,12 +31,17 @@ const ModalReviewContainer = ({ rating }) => {
         </WriteReviewIconWrapper>
       </ReviewTitle>
 
-      {isWriteReviewOpen ? <ReviewWrite /> : <ReviewList rating={rating} />}
+      {isWriteReviewOpen ? (
+        <ReviewWrite placeId={placeId} userId={userId} />
+      ) : (
+        <ReviewList rating={rating} />
+      )}
+      {console.log(placeId)}
     </Container>
   );
 };
 
-export default ModalReviewContainer;
+export default Review;
 
 const Container = styled.div`
   top: 50%;
