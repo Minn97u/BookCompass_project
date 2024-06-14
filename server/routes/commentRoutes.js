@@ -250,6 +250,7 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
 
     try {
         const post = await Post.findOne({ shortId: postId });
+
         if (!post) {
             return res.status(404).json({ msg: "Post not found" });
         }
@@ -268,7 +269,7 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
         }
 
         // 댓글 삭제
-        await Comment.deleteOne({ _id: commentId });
+        await comment.remove();
         post.comments.pull(commentId);
         await post.save();
 
