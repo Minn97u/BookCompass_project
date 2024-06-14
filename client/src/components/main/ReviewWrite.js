@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import ClickStar from './ClickStar';
 import axios from 'axios';
 
-function ReviewWrite({ libraryId, onClose, placeId, userId }) {
+function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
   console.log('libraryId:', libraryId); // 추가
@@ -44,6 +44,7 @@ function ReviewWrite({ libraryId, onClose, placeId, userId }) {
       console.log('리뷰가 성공적으로 작성되었습니다:', response.data);
       alert('리뷰가 성공적으로 작성되었습니다.');
       onClose();
+      refreshReviews(); // 리뷰 목록 갱신 함수 호출
     } catch (error) {
       console.error('리뷰 작성에 실패했습니다:', error);
 

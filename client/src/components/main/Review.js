@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import ReviewStar from './ReviewStar';
 import WriteReviewIcon from '../../assets/icons/WriteReviewIcon.svg';
 import BackIcon from '../../assets/icons/BackIcon.svg';
 import ReviewWrite from './ReviewWrite';
 import ReviewList from './ReviewList';
+import axios from 'axios';
 
 const Review = ({ rating, placeId }) => {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
+  const [reviews, setReviews] = useState([]);
 
   const handleToggleReview = () => {
     setIsWriteReviewOpen(!isWriteReviewOpen);
@@ -17,11 +19,26 @@ const Review = ({ rating, placeId }) => {
     console.log('userId:', userId);
   };
 
+  const refreshReviews = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3001/api/reviews?placeId=${placeId}`
+      );
+      setReviews(response.data);
+    } catch (error) {
+      console.error('리뷰를 불러오는 데 실패했습니다:', error);
+    }
+  };
+
+  useEffect(() => {
+    refreshReviews();
+  }, [placeId]);
+
   return (
     <Container>
       <ReviewTitle>
         <TitleText>
-          <span>리뷰(1)</span>
+          <span>리뷰({reviews.length})</span>
           <span>
             <ReviewStar rating={rating} />
           </span>
@@ -32,9 +49,22 @@ const Review = ({ rating, placeId }) => {
       </ReviewTitle>
 
       {isWriteReviewOpen ? (
-        <ReviewWrite placeId={placeId} userId={userId} />
+        <ReviewWrite
+          placeId={placeId}
+          userId={userId}
+          refreshReviews={refreshReviews}
+          onClose={handleToggleReview}
+        />
       ) : (
-        <ReviewList rating={rating} />
+        reviews.map((review) => (
+          <ReviewList
+            key={review._id}
+            rating={review.rating}
+            comment={review.comment}
+            user={review.user}
+            date={review.date}
+          />
+        ))
       )}
       {console.log(placeId)}
     </Container>

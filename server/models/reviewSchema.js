@@ -5,11 +5,8 @@ const Schema = mongoose.Schema;
 const reviewSchema = new Schema(
     {
         user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-        library: {
-            type: Schema.Types.ObjectId,
-            ref: "Library",
-            required: false,
-        },
+        library: { type: Schema.Types.ObjectId, ref: "Library" },
+        park: { type: Schema.Types.ObjectId, ref: "Park" }, // park 필드 추가
         rating: { type: Number, required: true },
         comment: { type: String, required: true },
     },

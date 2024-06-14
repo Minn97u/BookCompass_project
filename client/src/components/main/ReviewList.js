@@ -2,18 +2,15 @@ import React from 'react';
 import styled from 'styled-components';
 import ReviewStar from './ReviewStar';
 
-function ReviewList({ rating }) {
+function ReviewList({ rating, comment, user, date }) {
   return (
     <>
       <ReviewListContainer>
         <ReviewStar rating={rating} />
-        <ReviewContent>
-          책이 아주 많진 않지만 읽을 만한 책은 제법 있고, 분위기 좋고 분위기
-          좋습니다. 휴식이 필요할 때 여기오면 힐링 그 자체입니다.
-        </ReviewContent>
+        <ReviewContent>{comment}</ReviewContent>
         <ReviewInfo>
-          <span>Name</span>
-          <span>Date</span>
+          <span>{user}</span>
+          <span>{new Date(date).toLocaleDateString()}</span>
         </ReviewInfo>
       </ReviewListContainer>
     </>

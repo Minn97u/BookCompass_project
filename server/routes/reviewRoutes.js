@@ -24,7 +24,15 @@ const { ensureAuthenticated } = require("../middlewares/checklogin");
  */
 router.get("/", async (req, res, next) => {
     try {
-        const reviews = await Review.find()
+        const { placeId } = req.query;
+
+        if (!placeId) {
+            return res
+                .status(400)
+                .json({ error: "placeId 파라미터가 필요합니다." });
+        }
+
+        const reviews = await Review.find({ library: placeId })
             .populate("user")
             .populate("library")
             .populate("park");
