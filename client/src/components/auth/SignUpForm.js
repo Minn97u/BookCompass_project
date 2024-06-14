@@ -5,12 +5,12 @@ import Districts from './Districts';
 import GoogleIcon from '../../assets/icons/GoogleLogo.svg';
 import { LongInput } from '../common/LongInput';
 import { ShortInput } from '../common/ShortInput';
-import { postSignup, getGoogleSignup } from '../../api/Auth';
+import { postSignup, getGoogleLogin, getUserInfo } from '../../api/Auth';
 
 const emailRegEx =
   /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
 
-const SignUpForm = ({ setFormType }) => {
+const SignUpForm = ({ setFormType, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
@@ -55,10 +55,17 @@ const SignUpForm = ({ setFormType }) => {
 
   const handleGoogleSignup = async () => {
     try {
-      await getGoogleSignup();
-      console.log('구글 회원가입 완료');
+      await getGoogleLogin();
+      const res = await getUserInfo();
+      console.log('구글 회원가입 성공', res);
+      localStorage.setItem('userId', res.data.user.id);
+      localStorage.setItem('userName', res.data.user.name);
+      localStorage.setItem('userRegion', res.data.user.region);
+      localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      onClose();
+      window.location.href = '/';
     } catch (error) {
-      console.error('구글 회원가입 오류:', error);
+      console.error('구글 회원가입 실패:', error);
     }
   };
 

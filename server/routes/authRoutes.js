@@ -51,15 +51,23 @@ const sendMail = require("../utils/sendmail");
  */
 router.post("/register", async (req, res, next) => {
     const { name, email, password, region, favoriteAuthor } = req.body;
+    let errors = [];
+
+    // 입력값 검증
+    if (!name || !email || !password || !region || !favoriteAuthor) {
+        errors.push({ msg: "모두 입력해 주세요" });
+    }
+
+    if (errors.length > 0) {
+        return res.status(400).json({ errors });
+    }
+
     try {
         const existingUser = await User.findOne({ email: email });
         if (existingUser) {
             return res
                 .status(400)
-                .json({
-                    msg: "해당 이메일로 가입한 회원이 이미 존재합니다",
-                    code: 1,
-                });
+                .json({ msg: "해당 이메일로 가입한 회원이 이미 존재합니다" });
         }
 
         // 비밀번호 해시화
@@ -75,7 +83,7 @@ router.post("/register", async (req, res, next) => {
         });
 
         await newUser.save();
-        res.status(201).json({ msg: "회원가입이 완료되었습니다", code: 0 });
+        res.status(201).json({ msg: "회원가입이 완료되었습니다" });
     } catch (err) {
         next(err); // 에러를 전역 에러 핸들러로 전달
     }
@@ -114,7 +122,7 @@ router.post("/login", (req, res, next) => {
             return next(err);
         }
         if (!user) {
-            return res.status(400).json({ msg: "로그인 실패", code: 1 });
+            return res.status(400).json({ msg: "로그인 실패" });
         }
 
         req.logIn(user, (err) => {
@@ -130,7 +138,6 @@ router.post("/login", (req, res, next) => {
                     region: user.region,
                     favoriteAuthor: user.favoriteAuthor,
                 },
-                code: 0,
             });
         });
     })(req, res, next);
@@ -171,24 +178,16 @@ router.post("/login", (req, res, next) => {
 router.get("/logout", ensureAuthenticated, (req, res) => {
     req.logout((err) => {
         if (err) {
-            return res
-                .status(500)
-                .json({ msg: "로그아웃 실패했습니다", code: 1 });
+            return res.status(500).json({ msg: "로그아웃 실패했습니다" });
         }
         req.session.destroy((err) => {
             if (err) {
                 return res
                     .status(500)
-                    .json({
-                        msg: "세션 삭제에 실패했습니다",
-                        error: err,
-                        code: 2,
-                    });
+                    .json({ msg: "세션 삭제에 실패했습니다", error: err });
             }
             res.clearCookie("connect.sid"); // 세션 쿠키 삭제
-            return res
-                .status(200)
-                .json({ msg: "로그아웃 되었습니다", code: 0 });
+            return res.status(200).json({ msg: "로그아웃 되었습니다" });
         });
     });
 });
@@ -227,17 +226,12 @@ router.post("/reset-password", async (req, res) => {
         if (!user) {
             return res
                 .status(404)
-                .json({
-                    msg: "해당 이메일로 가입한 유저를 찾을 수 없습니다",
-                    code: 2,
-                });
+                .json({ msg: "해당 이메일로 가입한 유저를 찾을 수 없습니다" });
         }
 
         // 소셜 로그인 회원인지 확인
         if (user.password === null) {
-            return res
-                .status(400)
-                .json({ msg: "소셜로그인을 진행해 주세요", code: 1 });
+            return res.status(400).json({ msg: "소셜로그인을 진행해 주세요" });
         }
 
         // 비밀번호 초기화 로직
@@ -257,7 +251,6 @@ router.post("/reset-password", async (req, res) => {
 
         res.status(200).json({
             msg: "비밀번호가 초기화 되었습니다. 이메일 주소로 전송된 메일을 확인해 주세요",
-            code: 0,
         });
     } catch (err) {
         console.error(err);
@@ -298,22 +291,22 @@ router.post("/reset-password", async (req, res) => {
  */
 router.post("/change-password", ensureAuthenticated, async (req, res) => {
     const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ msg: "모두 입력해 주세요" });
+    }
+
     try {
         const user = await User.findById(req.user.id);
         if (!user) {
-            return res
-                .status(404)
-                .json({ msg: "유저를 찾을 수 없습니다", code: 1 });
+            return res.status(404).json({ msg: "유저를 찾을 수 없습니다" });
         }
 
         // 소셜 로그인 회원인지 확인
         if (user.password === null) {
             return res
                 .status(400)
-                .json({
-                    msg: "소셜회원은 비밀번호를 변경할 수 없습니다",
-                    code: 2,
-                });
+                .json({ msg: "소셜회원은 비밀번호를 변경할 수 없습니다" });
         }
 
         // 기존 비밀번호 확인
@@ -321,7 +314,7 @@ router.post("/change-password", ensureAuthenticated, async (req, res) => {
         if (!isMatch) {
             return res
                 .status(403)
-                .json({ msg: "기존 비밀번호를 확인해 주세요", code: 3 });
+                .json({ msg: "기존 비밀번호를 확인해 주세요" });
         }
 
         // 새로운 비밀번호 해시화
@@ -332,7 +325,7 @@ router.post("/change-password", ensureAuthenticated, async (req, res) => {
         user.password = hashedPassword;
         await user.save();
 
-        res.status(200).json({ msg: "비밀번호가 변경되었습니다", code: 0 });
+        res.status(200).json({ msg: "비밀번호가 변경되었습니다" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: "Server error" });
@@ -358,35 +351,9 @@ router.get(
     "/google/callback",
     passport.authenticate("google", { failureRedirect: "/login" }),
     (req, res) => {
-        if (req.user.favoriteAuthor === null || req.user.region === null) {
-            // 추가 정보 입력 페이지로 리디렉트
-            res.redirect("http://localhost:3000/additionalinfo");
-        } else {
-            // 메인 페이지로 리디렉트
-            res.redirect("http://localhost:3000");
-        }
+        res.json({ message: "Login successful", user: req.user });
     }
 );
-
-//유저정보패치
-router.get("/userinfo", async (req, res) => {
-    try {
-        if (req.user) {
-            res.status(200).json({
-                msg: "유저정보를 불러왔습니다",
-                user: req.user,
-                code: 0,
-            });
-        } else {
-            res.status(201).json({ msg: "로그인을 해주세요", code: 1 });
-        }
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ msg: "server error" });
-    }
-});
-
-//추가정보제출
 /**
  * @swagger
  * /api/additional-info:
@@ -417,17 +384,18 @@ router.get("/userinfo", async (req, res) => {
  */
 router.post("/additional-info", ensureAuthenticated, async (req, res) => {
     const { region, favoriteAuthor } = req.body;
+
+    if (!region || !favoriteAuthor) {
+        return res.status(400).json({ msg: "모두 입력해 주세요" });
+    }
+
     try {
         const user = await User.findById(req.user.id);
         user.region = region;
         user.favoriteAuthor = favoriteAuthor;
         await user.save();
 
-        res.status(200).json({
-            msg: "정보가 추가되었습니다",
-            submit: true,
-            code: 0,
-        });
+        res.status(200).json({ msg: "정보가 추가되었습니다" });
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: "Server error" });
@@ -484,7 +452,7 @@ router.post("/find-email", async (req, res) => {
     try {
         const users = await User.find({ name, region, favoriteAuthor });
         if (users.length === 0) {
-            return res.status(404).json({ msg: "User not found", code: 1 });
+            return res.status(404).json({ msg: "User not found" });
         }
 
         const results = users.map((user) => {
@@ -502,7 +470,7 @@ router.post("/find-email", async (req, res) => {
             };
         });
 
-        res.status(200).json({ results, code: 0 });
+        res.status(200).json(results);
     } catch (err) {
         console.error(err);
         res.status(500).json({ msg: "Server error" });
