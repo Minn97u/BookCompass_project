@@ -12,7 +12,13 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
-import { getProfileInfo, getMyPosts, getMyComments } from '../api/Mypage';
+import {
+  getProfileInfo,
+  getMyPosts,
+  getMyComments,
+  getMyFavoriteLibraries,
+  getMyReviews
+} from '../api/Mypage';
 
 const Mypage = () => {
   const [myInfo, setMyInfo] = useState({
@@ -96,13 +102,33 @@ const Mypage = () => {
     }
   };
 
+  const fetchMyFavoriteLibraries = async () => {
+    try {
+      const res = await getMyFavoriteLibraries();
+      console.log('즐겨찾기 장소', res);
+    } catch (error) {
+      console.error('즐겨찾기 장소 실패:', error);
+    }
+  };
+
+  const fetchMyReviews = async () => {
+    try {
+      const res = await getMyReviews();
+      console.log('내가 쓴 리뷰', res);
+    } catch (error) {
+      console.error('내가 쓴 리뷰 실패:', error);
+    }
+  };
+
   useEffect(() => {
     const fetchAllData = async () => {
       try {
         await Promise.all([
           fetchProfileInfo(),
           fetchMyPosts(),
-          fetchMyComments()
+          fetchMyComments(),
+          fetchMyFavoriteLibraries(),
+          fetchMyReviews()
         ]);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);

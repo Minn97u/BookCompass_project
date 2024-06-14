@@ -6,13 +6,15 @@ import DeleteModal from '../common/DeleteModal';
 
 const BookMarkList = ({ datas }) => {
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleDeleteBtn = () => {
-    setModalOpen(true);
-  };
+  const [currentId, setCurrentId] = useState(null);
 
   const closeModal = () => {
     setModalOpen(false);
+    setCurrentId(null);
+  };
+
+  const handleDeleteBtn = () => {
+    setModalOpen(true);
   };
 
   return (
