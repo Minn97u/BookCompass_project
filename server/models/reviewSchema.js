@@ -8,10 +8,10 @@ const reviewSchema = new Schema(
         library: {
             type: Schema.Types.ObjectId,
             ref: "Library",
-            required: true,
+            required: false,
         },
         rating: { type: Number, required: true },
-        comment: String,
+        comment: { type: String, required: true },
     },
     {
         timestamps: true, // 생성 및 수정 시간 자동 추가

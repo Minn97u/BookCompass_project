@@ -1,57 +1,74 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as StarIcon } from '../../assets/icons/StarIcon.svg';
 import { ReactComponent as EmptyStarIcon } from '../../assets/icons/EmptyStar.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
-
-const ratings = [1, 3, 5];
-const reviewComments = [
-  '책이 아주 많진 않지만 읽을 만한 책은 제법 있고, 분위기 좋습니다. 휴식이 필요할 때 여기오면 힐링 그 자체입니다.',
-  '휴식이 필요할 때 여기오면 힐링 그 자체입니다.',
-  '리뷰 예시'
-];
+import { getMyReviews, deleteMyReview } from '../../api/Mypage';
 
 const ReviewList = () => {
+  const [reviews, setReviews] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const response = await getMyReviews();
+        setReviews(response.data);
+      } catch (error) {
+        console.error('리뷰를 가져오지 못했습니다.', error);
+      }
+    };
+
+    fetchReviews();
+  }, []);
 
   const closeModal = () => {
     setModalOpen(false);
     setCurrentId(null);
   };
 
-  const handleDeleteBtn = () => {
+  const handleDeleteBtn = (id) => {
+    setCurrentId(id);
     setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async (id) => {
+    try {
+      await deleteMyReview(id); // 리뷰 삭제 API 호출
+      setReviews(reviews.filter((review) => review._id !== id));
+      closeModal();
+    } catch (error) {
+      console.error('리뷰 삭제 실패:', error);
+    }
   };
 
   return (
     <>
-      {ratings.map((rating, index) => (
-        <ReviewGroup key={index}>
-          <StarContainer>
-            {[...Array(rating)].map((i) => (
-              <Star key={i} />
-            ))}
-            {[...Array(5 - rating)].map((i) => (
-              <EmptyStar key={i} />
-            ))}
-            <RatingText>{rating}</RatingText>
-          </StarContainer>
+      {reviews.map((review) => (
+        <ReviewGroup key={review._id}>
           <TextContainer>
-            <ReviewText>{reviewComments[index]}</ReviewText>
+            <ReviewText>{review.comment}</ReviewText>
             <DeleteWrite>
               <DeleteIconImg
                 src={DeleteIcon}
                 alt='delete-icon'
-                onClick={handleDeleteBtn}
+                onClick={() => handleDeleteBtn(review._id)}
               />
             </DeleteWrite>
           </TextContainer>
-          {ratings.length > 1 && index !== ratings.length - 1 && <Hr />}
+          <Hr />
         </ReviewGroup>
       ))}
-      {modalOpen && <DeleteModal onClose={closeModal} />}
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeModal}
+          id={currentId}
+          type='review'
+          deleteSuccess={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };

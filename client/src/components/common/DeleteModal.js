@@ -1,7 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import closebutton from '../../assets/icons/closebutton.svg';
-import { deleteMyPost, deleteMyComment } from '../../api/Mypage';
+import {
+  deleteMyPost,
+  deleteMyComment,
+  deleteMyReview
+} from '../../api/Mypage';
 
 const DeleteType = {
   POST: 'post',
@@ -17,6 +21,8 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
         await deleteMyPost(id);
       } else if (type === DeleteType.COMMENT) {
         await deleteMyComment(id);
+      } else if (type === DeleteType.REVIEW) {
+        await deleteMyReview(id);
       }
       deleteSuccess(id);
       onClose();

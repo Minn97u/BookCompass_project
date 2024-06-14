@@ -53,7 +53,7 @@ router.get("/", async (req, res, next) => {
     try {
         const libraries = await Library.find();
         res.json(libraries);
-        console.log(libraries)
+        console.log(libraries);
     } catch (error) {
         next(error);
     }
@@ -120,9 +120,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:libraryId", async (req, res, next) => {
     try {
         const { libraryId } = req.params;
-        const library = await Library.findById(libraryId).select(
-            "name district address phone url hours holidays latitude longitude averageRating _id"
-        );
+        const library = await Library.findById(libraryId).select();
         console.log("library", library);
         if (!library) {
             return res.status(404).send("도서관을 찾을 수 없습니다.");

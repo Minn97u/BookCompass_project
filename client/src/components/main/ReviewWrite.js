@@ -3,14 +3,15 @@ import styled from 'styled-components';
 import ClickStar from './ClickStar';
 import axios from 'axios';
 
-function ReviewWrite({ userId, libraryId, onClose }) {
+function ReviewWrite({ libraryId, onClose, placeId, userId }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-
+  console.log('libraryId:', libraryId); // 추가
   const handleReviewChange = (e) => {
     setReviewText(e.target.value);
   };
 
+  console.log('userId:', userId);
   const handleSubmit = async () => {
     if (rating === 0) {
       alert('평점을 선택해주세요.');
@@ -25,11 +26,14 @@ function ReviewWrite({ userId, libraryId, onClose }) {
         comment: reviewText
       });
 
+      console.log('placeId:', placeId);
+
       const response = await axios.post(
-        `http://localhost:3001/api/reviews`,
+        'http://localhost:3001/api/reviews',
         {
           userId,
-          libraryId,
+          libraryId: placeId,
+          parkId: null,
           rating,
           comment: reviewText
         },

@@ -83,7 +83,7 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
         >
           {place.url || '홈페이지 URL 없음'}
         </PlaceURL>
-        <Review rating={4} />
+        <Review rating={4} placeId={place._id} />
       </ModalContent>
     </ModalContainer>
   );

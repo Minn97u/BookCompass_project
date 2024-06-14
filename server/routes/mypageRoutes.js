@@ -433,8 +433,8 @@ router.delete("/favoriteParks", ensureAuthenticated, async (req, res, next) => {
 router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const reviews = await Review.find({ author: userId });
-
+        const reviews = await Review.find({ user: userId });
+        console.log(reviews);
         res.json(reviews);
     } catch (error) {
         next(error);
@@ -470,7 +470,7 @@ router.delete(
 
             const review = await Review.findOneAndDelete({
                 _id: reviewId,
-                author: userId,
+                user: userId,
             });
             if (!review)
                 return res.status(404).send("리뷰를 찾을 수 없습니다.");
