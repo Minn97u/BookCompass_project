@@ -25,7 +25,7 @@ const CommentSection = ({
       </CommentButton>
       <CommentList>
         {selectedItem.comments.map((comment) => (
-          <CommentItem key={comment.shortId}>
+          <CommentItem key={comment._id}>
             <CommentAvatar>
               <UserIcon />
             </CommentAvatar>

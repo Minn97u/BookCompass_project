@@ -76,10 +76,10 @@ export const postComments = async (data, shortId) => {
         withCredentials: true
       }
     );
-    console.log('게시 완료', res);
+    console.log('댓글 작성 완료', res);
     return res.data;
   } catch (error) {
-    console.error('게시 오류', error);
+    console.error('댓글 작성 오류', error);
     throw error;
   }
 };

@@ -187,29 +187,27 @@ const Board = () => {
         author: { name: userName }
       };
 
-      const updatedComments = [...selectedItem.comments, newComment];
-      setState((prevState) => ({
-        ...prevState,
-        selectedItem: { ...selectedItem, comments: updatedComments }
-      }));
-      setValue('commentText', '');
-
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
         console.log('Comment submitted successfully');
-      } catch (error) {
-        console.error('Error submitting comment:', error);
+
+        // Fetch the updated post with new comments
+        const res = await viewPosts(selectedItem.shortId);
         setState((prevState) => ({
           ...prevState,
-          selectedItem: { ...selectedItem, comments: selectedItem.comments }
+          selectedItem: res
         }));
+
+        setValue('commentText', '');
+      } catch (error) {
+        console.error('Error submitting comment:', error);
       }
     }
   };
 
   const handleCommentDelete = async (commentId) => {
-    if (selectedItem) {
+    if (selectedItem && commentId) {
       try {
         await deleteComments(selectedItem.shortId, commentId);
         const updatedComments = selectedItem.comments.filter(
@@ -217,12 +215,14 @@ const Board = () => {
         );
         setState((prevState) => ({
           ...prevState,
-          selectedItem: { ...selectedItem, comments: updatedComments }
+          selectedItem: { ...prevState.selectedItem, comments: updatedComments }
         }));
         console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
       }
+    } else {
+      console.error('올바르지 않은 commentId 또는 선택된 게시글이 없습니다.');
     }
   };
 
