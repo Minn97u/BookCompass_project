@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import BookIcon from '../../assets/icons/BookIcon.svg';
 import CloseIcon from '../../assets/icons/CloseIcon.svg';
-import ModalReviewContainer from './ModalReviewContainer'; // ReviewContainer를 가져옴
+import Review from './Review'; // ReviewContainer를 가져옴
 import ArchiveAddIconSrc from '../../assets/icons/ArchiveAdd.svg';
 import ArchiveAddedIconSrc from '../../assets/icons/ArchivePreAddIcon.svg';
 
@@ -46,7 +46,7 @@ const Modal = ({ isOpen, closeModal, place }) => {
         >
           {place.url || '홈페이지 URL 없음'}
         </PlaceURL>
-        <ModalReviewContainer rating={4} /> {/* ReviewContainer를 사용 */}
+        <Review rating={4} /> {/* ReviewContainer를 사용 */}
       </ModalContent>
     </ModalContainer>
   );

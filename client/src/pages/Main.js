@@ -146,20 +146,21 @@ const Main = () => {
                 </Select>
               </LabelContainer>
             </InputContainer>
-
-            {selectedButton === 'library' ? (
-              <LibraryList
-                libraries={filteredLibraries}
-                keyword={keyword}
-                handleLibraryItemClick={handleLibraryItemClick}
-              />
-            ) : (
-              <ParkList
-                parks={filteredParks}
-                keyword={keyword}
-                handleParkItemClick={handleParkItemClick}
-              />
-            )}
+            <ListContainer>
+              {selectedButton === 'library' ? (
+                <LibraryList
+                  libraries={filteredLibraries}
+                  keyword={keyword}
+                  handleLibraryItemClick={handleLibraryItemClick}
+                />
+              ) : (
+                <ParkList
+                  parks={filteredParks}
+                  keyword={keyword}
+                  handleParkItemClick={handleParkItemClick}
+                />
+              )}
+            </ListContainer>
           </>
         </Flex>
         <Flex flex={4}>
@@ -210,6 +211,7 @@ const ButtonContainer = styled.div`
   top: 10px;
   left: 10px;
   z-index: 1;
+  margin: 8px 0px 0px 15px;
 `;
 
 const Button = styled.button`
@@ -219,13 +221,12 @@ const Button = styled.button`
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
   border-radius: 20px;
   font-size: 14px;
-  padding: 10px 20px;
-  margin: 10px;
+  padding: 7px 15px;
+  margin-right: 10px;
   cursor: pointer;
 `;
 
 const FullHeightContainer = styled.div`
-  height: 100vh;
   display: flex;
   flex-direction: column;
 `;
@@ -241,6 +242,15 @@ const Flex = styled.div`
   flex: ${(props) => props.flex || 1};
   display: flex;
   flex-direction: column;
+
+  ::-webkit-scrollbar {
+    width: 7px;
+    background-color: #f1f1f1;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바의 색상 설정 */
+    border-radius: 5px; /* 스크롤바의 모서리 반경 설정 */
+  }
 `;
 
 const Guide = styled.div`
@@ -257,12 +267,12 @@ const InputContainer = styled.div`
 `;
 
 const Input = styled.input`
-  width: 16rem;
+  width: 17.5rem;
   height: 1.5rem;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
   padding: 5px 12px;
-  margin-bottom: 15px;
+  margin: 0px 0px 15px 8px;
 
   &::placeholder {
     color: #bababa;
@@ -309,4 +319,11 @@ const Select = styled.select`
   border-radius: 8px;
   font-size: 11px;
   font-family: 'SUIT';
+`;
+
+const ListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0px 15px;
 `;

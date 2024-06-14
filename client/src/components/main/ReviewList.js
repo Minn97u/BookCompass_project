@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import ReviewStar from './ReviewStar';
 
-function ModalReviewListContainer({ rating }) {
+function ReviewList({ rating }) {
   return (
     <>
       <ReviewListContainer>
@@ -20,7 +20,7 @@ function ModalReviewListContainer({ rating }) {
   );
 }
 
-export default ModalReviewListContainer;
+export default ReviewList;
 
 const ReviewListContainer = styled.div`
   display: flex;

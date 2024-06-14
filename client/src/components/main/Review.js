@@ -3,21 +3,16 @@ import styled from 'styled-components';
 import ReviewStar from './ReviewStar';
 import WriteReviewIcon from '../../assets/icons/WriteReviewIcon.svg';
 import BackIcon from '../../assets/icons/BackIcon.svg';
-import ModalReviewWriteContainer from '../main/ModalReviewWriteContainer';
-import ModalReviewListContainer from './ModalReviewListContainer';
+import ReviewWrite from './ReviewWrite';
+import ReviewList from './ReviewList';
 
 const ModalReviewContainer = ({ rating }) => {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
 
-  const handleWriteReviewClick = () => {
-    setIsWriteReviewOpen(true);
-    setIconImage(BackIcon);
-  };
-
-  const handleBackIconClick = () => {
-    setIsWriteReviewOpen(false);
-    setIconImage(WriteReviewIcon);
+  const handleToggleReview = () => {
+    setIsWriteReviewOpen(!isWriteReviewOpen);
+    setIconImage(isWriteReviewOpen ? WriteReviewIcon : BackIcon);
   };
 
   return (
@@ -29,20 +24,12 @@ const ModalReviewContainer = ({ rating }) => {
             <ReviewStar rating={rating} />
           </span>
         </TitleText>
-        <WriteReviewIconWrapper
-          onClick={
-            isWriteReviewOpen ? handleBackIconClick : handleWriteReviewClick
-          }
-        >
+        <WriteReviewIconWrapper onClick={handleToggleReview}>
           <img src={iconImage} alt='WriteReviewIcon' />
         </WriteReviewIconWrapper>
       </ReviewTitle>
 
-      {isWriteReviewOpen ? (
-        <ModalReviewWriteContainer />
-      ) : (
-        <ModalReviewListContainer rating={rating} />
-      )}
+      {isWriteReviewOpen ? <ReviewWrite /> : <ReviewList rating={rating} />}
     </Container>
   );
 };

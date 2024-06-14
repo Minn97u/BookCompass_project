@@ -1,109 +1,37 @@
-const baseURL = 'http://localhost:3000';
-import axios from 'axios';
+import axios from './index';
 
-export const getProfileInfo = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/mypage/profile`, {
-      withCredentials: true
-    });
-    console.log('프로필 조회 완료', res);
-    return res;
-  } catch (error) {
-    console.error('프로필 조회 오류:', error);
-    throw error;
-  }
+export const getProfileInfo = () => {
+  return axios.get('/api/mypage/profile');
 };
 
-export const getMyPosts = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/mypage/myPosts`, {
-      withCredentials: true
-    });
-    console.log('내가 쓴 글 조회 완료', res);
-    return res;
-  } catch (error) {
-    console.error('내가 쓴 글 조회 오류:', error);
-    throw error;
-  }
+export const getMyPosts = () => {
+  return axios.get('/api/mypage/myPosts');
 };
 
-export const deleteMyPost = async (id) => {
-  try {
-    const res = await axios.delete(`${baseURL}/api/mypage/myPosts/${id}`, {
-      withCredentials: true
-    });
-    console.log('내가 쓴 글 삭제 완료', res);
-    return res;
-  } catch (error) {
-    console.error('내가 쓴 글 삭제 오류:', error);
-    throw error;
-  }
+export const deleteMyPost = (id) => {
+  return axios.delete(`/api/mypage/myPosts/${id}`);
 };
 
-export const getMyComments = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/mypage/myComments`, {
-      withCredentials: true
-    });
-    console.log('내가 쓴 댓글 조회 완료', res);
-    return res;
-  } catch (error) {
-    console.error('내가 쓴 댓글 조회 오류:', error);
-    throw error;
-  }
+export const getMyComments = () => {
+  return axios.get('/api/mypage/myComments');
 };
 
-export const deleteMyComment = async (id) => {
-  try {
-    const res = await axios.delete(`${baseURL}/api/mypage/myComments/${id}`, {
-      withCredentials: true
-    });
-    console.log('내가 쓴 댓글 삭제 완료', res);
-    return res;
-  } catch (error) {
-    console.error('내가 쓴 댓글 삭제 오류:', error);
-    throw error;
-  }
+export const deleteMyComment = (id) => {
+  return axios.delete(`/api/mypage/myComments/${id}`);
 };
 
-export const getMyFavoriteLibraries = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/mypage/favoriteLibrariesList`, {
-      withCredentials: true
-    });
-    console.log('즐겨찾기 도서관 조회 완료', res);
-    return res;
-  } catch (error) {
-    console.error('즐겨찾기 도서관 조회 오류:', error);
-    throw error;
-  }
+export const getMyFavoriteLibraries = () => {
+  return axios.get('/api/mypage/favoriteLibrariesList');
 };
 
-export const getMyReviews = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/mypage/myReviews`, {
-      withCredentials: true
-    });
-    console.log('내가 쓴 리뷰 조회 완료', res);
-    return res;
-  } catch (error) {
-    console.error('내가 쓴 리뷰 조회 오류:', error);
-    throw error;
-  }
+export const getMyReviews = () => {
+  return axios.get('/api/mypage/myReviews');
 };
 
 export const putProfileInfo = async (data) => {
-  try {
-    const res = await axios.put(`${baseURL}/api/mypage/profile`, data, {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    console.log('프로필 수정 완료', res);
-    return res;
-  } catch (error) {
-    console.error('프로필 수정 오류:', error);
-    throw error;
-  }
+  return axios.put('/api/mypage/profile', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
 };

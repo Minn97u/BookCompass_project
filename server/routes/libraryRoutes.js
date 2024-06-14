@@ -51,7 +51,7 @@ const { ensureAuthenticated } = require("../middlewares/checklogin");
  */
 router.get("/", async (req, res, next) => {
     try {
-        const libraries = await Library.find().select("-_id");
+        const libraries = await Library.find().select();
         res.json(libraries);
     } catch (error) {
         next(error);
@@ -119,9 +119,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:libraryId", async (req, res, next) => {
     try {
         const { libraryId } = req.params;
-        const library = await Library.findById(libraryId).select(
-            "name district address phone url hours holidays latitude longitude averageRating"
-        );
+        const library = await Library.findById(libraryId).select();
 
         if (!library) {
             return res.status(404).send("도서관을 찾을 수 없습니다.");

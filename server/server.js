@@ -48,6 +48,8 @@ app.use(cors(corsOptions));
 app.options("*", cors(corsOptions));
 
 // 미들웨어 설정
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/static", express.static(path.join(__dirname, "static")));
 app.use(
     "/uploads",
@@ -66,7 +68,7 @@ app.use(
             collectionName: "sessions",
         }),
         cookie: {
-            maxAge: 30 * 60 * 1000, //30분
+            maxAge: 300 * 60 * 1000,
             secure: false,
             httpOnly: true,
         },
