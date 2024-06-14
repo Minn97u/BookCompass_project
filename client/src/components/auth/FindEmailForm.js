@@ -12,26 +12,33 @@ const FindEmailForm = ({ setFormType }) => {
   const [foundAnswer, setFoundAnswer] = useState('');
   const [resultText, setResultText] = useState('');
 
+  const isFormValid = name !== '' && region !== '' && foundAnswer.trim() !== '';
+
   const handleFindEmail = async () => {
     const data = {
       name,
       region,
       favoriteAuthor: foundAnswer
     };
-    try {
-      const res = await postFindEmail(data);
-      console.log('이메일 찾기 성공', res);
-      setResultText(`가입 이메일 : ${res.data[0].email}`);
-    } catch (error) {
-      console.error('이메일 찾기 실패:', error);
-      const status = error.response?.status;
-      if (status === 404) {
-        setResultText('가입되지 않은 계정입니다.');
-      } else if (status === 400) {
-        setResultText('소셜 로그인 회원입니다.');
-      } else {
+
+    if (isFormValid) {
+      try {
+        const res = await postFindEmail(data);
+        console.log('이메일 찾기 성공', res);
+        setResultText(`가입 이메일 : ${res.data.results[0].email}`);
+      } catch (error) {
         console.error('이메일 찾기 실패:', error);
+        const status = error.response?.status;
+        if (status === 404) {
+          setResultText('가입되지 않은 계정입니다.');
+        } else if (status === 400) {
+          setResultText('소셜 로그인 회원입니다.');
+        } else {
+          console.error('이메일 찾기 실패:', error);
+        }
       }
+    } else {
+      setResultText('모두 입력해 주세요.');
     }
   };
 
