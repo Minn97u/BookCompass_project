@@ -1,15 +1,14 @@
-const baseURL = 'http://localhost:3000';
 import axios from './index';
 
 export const getPosts = async (page, limit, tag = '') => {
   const res = await axios.get(
-    `${baseURL}/api/posts?page=${page}&limit=${limit}&tag=${tag}`
+    `/api/posts?page=${page}&limit=${limit}&tag=${tag}`
   );
   return res.data;
 };
 
 export const viewPosts = async (shortId) => {
-  const res = await axios.get(`${baseURL}/api/posts/${shortId}`);
+  const res = await axios.get(`/api/posts/${shortId}`);
   return res.data;
 };
 

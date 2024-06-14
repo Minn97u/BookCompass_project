@@ -201,6 +201,8 @@ const Board = () => {
         }));
 
         setValue('commentText', '');
+        reset({ commentText: '' });
+        console.log('hihi', data.commentText);
       } catch (error) {
         console.error('Error submitting comment:', error);
       }

@@ -14,15 +14,18 @@ const CommentSection = ({
   const [editingCommentId, setEditingCommentId] = useState(null); // 상태 추가
 
   const handleEditClick = (comment) => {
-    // 수정 버튼 클릭 핸들러 추가
     setEditingCommentId(comment._id);
     setValue('editCommentText', comment.content);
   };
 
   const handleEditSubmit = (data) => {
-    // 수정 제출 핸들러 추가
     handleCommentUpdate(editingCommentId, data.editCommentText);
     setEditingCommentId(null);
+  };
+
+  const onSubmit = (data) => {
+    handleCommentSubmit(data);
+    setValue('commentText', '');
   };
 
   return (
@@ -34,9 +37,7 @@ const CommentSection = ({
         placeholder='내용을 입력해 주세요.'
         {...register('commentText')}
       />
-      <CommentButton onClick={handleSubmit(handleCommentSubmit)}>
-        등록
-      </CommentButton>
+      <CommentButton onClick={handleSubmit(onSubmit)}>등록</CommentButton>
       <CommentList>
         {selectedItem.comments.map((comment) => (
           <CommentItem key={comment._id}>
