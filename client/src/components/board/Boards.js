@@ -192,7 +192,6 @@ const Board = () => {
         await postComments(commentData, selectedItem.shortId);
         console.log('Comment submitted successfully');
 
-        // Fetch the updated post with new comments
         const res = await viewPosts(selectedItem.shortId);
         setState((prevState) => ({
           ...prevState,
