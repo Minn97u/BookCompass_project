@@ -4,11 +4,7 @@ import { putProfileInfo } from '../../api/Mypage';
 
 const EditProfile = ({ profile, setProfile }) => {
   const [editText, setEditText] = useState('수정');
-  const [resultText, setResultText] = useState('');
   const imageInput = useRef();
-
-  const isFormValid =
-    profile.name.trim() !== '' && profile.description.trim() !== '';
 
   const handleImageUploadClick = () => {
     imageInput.current.click();
@@ -29,29 +25,24 @@ const EditProfile = ({ profile, setProfile }) => {
   };
 
   const handleEditProfileInfo = async () => {
-    if (isFormValid) {
-      try {
-        const formData = new FormData();
-        formData.append('name', profile.name);
-        formData.append('profileMsg', profile.description);
+    try {
+      const formData = new FormData();
+      formData.append('name', profile.name);
+      formData.append('profileMsg', profile.description);
 
-        const file = imageInput.current.files[0];
-        if (file) {
-          formData.append('profilePic', file);
-        }
-
-        const res = await putProfileInfo(formData);
-        console.log('프로필 편집 성공', res);
-        setResultText('');
-        setEditText('완료!');
-        setTimeout(() => {
-          setEditText('수정');
-        }, 1000);
-      } catch (error) {
-        console.error('프로필 편집 실패:', error);
+      const file = imageInput.current.files[0];
+      if (file) {
+        formData.append('profilePic', file);
       }
-    } else {
-      setResultText('모두 입력해 주세요.');
+
+      const res = await putProfileInfo(formData);
+      console.log('프로필 편집 성공', res);
+      setEditText('완료!');
+      setTimeout(() => {
+        setEditText('수정');
+      }, 1000);
+    } catch (error) {
+      console.error('프로필 편집 실패:', error);
     }
   };
 
@@ -95,7 +86,6 @@ const EditProfile = ({ profile, setProfile }) => {
         </InputConatiner>
         <EditBtn onClick={handleEditProfileInfo}>{editText}</EditBtn>
       </ProfileContainer>
-      {resultText && <ErrorText>{resultText}</ErrorText>}
     </EditProfileContainer>
   );
 };
@@ -218,13 +208,6 @@ const EditBtn = styled.button`
 const SubTitle = styled.p`
   font-size: 1.2rem;
   font-weight: 400;
-  margin: 5px 0px 10px 50px;
+  margin: 15px 0px 10px 50px;
   align-self: start;
-`;
-
-const ErrorText = styled.p`
-  font-size: 0.9rem;
-  color: #ca3636;
-  align-self: center;
-  margin: 15px 0px 0px 65px;
 `;

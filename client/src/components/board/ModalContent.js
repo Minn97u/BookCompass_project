@@ -8,8 +8,7 @@ const ModalContent = ({
   handleEditClick,
   handleDeleteClick,
   handleCommentSubmit,
-  handleCommentDelete,
-  handleCommentUpdate
+  handleCommentDelete
 }) => {
   return (
     <StyledModalContent>
@@ -44,7 +43,6 @@ const ModalContent = ({
           userName={userName}
           handleCommentSubmit={handleCommentSubmit}
           handleCommentDelete={handleCommentDelete}
-          handleCommentUpdate={handleCommentUpdate}
         />
       </ModalBody>
     </StyledModalContent>

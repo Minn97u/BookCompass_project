@@ -9,11 +9,15 @@ export const getLoginStatus = () => {
 };
 
 export const getGoogleLogin = () => {
-  window.location.href = 'http://localhost:3000/api/google';
+  return axios.get('/api/google');
 };
 
 export const postSignup = (data) => {
   return axios.post('/api/register', data);
+};
+
+export const getGoogleSignup = () => {
+  return axios.get('/api/google/callback');
 };
 
 export const getLogout = () => {
