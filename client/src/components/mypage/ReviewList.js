@@ -5,14 +5,7 @@ import { ReactComponent as EmptyStarIcon } from '../../assets/icons/EmptyStar.sv
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const ratings = [1, 3, 5];
-const reviewComments = [
-  '책이 아주 많진 않지만 읽을 만한 책은 제법 있고, 분위기 좋습니다. 휴식이 필요할 때 여기오면 힐링 그 자체입니다.',
-  '휴식이 필요할 때 여기오면 힐링 그 자체입니다.',
-  '리뷰 예시'
-];
-
-const ReviewList = () => {
+const ReviewList = ({ datas, type, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
 
@@ -21,37 +14,55 @@ const ReviewList = () => {
     setCurrentId(null);
   };
 
-  const handleDeleteBtn = () => {
+  const handleDeleteBtn = (listid) => {
+    setCurrentId(listid);
     setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (id) => {
+    setList(datas.filter((data) => data.id !== id));
+    closeModal();
   };
 
   return (
     <>
-      {ratings.map((rating, index) => (
-        <ReviewGroup key={index}>
+      {datas.map((data) => (
+        <ReviewGroup key={data.id}>
           <StarContainer>
-            {[...Array(rating)].map((i) => (
+            {[...Array(data.rating)].map((i) => (
               <Star key={i} />
             ))}
-            {[...Array(5 - rating)].map((i) => (
+            {[...Array(5 - data.rating)].map((i) => (
               <EmptyStar key={i} />
             ))}
-            <RatingText>{rating}</RatingText>
+            <RatingText>{data.rating}</RatingText>
           </StarContainer>
           <TextContainer>
-            <ReviewText>{reviewComments[index]}</ReviewText>
+            <CommentBox>
+              <ReviewText>{data.comment}</ReviewText>
+              <Date>{data.date}</Date>
+            </CommentBox>
             <DeleteWrite>
               <DeleteIconImg
                 src={DeleteIcon}
                 alt='delete-icon'
-                onClick={handleDeleteBtn}
+                onClick={() => handleDeleteBtn(data.id)}
               />
             </DeleteWrite>
           </TextContainer>
-          {ratings.length > 1 && index !== ratings.length - 1 && <Hr />}
+          {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
+            <Hr />
+          )}
         </ReviewGroup>
       ))}
-      {modalOpen && <DeleteModal onClose={closeModal} />}
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeModal}
+          id={currentId}
+          type={type}
+          deleteSuccess={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };
@@ -97,6 +108,17 @@ const TextContainer = styled.div`
 
 const ReviewText = styled.div`
   font-size: 1.1rem;
+`;
+
+const CommentBox = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Date = styled.span`
+  font-size: 0.8rem;
+  color: #afafaf;
+  margin-top: 6px;
 `;
 
 const DeleteWrite = styled.button`

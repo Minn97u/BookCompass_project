@@ -24,8 +24,21 @@ export const getMyFavoriteLibraries = () => {
   return axios.get('/api/mypage/favoriteLibrariesList');
 };
 
+export const deleteMyFavoriteLibraries = (data) => {
+  return axios.delete('/api/mypage/favoriteLibraries', data);
+};
+
+export const getMyFavoriteParksList = () => {
+  return axios.get('/api/mypage/favoriteParksList');
+};
+
 export const getMyReviews = () => {
   return axios.get('/api/mypage/myReviews');
+};
+
+export const deleteMyReviews = (id) => {
+  console.log(`주소: /api/mypage/myReviews/${id}`);
+  return axios.delete(`/api/mypage/myReviews/${id}`);
 };
 
 export const putProfileInfo = async (data) => {

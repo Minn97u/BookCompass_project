@@ -30,6 +30,8 @@ const Mypage = () => {
   const [showModal, setShowModal] = useState(false);
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
+  const [libraryDatas, setLibraryDatas] = useState([]);
+  const [reviewDatas, setReviewDatas] = useState([]);
   const navigate = useNavigate();
 
   const bookMarkList = [
@@ -114,7 +116,19 @@ const Mypage = () => {
   const fetchMyReviews = async () => {
     try {
       const res = await getMyReviews();
-      console.log('내가 쓴 리뷰', res);
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item._id,
+          comment: item.comment,
+          rating: item.rating,
+          date: localDate
+        };
+      });
+      setReviewDatas(datas);
+      console.log('내가 쓴 리뷰', datas);
     } catch (error) {
       console.error('내가 쓴 리뷰 실패:', error);
     }
@@ -179,7 +193,13 @@ const Mypage = () => {
         <MypageBox
           icon={ReviewIcon}
           title='작성한 리뷰'
-          component={<ReviewList />}
+          component={
+            <ReviewList
+              datas={reviewDatas}
+              type={'review'}
+              setList={setReviewDatas}
+            />
+          }
         />
       </MypageContainer>
       {showModal && <AuthModal onClose={handleCloseModal} />}

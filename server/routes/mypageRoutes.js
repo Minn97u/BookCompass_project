@@ -465,7 +465,7 @@ router.delete(
 
       const review = await Review.findOneAndDelete({
         _id: reviewId,
-        author: userId,
+        user: userId,
       });
       if (!review) return res.status(404).send('리뷰를 찾을 수 없습니다.');
 
