@@ -5,15 +5,15 @@
  *   description: 마이페이지 관리
  */
 
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const User = require("../models/userSchema");
-const Post = require("../models/postSchema");
-const Comment = require("../models/commentSchema");
-const Review = require("../models/reviewSchema");
-const { ensureAuthenticated } = require("../middlewares/checklogin");
-const upload = require("../middlewares/upload");
-const path = require("path");
+const User = require('../models/userSchema');
+const Post = require('../models/postSchema');
+const Comment = require('../models/commentSchema');
+const Review = require('../models/reviewSchema');
+const { ensureAuthenticated } = require('../middlewares/checklogin');
+const upload = require('../middlewares/upload');
+const path = require('path');
 
 /**
  * @swagger
@@ -27,16 +27,16 @@ const path = require("path");
  *       200:
  *         description: 유저 프로필 정보 반환
  */
-router.get("/profile", ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id; // 인증된 사용자 ID 가져오기
-        const user = await User.findById(userId).select("-password"); // 비밀번호 필드 제외하고 유저 정보 가져오기
+router.get('/profile', ensureAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.user._id; // 인증된 사용자 ID 가져오기
+    const user = await User.findById(userId).select('-password'); // 비밀번호 필드 제외하고 유저 정보 가져오기
 
-        if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
-        res.json(user);
-    } catch (error) {
-        next(error);
-    }
+    if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -66,40 +66,40 @@ router.get("/profile", ensureAuthenticated, async (req, res, next) => {
  *         description: 유저 프로필 정보 반환
  */
 router.put(
-    "/profile",
-    ensureAuthenticated,
-    upload.single("profilePic"),
-    async (req, res, next) => {
-        try {
-            const { name, profileMsg } = req.body;
-            const userId = req.user._id; // 인증된 사용자 ID 가져오기
+  '/profile',
+  ensureAuthenticated,
+  upload.single('profilePic'),
+  async (req, res, next) => {
+    try {
+      const { name, profileMsg } = req.body;
+      const userId = req.user._id; // 인증된 사용자 ID 가져오기
 
-            // 업데이트할 데이터를 객체로 생성
-            const updateData = { name, profileMsg };
+      // 업데이트할 데이터를 객체로 생성
+      const updateData = { name, profileMsg };
 
-            // 프로필 사진이 존재하면 updateData에 추가
-            if (req.file) {
-                const filePath = path.join(
-                    __dirname,
-                    "..",
-                    "client",
-                    "public",
-                    "uploads",
-                    req.file.filename
-                );
-                updateData.profilePic = `/uploads/${req.file.filename}`;
-            }
+      // 프로필 사진이 존재하면 updateData에 추가
+      if (req.file) {
+        const filePath = path.join(
+          __dirname,
+          '..',
+          'client',
+          'public',
+          'uploads',
+          req.file.filename
+        );
+        updateData.profilePic = `/uploads/${req.file.filename}`;
+      }
 
-            const user = await User.findByIdAndUpdate(userId, updateData, {
-                new: true,
-            });
+      const user = await User.findByIdAndUpdate(userId, updateData, {
+        new: true,
+      });
 
-            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
-            res.json(user);
-        } catch (error) {
-            next(error);
-        }
+      if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
+      res.json(user);
+    } catch (error) {
+      next(error);
     }
+  }
 );
 
 /**
@@ -122,26 +122,26 @@ router.put(
  *         description: 프로필 사진 반환
  */
 router.get(
-    "/uploads/:filename",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const filename = req.params.filename;
-            const filePath = path.join(
-                __dirname,
-                "..",
-                "..",
-                "client",
-                "public",
-                "uploads",
-                filename
-            );
+  '/uploads/:filename',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const filename = req.params.filename;
+      const filePath = path.join(
+        __dirname,
+        '..',
+        '..',
+        'client',
+        'public',
+        'uploads',
+        filename
+      );
 
-            res.sendFile(filePath);
-        } catch (error) {
-            next(error);
-        }
+      res.sendFile(filePath);
+    } catch (error) {
+      next(error);
     }
+  }
 );
 
 /**
@@ -156,15 +156,15 @@ router.get(
  *       200:
  *         description: 내가 쓴 글 목록 반환
  */
-router.get("/myPosts", ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id;
-        const posts = await Post.find({ "author.id": userId });
+router.get('/myPosts', ensureAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const posts = await Post.find({ 'author.id': userId });
 
-        res.json(posts);
-    } catch (error) {
-        next(error);
-    }
+    res.json(posts);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -188,31 +188,29 @@ router.get("/myPosts", ensureAuthenticated, async (req, res, next) => {
  */
 
 router.delete(
-    "/myPosts/:postId",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const { postId } = req.params; // shortId
-            const userId = req.user._id;
+  '/myPosts/:postId',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { postId } = req.params; // shortId
+      const userId = req.user._id;
 
-            const post = await Post.findOneAndDelete({
-                shortId: postId,
-                "author.id": userId,
-            });
-            if (!post) {
-                console.error(
-                    `Post not found: postId=${postId}, userId=${userId}`
-                );
-                return res.status(404).send("글을 찾을 수 없습니다.");
-            }
+      const post = await Post.findOneAndDelete({
+        shortId: postId,
+        'author.id': userId,
+      });
+      if (!post) {
+        console.error(`Post not found: postId=${postId}, userId=${userId}`);
+        return res.status(404).send('글을 찾을 수 없습니다.');
+      }
 
-            res.status(200).send("글을 삭제했습니다.");
-        } catch (error) {
-            console.error("게시글 삭제 중 오류 발생:", error);
-            res.status(500).json({ message: "서버 오류로 삭제 못 했습니다." });
-            next(error);
-        }
+      res.status(200).send('글을 삭제했습니다.');
+    } catch (error) {
+      console.error('게시글 삭제 중 오류 발생:', error);
+      res.status(500).json({ message: '서버 오류로 삭제 못 했습니다.' });
+      next(error);
     }
+  }
 );
 
 /**
@@ -227,16 +225,16 @@ router.delete(
  *       200:
  *         description: 내가 쓴 댓글 목록 반환
  */
-router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id;
-        const comments = await Comment.find({ author: userId });
-        console.log(comments);
+router.get('/myComments', ensureAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const comments = await Comment.find({ author: userId });
+    console.log(comments);
 
-        res.json(comments);
-    } catch (error) {
-        next(error);
-    }
+    res.json(comments);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -259,27 +257,26 @@ router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
  *         description: 댓글을 삭제했습니다.
  */
 router.delete(
-    "/myComments/:commentId",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const { commentId } = req.params;
-            const userId = req.user._id;
+  '/myComments/:commentId',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { commentId } = req.params;
+      const userId = req.user._id;
 
-            const comment = await Comment.findOneAndDelete({
-                _id: commentId,
-                author: userId,
-            });
-            if (!comment)
-                return res.status(404).send("댓글을 찾을 수 없습니다.");
+      const comment = await Comment.findOneAndDelete({
+        _id: commentId,
+        author: userId,
+      });
+      if (!comment) return res.status(404).send('댓글을 찾을 수 없습니다.');
 
-            res.status(200).send("댓글을 삭제했습니다.");
-        } catch (error) {
-            console.error("댓글 삭제 중 오류 발생:", error);
-            res.status(500).json({ message: "서버 오류로 삭제 못 했습니다." });
-            next(error);
-        }
+      res.status(200).send('댓글을 삭제했습니다.');
+    } catch (error) {
+      console.error('댓글 삭제 중 오류 발생:', error);
+      res.status(500).json({ message: '서버 오류로 삭제 못 했습니다.' });
+      next(error);
     }
+  }
 );
 
 /**
@@ -295,20 +292,18 @@ router.delete(
  *         description: 찜해둔 도서관 목록 반환
  */
 router.get(
-    "/favoriteLibrariesList",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const userId = req.user._id; // 인증된 사용자 ID 가져오기
-            const user = await User.findById(userId).populate(
-                "favoriteLibraries"
-            );
-            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
-            res.json(user.favoriteLibraries);
-        } catch (error) {
-            next(error);
-        }
+  '/favoriteLibrariesList',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const userId = req.user._id; // 인증된 사용자 ID 가져오기
+      const user = await User.findById(userId).populate('favoriteLibraries');
+      if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
+      res.json(user.favoriteLibraries);
+    } catch (error) {
+      next(error);
     }
+  }
 );
 
 /**
@@ -333,24 +328,24 @@ router.get(
  *         description: 도서관을 삭제했습니다.
  */
 router.delete(
-    "/favoriteLibraries",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const userId = req.user._id; // 인증된 사용자 ID 가져오기
-            const { libraryId } = req.body; // 클라이언트로부터 받아온 도서관 ID
-            const user = await User.findById(userId);
-            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
+  '/favoriteLibraries',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const userId = req.user._id; // 인증된 사용자 ID 가져오기
+      const { libraryId } = req.body; // 클라이언트로부터 받아온 도서관 ID
+      const user = await User.findById(userId);
+      if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
 
-            user.favoriteLibraries = user.favoriteLibraries.filter(
-                (id) => id.toString() !== libraryId
-            );
-            await user.save();
-            res.status(200).send("도서관을 삭제했습니다.");
-        } catch (error) {
-            next(error);
-        }
+      user.favoriteLibraries = user.favoriteLibraries.filter(
+        (id) => id.toString() !== libraryId
+      );
+      await user.save();
+      res.status(200).send('도서관을 삭제했습니다.');
+    } catch (error) {
+      next(error);
     }
+  }
 );
 
 /**
@@ -366,18 +361,18 @@ router.delete(
  *         description: 찜해둔 공원 목록 반환
  */
 router.get(
-    "/favoriteParksList",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const userId = req.user._id; // 인증된 사용자 ID 가져오기
-            const user = await User.findById(userId).populate("favoriteParks");
-            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
-            res.json(user.favoriteParks);
-        } catch (error) {
-            next(error);
-        }
+  '/favoriteParksList',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const userId = req.user._id; // 인증된 사용자 ID 가져오기
+      const user = await User.findById(userId).populate('favoriteParks');
+      if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
+      res.json(user.favoriteParks);
+    } catch (error) {
+      next(error);
     }
+  }
 );
 
 /**
@@ -401,21 +396,21 @@ router.get(
  *       200:
  *         description: 공원을 삭제했습니다.
  */
-router.delete("/favoriteParks", ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id; // 인증된 사용자 ID 가져오기
-        const { parkId } = req.body; // 클라이언트로부터 받아온 공원 ID
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
+router.delete('/favoriteParks', ensureAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.user._id; // 인증된 사용자 ID 가져오기
+    const { parkId } = req.body; // 클라이언트로부터 받아온 공원 ID
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
 
-        user.favoriteParks = user.favoriteParks.filter(
-            (id) => id.toString() !== parkId
-        );
-        await user.save();
-        res.status(200).send("공원을 삭제했습니다.");
-    } catch (error) {
-        next(error);
-    }
+    user.favoriteParks = user.favoriteParks.filter(
+      (id) => id.toString() !== parkId
+    );
+    await user.save();
+    res.status(200).send('공원을 삭제했습니다.');
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -430,15 +425,15 @@ router.delete("/favoriteParks", ensureAuthenticated, async (req, res, next) => {
  *       200:
  *         description: 내가 쓴 리뷰 목록 반환
  */
-router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id;
-        const reviews = await Review.find({ author: userId });
+router.get('/myReviews', ensureAuthenticated, async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const reviews = await Review.find({ user: userId });
 
-        res.json(reviews);
-    } catch (error) {
-        next(error);
-    }
+    res.json(reviews);
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -461,25 +456,24 @@ router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
  *         description: 리뷰를 삭제했습니다.
  */
 router.delete(
-    "/myReviews/:reviewId",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const { reviewId } = req.params;
-            const userId = req.user._id;
+  '/myReviews/:reviewId',
+  ensureAuthenticated,
+  async (req, res, next) => {
+    try {
+      const { reviewId } = req.params;
+      const userId = req.user._id;
 
-            const review = await Review.findOneAndDelete({
-                _id: reviewId,
-                author: userId,
-            });
-            if (!review)
-                return res.status(404).send("리뷰를 찾을 수 없습니다.");
+      const review = await Review.findOneAndDelete({
+        _id: reviewId,
+        author: userId,
+      });
+      if (!review) return res.status(404).send('리뷰를 찾을 수 없습니다.');
 
-            res.status(200).send("리뷰를 삭제했습니다.");
-        } catch (error) {
-            next(error);
-        }
+      res.status(200).send('리뷰를 삭제했습니다.');
+    } catch (error) {
+      next(error);
     }
+  }
 );
 
 module.exports = router;
