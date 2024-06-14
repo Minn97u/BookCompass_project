@@ -13,11 +13,13 @@ const WriteList = ({ datas, type, setList }) => {
   };
 
   const handleDeleteBtn = (listid) => {
+    console.log('리스트 아이디', listid);
     setCurrentId(listid);
     setModalOpen(true);
   };
 
   const handleDeleteConfirm = (id) => {
+    console.log(id);
     setList(datas.filter((data) => data.id !== id));
     closeModal();
   };

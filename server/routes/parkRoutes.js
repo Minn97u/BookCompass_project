@@ -24,9 +24,7 @@ const { ensureAuthenticated } = require("../middlewares/checklogin");
  */
 router.get("/", async (req, res, next) => {
     try {
-        const parks = await Park.find().select(
-            "-_id name district address managing_department phone latitude longitude"
-        );
+        const parks = await Park.find().select();
         res.json(parks);
     } catch (error) {
         next(error);
@@ -53,9 +51,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:parkId", async (req, res, next) => {
     try {
         const { parkId } = req.params;
-        const park = await Park.findById(parkId).select(
-            "name district address managing_department phone latitude longitude averageRating"
-        );
+        const park = await Park.findById(parkId).select();
 
         if (!park) {
             return res.status(404).send("공원을 찾을 수 없습니다.");

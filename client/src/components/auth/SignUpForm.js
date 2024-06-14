@@ -43,15 +43,13 @@ const SignUpForm = ({ setFormType, onClose }) => {
       favoriteAuthor: foundAnswer
     };
 
-    if (checkEmailText === '' && checkPasswordText === '') {
-      try {
-        const res = await postSignup(data);
-        console.log('회원가입 완료', res);
-        setFormType('로그인');
-      } catch (error) {
-        console.error('회원가입 오류:', error);
-        setSignupError('모두 입력해 주세요.');
-      }
+    try {
+      const res = await postSignup(data);
+      console.log('회원가입 완료', res);
+      setFormType('로그인');
+    } catch (error) {
+      console.error('회원가입 오류:', error);
+      setSignupError('모두 입력해 주세요.');
     }
   };
 

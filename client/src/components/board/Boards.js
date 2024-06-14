@@ -16,8 +16,7 @@ import {
   updatePosts,
   deletePosts,
   postComments,
-  deleteComments,
-  updateComments
+  deleteComments
 } from '../../api/BoardApi.js';
 
 const Board = () => {
@@ -183,34 +182,34 @@ const Board = () => {
 
   const handleCommentSubmit = async (data) => {
     if (selectedItem) {
-      // eslint-disable-next-line
       const newComment = {
         content: data.commentText,
         author: { name: userName }
       };
 
+      const updatedComments = [...selectedItem.comments, newComment];
+      setState((prevState) => ({
+        ...prevState,
+        selectedItem: { ...selectedItem, comments: updatedComments }
+      }));
+      setValue('commentText', '');
+
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
         console.log('Comment submitted successfully');
-
-        const res = await viewPosts(selectedItem.shortId);
-        setState((prevState) => ({
-          ...prevState,
-          selectedItem: res
-        }));
-
-        setValue('commentText', '');
-        reset({ commentText: '' });
-        console.log('hihi', data.commentText);
       } catch (error) {
         console.error('Error submitting comment:', error);
+        setState((prevState) => ({
+          ...prevState,
+          selectedItem: { ...selectedItem, comments: selectedItem.comments }
+        }));
       }
     }
   };
 
   const handleCommentDelete = async (commentId) => {
-    if (selectedItem && commentId) {
+    if (selectedItem) {
       try {
         await deleteComments(selectedItem.shortId, commentId);
         const updatedComments = selectedItem.comments.filter(
@@ -218,37 +217,12 @@ const Board = () => {
         );
         setState((prevState) => ({
           ...prevState,
-          selectedItem: { ...prevState.selectedItem, comments: updatedComments }
+          selectedItem: { ...selectedItem, comments: updatedComments }
         }));
         console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
       }
-    } else {
-      console.error('올바르지 않은 commentId 또는 선택된 게시글이 없습니다.');
-    }
-  };
-
-  const handleCommentUpdate = async (commentId, updatedContent) => {
-    if (selectedItem && commentId) {
-      try {
-        const updatedComment = { content: updatedContent };
-        await updateComments(selectedItem.shortId, commentId, updatedComment);
-        const updatedComments = selectedItem.comments.map((comment) =>
-          comment._id === commentId
-            ? { ...comment, content: updatedContent }
-            : comment
-        );
-        setState((prevState) => ({
-          ...prevState,
-          selectedItem: { ...prevState.selectedItem, comments: updatedComments }
-        }));
-        console.log('댓글 수정 완료');
-      } catch (error) {
-        console.error('댓글 수정 오류', error);
-      }
-    } else {
-      console.error('올바르지 않은 commentId 또는 선택된 게시글이 없습니다.');
     }
   };
 
@@ -303,7 +277,6 @@ const Board = () => {
             handleDeleteClick={handleDeleteClick}
             handleCommentSubmit={handleCommentSubmit}
             handleCommentDelete={handleCommentDelete}
-            handleCommentUpdate={handleCommentUpdate}
           />
         )}
       </CustomModal>

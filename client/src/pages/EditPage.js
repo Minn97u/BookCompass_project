@@ -12,8 +12,8 @@ const EditPage = () => {
     description: ''
   });
   const [myInfo, setMyInfo] = useState({
-    foundAnswer: localStorage.getItem('favoriteAuthor') || '',
-    region: localStorage.getItem('userRegion') || ''
+    foundAnswer: localStorage.getItem('favoriteAuthor'),
+    region: localStorage.getItem('userRegion')
   });
   const [modalVisible, setModalVisible] = useState(false);
   const [formType, setFormType] = useState(null);
@@ -27,15 +27,11 @@ const EditPage = () => {
     try {
       const res = await getProfileInfo();
       console.log('프로필 가져오기:', res);
-      const { profilePic, name, profileMsg, region, favoriteAuthor } = res.data;
+      const { profilePic, name, profileMsg } = res.data;
       setMyProfile({
         profileImg: profilePic,
         name,
         description: profileMsg
-      });
-      setMyInfo({
-        region,
-        foundAnswer: favoriteAuthor
       });
     } catch (error) {
       console.error('프로필 가져오기 실패:', error);
@@ -88,7 +84,7 @@ const EditBox = styled.div`
   border-radius: 5px;
   box-shadow: 0px 3px 18px rgba(0, 0, 0, 0.04);
   width: 45rem;
-  height: 44rem;
+  height: 42rem;
   padding: 20px 50px 33px 50px;
   box-sizing: border-box;
   position: relative;

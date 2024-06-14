@@ -14,6 +14,7 @@ mongoose.connect(
 
 // CSV 파일 필드 매핑 함수 (도서관)
 const mapLibraryFields = (data) => ({
+    _id: new mongoose.Types.ObjectId(),
     id: data["도서관ID"],
     name: data["도서관명"],
     district: data["구명"],
@@ -28,6 +29,7 @@ const mapLibraryFields = (data) => ({
 
 // CSV 파일 필드 매핑 함수 (공원)
 const mapParkFields = (data) => ({
+    _id: new mongoose.Types.ObjectId(),
     name: data["공원명"],
     district: data["지역"] || "알 수 없음",
     address: data["공원주소"],
