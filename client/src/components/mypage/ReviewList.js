@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as StarIcon } from '../../assets/icons/StarIcon.svg';
 import { ReactComponent as EmptyStarIcon } from '../../assets/icons/EmptyStar.svg';
@@ -8,19 +8,6 @@ import DeleteModal from '../common/DeleteModal';
 const ReviewList = ({ datas, type, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await getMyReviews();
-        setReviews(response.data);
-      } catch (error) {
-        console.error('리뷰를 가져오지 못했습니다.', error);
-      }
-    };
-
-    fetchReviews();
-  }, []);
 
   const closeModal = () => {
     setModalOpen(false);

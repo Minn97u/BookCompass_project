@@ -12,7 +12,13 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
-import { getProfileInfo, getMyPosts, getMyComments } from '../api/Mypage';
+import {
+  getProfileInfo,
+  getMyPosts,
+  getMyComments,
+  getMyFavoriteLibraries,
+  getMyReviews
+} from '../api/Mypage';
 
 const Mypage = () => {
   const [myInfo, setMyInfo] = useState({
@@ -134,7 +140,9 @@ const Mypage = () => {
         await Promise.all([
           fetchProfileInfo(),
           fetchMyPosts(),
-          fetchMyComments()
+          fetchMyComments(),
+          fetchMyFavoriteLibraries(),
+          fetchMyReviews()
         ]);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);
