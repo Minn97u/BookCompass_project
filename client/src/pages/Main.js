@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import FindLibrary from '../../src/assets/icons/FindLibrary.svg';
 import LibraryParkMap from '../components/main/LibraryParkMap';
-import DetailModal from '../../src/components/main/DetailModal';
+import Modal from '../components/main/Modal';
 import LibraryList from '../components/main/LibraryList';
 import ParkList from '../components/main/ParkList';
 
@@ -191,10 +191,11 @@ const Main = () => {
           </LibraryParkMapContainer>
         </Flex>
       </Guide>
-      <DetailModal
+      <Modal
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
         place={selectedButton === 'library' ? selectedLibrary : selectedPark}
+        type={selectedButton === 'library' ? 'library' : 'park'}
       />
     </FullHeightContainer>
   );
