@@ -16,7 +16,8 @@ import {
   updatePosts,
   deletePosts,
   postComments,
-  deleteComments
+  deleteComments,
+  updateComments
 } from '../../api/BoardApi.js';
 
 const Board = () => {
@@ -226,6 +227,29 @@ const Board = () => {
     }
   };
 
+  const handleCommentUpdate = async (commentId, updatedContent) => {
+    if (selectedItem && commentId) {
+      try {
+        const updatedComment = { content: updatedContent };
+        await updateComments(selectedItem.shortId, commentId, updatedComment);
+        const updatedComments = selectedItem.comments.map((comment) =>
+          comment._id === commentId
+            ? { ...comment, content: updatedContent }
+            : comment
+        );
+        setState((prevState) => ({
+          ...prevState,
+          selectedItem: { ...prevState.selectedItem, comments: updatedComments }
+        }));
+        console.log('댓글 수정 완료');
+      } catch (error) {
+        console.error('댓글 수정 오류', error);
+      }
+    } else {
+      console.error('올바르지 않은 commentId 또는 선택된 게시글이 없습니다.');
+    }
+  };
+
   return (
     <BoardContainer>
       <BoardTagsContainer>
@@ -277,6 +301,7 @@ const Board = () => {
             handleDeleteClick={handleDeleteClick}
             handleCommentSubmit={handleCommentSubmit}
             handleCommentDelete={handleCommentDelete}
+            handleCommentUpdate={handleCommentUpdate}
           />
         )}
       </CustomModal>

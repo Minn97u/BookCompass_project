@@ -36,3 +36,10 @@ export const postComments = (data, shortId) => {
 export const deleteComments = (shortId, commentId) => {
   return axios.delete(`/api/posts/${shortId}/comments/${commentId}`);
 };
+
+export const updateComments = (shortId, commentId, updatedComment) => {
+  return axios.put(
+    `/api/posts/${shortId}/comments/${commentId}`,
+    updatedComment
+  );
+};
