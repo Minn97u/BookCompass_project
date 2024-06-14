@@ -27,13 +27,27 @@ export const getLoginStatus = async () => {
   }
 };
 
-export const getGoogleLogin = async () => {
+export const getUserInfo = async () => {
   try {
-    const res = await axios.get(`${baseURL}/api/google`, {
+    const res = await axios.get(`${baseURL}/api/userinfo`, {
       withCredentials: true
     });
-    console.log('구글 로그인 완료', res);
+    console.log('유저정보', res);
     return res;
+  } catch (error) {
+    console.error('유저정보 확인 오류:', error);
+    throw error;
+  }
+};
+
+export const getGoogleLogin = async () => {
+  try {
+    // const res = await axios.get(`${baseURL}/api/google`, {
+    //   withCredentials: true
+    // });
+    window.location.href = `${baseURL}/api/google`;
+    console.log('구글 로그인 완료');
+    // return res;
   } catch (error) {
     console.error('구글 로그인 오류:', error);
     throw error;
@@ -53,18 +67,18 @@ export const postSignup = async (data) => {
   }
 };
 
-export const getGoogleSignup = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/google/callback`, {
-      withCredentials: true
-    });
-    console.log('구글 회원가입 완료', res);
-    return res;
-  } catch (error) {
-    console.error('구글 회원가입 오류:', error);
-    throw error;
-  }
-};
+// export const getGoogleSignup = async () => {
+//   try {
+//     const res = await axios.get(`${baseURL}/api/google/callback`, {
+//       withCredentials: true
+//     });
+//     console.log('구글 회원가입 완료', res);
+//     return res;
+//   } catch (error) {
+//     console.error('구글 회원가입 오류:', error);
+//     throw error;
+//   }
+// };
 
 export const getLogout = async () => {
   try {
@@ -118,18 +132,18 @@ export const postChangePassword = async (data) => {
   }
 };
 
-export const getUserInfo = async () => {
-  try {
-    const res = await axios.get(`${baseURL}/api/additional-info`, {
-      withCredentials: true
-    });
-    console.log('유저 정보 조회 완료', res);
-    return res;
-  } catch (error) {
-    console.error('유저 정보 조회 오류:', error);
-    throw error;
-  }
-};
+// export const getUserInfo = async () => {
+//   try {
+//     const res = await axios.get(`${baseURL}/api/additional-info`, {
+//       withCredentials: true
+//     });
+//     console.log('유저 정보 조회 완료', res);
+//     return res;
+//   } catch (error) {
+//     console.error('유저 정보 조회 오류:', error);
+//     throw error;
+//   }
+// };
 
 export const postUserInfo = async (data) => {
   try {

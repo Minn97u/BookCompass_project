@@ -137,7 +137,7 @@ router.post('/login', (req, res, next) => {
           email: user.email,
           region: user.region,
           favoriteAuthor: user.favoriteAuthor,
-        },
+        }
       });
     });
   })(req, res, next);
@@ -347,23 +347,34 @@ router.get(
   '/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
-/**
- * @swagger
- * /api/google/callback:
- *   get:
- *     summary: Google authentication callback
- *     tags: [Auth]
- *     responses:
- *       302:
- *         description: Redirect based on authentication result
- */
 router.get(
   '/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
-  (req, res) => {
-    res.json({ message: 'Login successful', user: req.user });
+  passport.authenticate('google', { failureRedirect: '/login' }), (req, res) => {
+    if (req.user.favoriteAuthor === null || req.user.region === null ) {
+      // 추가 정보 입력 페이지로 리디렉트
+      res.redirect('http://localhost:3000/additionalinfo');
+    } else {
+      // 메인 페이지로 리디렉트
+      res.redirect('http://localhost:3000');
+    }
   }
 );
+
+//유저정보패치
+router.get('/userinfo', async (req, res) => {
+ try{
+  if(req.user) {
+    res.status(200).json({msg: "유저정보를 불러왔습니다", user: req.user})
+  } else {
+    res.status(201).json({msg:"로그인을 해주세요"})
+  }
+ } catch (err) {
+  console.log(err);
+  res.status(500).json({ msg: 'server error'});
+ }
+})
+
+//추가정보제출
 /**
  * @swagger
  * /api/additional-info:
@@ -405,25 +416,12 @@ router.post('/additional-info', ensureAuthenticated, async (req, res) => {
     user.favoriteAuthor = favoriteAuthor;
     await user.save();
 
-    res.status(200).json({ msg: '정보가 추가되었습니다' });
+    res.status(200).json({ msg: '정보가 추가되었습니다', submit: true });
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: 'Server error' });
   }
 });
-// /**
-//  * @swagger
-//  * /api/additional-info:
-//  *   get:
-//  *     summary: Render additional info page
-//  *     tags: [Auth]
-//  *     responses:
-//  *       200:
-//  *         description: Page rendered successfully
-//  */
-// router.get('/additional-info', ensureAuthenticated, (req, res) => {
-//     res.render('additional-info');
-// });
 
 //이메일 찾기
 /**
@@ -491,7 +489,7 @@ router.post('/find-email', async (req, res) => {
         email: maskedEmail,
         createdAt: user.createdAt,
       };
-    });
+    });일
 
     res.status(200).json(results);
   } catch (err) {
@@ -499,8 +497,8 @@ router.post('/find-email', async (req, res) => {
     res.status(500).json({ msg: 'Server error' });
   }
 });
-//로그인 확인
 
+//로그인 확인
 /**
  * @swagger
  * /status:
