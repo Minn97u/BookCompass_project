@@ -182,6 +182,7 @@ const Board = () => {
 
   const handleCommentSubmit = async (data) => {
     if (selectedItem) {
+      // eslint-disable-next-line
       const newComment = {
         content: data.commentText,
         author: { name: userName }
