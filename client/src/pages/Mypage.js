@@ -202,7 +202,7 @@ const ProfileConatiner = styled.div`
   justify-content: center;
   text-align: center;
   background-color: #eed8bc;
-  width: 21.5rem;
+  min-width: 21.5rem;
   position: relative;
 `;
 

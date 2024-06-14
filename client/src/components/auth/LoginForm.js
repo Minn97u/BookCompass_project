@@ -36,7 +36,7 @@ const LoginForm = ({ setFormType, onClose }) => {
     try {
       await getGoogleLogin();
       const res = await getUserInfo();
-      console.log('로그인 성공:', res);
+      console.log('구글 로그인 성공:', res);
       localStorage.setItem('userId', res.data.user.id);
       localStorage.setItem('userName', res.data.user.name);
       localStorage.setItem('userRegion', res.data.user.region);
