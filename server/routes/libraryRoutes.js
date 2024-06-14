@@ -9,6 +9,7 @@ const express = require("express");
 const router = express.Router();
 const Library = require("../models/librarySchema");
 const User = require("../models/userSchema");
+const Review = require("../models/reviewSchema");
 const { ensureAuthenticated } = require("../middlewares/checklogin");
 
 /**
@@ -50,7 +51,7 @@ const { ensureAuthenticated } = require("../middlewares/checklogin");
  */
 router.get("/", async (req, res, next) => {
     try {
-        const libraries = await Library.find().select();
+        const libraries = await Library.find().select("-_id");
         res.json(libraries);
     } catch (error) {
         next(error);
@@ -118,7 +119,9 @@ router.get("/", async (req, res, next) => {
 router.get("/:libraryId", async (req, res, next) => {
     try {
         const { libraryId } = req.params;
-        const library = await Library.findById(libraryId).select();
+        const library = await Library.findById(libraryId).select(
+            "name district address phone url hours holidays latitude longitude averageRating"
+        );
 
         if (!library) {
             return res.status(404).send("도서관을 찾을 수 없습니다.");

@@ -207,7 +207,7 @@ router.put("/:commentId", ensureAuthenticated, async (req, res) => {
         comment.content = content;
         comment.updatedAt = Date.now(); // 수정한 시간 기록
 
-        await post.save();
+        await comment.save();
         res.status(200).json(comment);
     } catch (err) {
         console.error(err);
@@ -250,7 +250,6 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
 
     try {
         const post = await Post.findOne({ shortId: postId });
-
         if (!post) {
             return res.status(404).json({ msg: "Post not found" });
         }
@@ -269,7 +268,7 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
         }
 
         // 댓글 삭제
-        await comment.remove();
+        await Comment.deleteOne({ _id: commentId });
         post.comments.pull(commentId);
         await post.save();
 
