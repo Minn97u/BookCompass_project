@@ -84,6 +84,7 @@ const Main = () => {
   const handleLibraryClick = (library) => {
     setSelectedLibrary(library);
     setIsModalOpen(true);
+    console.log('selectedLibrary:', selectedLibrary);
   };
 
   const handleButtonClick = (button) => {
@@ -95,6 +96,8 @@ const Main = () => {
     setSelectedPark(park);
     setIsModalOpen(true);
   };
+
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const selectedDistrict = districts.find(
@@ -196,6 +199,7 @@ const Main = () => {
         closeModal={() => setIsModalOpen(false)}
         place={selectedButton === 'library' ? selectedLibrary : selectedPark}
         type={selectedButton === 'library' ? 'library' : 'park'}
+        userId={userId}
       />
     </FullHeightContainer>
   );
