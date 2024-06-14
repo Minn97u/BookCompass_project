@@ -434,7 +434,7 @@ router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
         const reviews = await Review.find({ user: userId });
-        console.log(reviews);
+
         res.json(reviews);
     } catch (error) {
         next(error);

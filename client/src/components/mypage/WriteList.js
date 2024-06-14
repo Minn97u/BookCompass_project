@@ -92,8 +92,8 @@ const Title = styled.span`
 `;
 
 const Date = styled.span`
-  font-size: 0.9rem;
-  color: #868686;
+  font-size: 0.8rem;
+  color: #afafaf;
 `;
 
 const DeleteWrite = styled.button`

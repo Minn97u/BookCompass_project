@@ -13,7 +13,6 @@ const librarySchema = new Schema({
     latitude: Number,
     longitude: Number,
     averageRating: { type: Number, default: 0 },
-    reviews: [{ type: Schema.Types.ObjectId, ref: "Review" }],
 });
 
 module.exports = mongoose.model("Library", librarySchema);

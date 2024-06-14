@@ -4,10 +4,8 @@ import { ReactComponent as StarIcon } from '../../assets/icons/StarIcon.svg';
 import { ReactComponent as EmptyStarIcon } from '../../assets/icons/EmptyStar.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
-import { getMyReviews, deleteMyReview } from '../../api/Mypage';
 
-const ReviewList = () => {
-  const [reviews, setReviews] = useState([]);
+const ReviewList = ({ datas, type, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
 
@@ -29,43 +27,52 @@ const ReviewList = () => {
     setCurrentId(null);
   };
 
-  const handleDeleteBtn = (id) => {
-    setCurrentId(id);
+  const handleDeleteBtn = (listid) => {
+    setCurrentId(listid);
     setModalOpen(true);
   };
 
-  const handleDeleteConfirm = async (id) => {
-    try {
-      await deleteMyReview(id); // 리뷰 삭제 API 호출
-      setReviews(reviews.filter((review) => review._id !== id));
-      closeModal();
-    } catch (error) {
-      console.error('리뷰 삭제 실패:', error);
-    }
+  const handleDeleteConfirm = (id) => {
+    setList(datas.filter((data) => data.id !== id));
+    closeModal();
   };
 
   return (
     <>
-      {reviews.map((review) => (
-        <ReviewGroup key={review._id}>
+      {datas.map((data) => (
+        <ReviewGroup key={data.id}>
+          <StarContainer>
+            {[...Array(data.rating)].map((i) => (
+              <Star key={i} />
+            ))}
+            {[...Array(5 - data.rating)].map((i) => (
+              <EmptyStar key={i} />
+            ))}
+            <RatingText>{data.rating}</RatingText>
+          </StarContainer>
           <TextContainer>
-            <ReviewText>{review.comment}</ReviewText>
+            <CommentBox>
+              <ReviewText>{data.comment}</ReviewText>
+              <Date>{data.date}</Date>
+            </CommentBox>
             <DeleteWrite>
               <DeleteIconImg
                 src={DeleteIcon}
                 alt='delete-icon'
-                onClick={() => handleDeleteBtn(review._id)}
+                onClick={() => handleDeleteBtn(data.id)}
               />
             </DeleteWrite>
           </TextContainer>
-          <Hr />
+          {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
+            <Hr />
+          )}
         </ReviewGroup>
       ))}
       {modalOpen && (
         <DeleteModal
           onClose={closeModal}
           id={currentId}
-          type='review'
+          type={type}
           deleteSuccess={handleDeleteConfirm}
         />
       )}
@@ -114,6 +121,17 @@ const TextContainer = styled.div`
 
 const ReviewText = styled.div`
   font-size: 1.1rem;
+`;
+
+const CommentBox = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const Date = styled.span`
+  font-size: 0.8rem;
+  color: #afafaf;
+  margin-top: 6px;
 `;
 
 const DeleteWrite = styled.button`

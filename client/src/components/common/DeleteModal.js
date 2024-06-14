@@ -4,7 +4,7 @@ import closebutton from '../../assets/icons/closebutton.svg';
 import {
   deleteMyPost,
   deleteMyComment,
-  deleteMyReview
+  deleteMyReviews
 } from '../../api/Mypage';
 
 const DeleteType = {
@@ -22,7 +22,7 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
       } else if (type === DeleteType.COMMENT) {
         await deleteMyComment(id);
       } else if (type === DeleteType.REVIEW) {
-        await deleteMyReview(id);
+        await deleteMyReviews(id);
       }
       deleteSuccess(id);
       onClose();
