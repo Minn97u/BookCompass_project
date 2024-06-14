@@ -53,6 +53,7 @@ router.get("/", async (req, res, next) => {
     try {
         const libraries = await Library.find().select();
         res.json(libraries);
+        console.log(libraries);
     } catch (error) {
         next(error);
     }

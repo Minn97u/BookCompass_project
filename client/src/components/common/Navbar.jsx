@@ -17,12 +17,19 @@ function Navbar() {
   const [activeButton, setActiveButton] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginText, setLoginText] = useState('로그인');
+  const userId = localStorage.getItem('userId');
   const navigate = useNavigate();
 
   const handelLoginStatus = async () => {
     try {
       await getLoginStatus();
-      setIsLoggedIn(true);
+      if (!userId) {
+        setLoginText('로그인');
+      } else {
+        setIsLoggedIn(true);
+        setLoginText('로그아웃');
+      }
     } catch (error) {
       console.error('로그아웃 오류:', error);
     }
@@ -50,20 +57,20 @@ function Navbar() {
     setShowModal(false);
   };
 
-  const handleLoginClick = () => {
-    setShowModal(true);
-  };
-
-  const handleLogoutClick = async () => {
-    try {
-      await getLogout();
-      localStorage.removeItem('userId');
-      localStorage.removeItem('userName');
-      localStorage.removeItem('userRegion');
-      localStorage.removeItem('favoriteAuthor');
-      window.location.href = '/';
-    } catch (error) {
-      console.error('로그아웃 오류:', error);
+  const handleLoginClick = async () => {
+    if (loginText === '로그인') {
+      setShowModal(true);
+    } else {
+      try {
+        await getLogout();
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRegion');
+        localStorage.removeItem('favoriteAuthor');
+        window.location.href = '/';
+      } catch (error) {
+        console.error('로그아웃 오류:', error);
+      }
     }
   };
 
@@ -103,12 +110,7 @@ function Navbar() {
             >
               마이페이지
             </Button>
-
-            {isLoggedIn ? (
-              <Button onClick={handleLogoutClick}>로그아웃</Button>
-            ) : (
-              <Button onClick={handleLoginClick}>로그인</Button>
-            )}
+            <Button onClick={handleLoginClick}>{loginText}</Button>
           </ButtonContainer>
         </NavbarContainer>
       </NavbarWrapper>
