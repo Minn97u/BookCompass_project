@@ -218,7 +218,7 @@ const EditBtn = styled.button`
 const SubTitle = styled.p`
   font-size: 1.2rem;
   font-weight: 400;
-  margin: 15px 0px 10px 50px;
+  margin: 5px 0px 10px 50px;
   align-self: start;
 `;
 

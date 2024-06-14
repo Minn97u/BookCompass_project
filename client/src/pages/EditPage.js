@@ -78,7 +78,7 @@ const Container = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 70px;
+  margin-top: 50px;
 `;
 
 const EditBox = styled.div`
@@ -88,7 +88,7 @@ const EditBox = styled.div`
   border-radius: 5px;
   box-shadow: 0px 3px 18px rgba(0, 0, 0, 0.04);
   width: 45rem;
-  height: 42rem;
+  height: 44rem;
   padding: 20px 50px 33px 50px;
   box-sizing: border-box;
   position: relative;

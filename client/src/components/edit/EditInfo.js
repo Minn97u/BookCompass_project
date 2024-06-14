@@ -71,7 +71,7 @@ export default EditInfo;
 const EditInfoContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin: 25px 0px 30px 0px;
+  margin: 15px 0px 30px 0px;
 `;
 
 const Hr = styled.hr`
@@ -86,7 +86,7 @@ const InfoBox = styled.div`
   flex-direction: row;
   justify-content: space-between;
   text-align: left;
-  margin: 10px 75px;
+  margin: 5px 75px;
 `;
 
 const InputBox = styled.div`
@@ -129,7 +129,7 @@ const EditBtn = styled.button`
 const SubTitle = styled.p`
   font-size: 1.2rem;
   font-weight: 400;
-  margin: 15px 0px 10px 50px;
+  margin: 5px 0px 10px 50px;
   align-self: start;
 `;
 
@@ -137,5 +137,5 @@ const ErrorText = styled.p`
   font-size: 0.9rem;
   color: #ca3636;
   text-align: left;
-  margin: 10px 0px 0px 75px;
+  margin: 10px 0px -5px 75px;
 `;

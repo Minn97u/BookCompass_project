@@ -35,9 +35,9 @@ const ChangePasswordForm = ({ setFormType }) => {
       } catch (error) {
         console.error('비밀번호 변경 오류:', error);
         const code = error.response?.data?.code;
-        if (code === 0) {
+        if (code === 1) {
           setResultText('모두 입력해 주세요.');
-        } else if (code === 1) {
+        } else if (code === 2) {
           setResultText('소셜 로그인 회원입니다.');
         }
       }
