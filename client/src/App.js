@@ -16,6 +16,7 @@ import EditPage from './pages/EditPage';
 import AddInfo from './pages/AddInfo';
 import NotFoundPage from './pages/NotFoundPage';
 import { getLoginStatus } from './api/Auth';
+import PostDetails from './pages/PostDetails';
 
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
@@ -43,6 +44,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<Intro />} />
         <Route path='/library' element={<Main />} />
+        <Route path='/board/:shortId' element={<PostDetails />} />
         <Route path='/board' element={<Board />} />
         {isLoggedIn ? (
           <>
