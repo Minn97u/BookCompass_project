@@ -49,9 +49,5 @@ export const putProfileInfo = async (data) => {
   });
 };
 export const deleteMyReview = async (id) => {
-  await axios.delete(`/api/mypage/myReviews/${id}`, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem('token')}`
-    }
-  });
+  await axios.delete(`/api/mypage/myReviews/${id}`);
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
 import { ReactComponent as UserIcon } from '../../assets/icons/usericon.svg';
+import Pagination from './Pagination'; // Pagination 컴포넌트 임포트
 
 const CommentSection = ({
   selectedItem,
@@ -10,8 +11,10 @@ const CommentSection = ({
   handleCommentDelete,
   handleCommentUpdate
 }) => {
-  const { register, handleSubmit, setValue } = useForm(); // setValue 추가
-  const [editingCommentId, setEditingCommentId] = useState(null); // 상태 추가
+  const { register, handleSubmit, setValue } = useForm();
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const commentsPerPage = 3;
 
   const handleEditClick = (comment) => {
     setEditingCommentId(comment._id);
@@ -24,9 +27,24 @@ const CommentSection = ({
   };
 
   const onSubmit = (data) => {
+    if (userName === null) {
+      alert('로그인을 해주세요');
+      return;
+    }
     handleCommentSubmit(data);
     setValue('commentText', '');
   };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const indexOfLastComment = currentPage * commentsPerPage;
+  const indexOfFirstComment = indexOfLastComment - commentsPerPage;
+  const currentComments = selectedItem.comments.slice(
+    indexOfFirstComment,
+    indexOfLastComment
+  );
 
   return (
     <CommentSectionContainer>
@@ -39,9 +57,8 @@ const CommentSection = ({
       />
       <CommentButton onClick={handleSubmit(onSubmit)}>등록</CommentButton>
       <CommentList>
-        {selectedItem.comments.map((comment) => (
+        {currentComments.map((comment) => (
           <CommentItem key={comment._id}>
-            {console.log(comment.author)}
             <CommentAvatar>
               {comment.author.profilePic ? (
                 <ProfileImage src={comment.author.profilePic} alt='Profile' />
@@ -79,6 +96,11 @@ const CommentSection = ({
           </CommentItem>
         ))}
       </CommentList>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={Math.ceil(selectedItem.comments.length / commentsPerPage)}
+        onPageChange={handlePageChange}
+      />
     </CommentSectionContainer>
   );
 };

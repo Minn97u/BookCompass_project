@@ -15,8 +15,8 @@ const AuthFunnel = {
   CHANGEPW: '비밀번호 변경'
 };
 
-const AuthModal = ({ onClose }) => {
-  const [formType, setFormType] = useState(AuthFunnel.LOGIN);
+const AuthModal = ({ onClose, initialFormType }) => {
+  const [formType, setFormType] = useState(initialFormType);
 
   const renderForm = () => {
     switch (formType) {

@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
 import Intro from './pages/Intro';
-import Board from './components/board/Boards';
+import Board from './pages/Board';
 import Mypage from './pages/Mypage';
 import Main from './pages/Main';
 import EditPage from './pages/EditPage';
@@ -46,11 +46,11 @@ const App = () => {
         <Route path='/library' element={<Main />} />
         <Route path='/board/:shortId' element={<PostDetails />} />
         <Route path='/board' element={<Board />} />
+        <Route path='/additionalinfo' element={<AddInfo />} />
         {isLoggedIn ? (
           <>
             <Route path='/mypage' element={<Mypage />} />
             <Route path='/mypage/edit' element={<EditPage />} />
-            <Route path='/mypage/additionalinfo' element={<AddInfo />} />
           </>
         ) : (
           <Route path='/mypage/*' element={<Navigate to='/404' />} />

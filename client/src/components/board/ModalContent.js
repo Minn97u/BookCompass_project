@@ -18,7 +18,6 @@ const ModalContent = ({
         <ModalDate>
           {new Date(selectedItem.createdAt).toLocaleString()}
         </ModalDate>
-        {console.log(selectedItem.author.profilePic)}
         {userName === selectedItem.author.name && (
           <ActionButtons>
             <TextButton onClick={handleEditClick}>수정</TextButton>

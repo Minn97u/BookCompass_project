@@ -14,9 +14,11 @@ const PaginationButton = ({ isActive, onClick, children }) => {
 };
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  if (totalPages <= 1) return null;
+
   const renderPageNumbers = () => {
     const pageNumbers = [];
-    const maxPagesToShow = 5; // 현재 페이지를 기준으로 앞뒤로 2개의 페이지 번호만 표시
+    const maxPagesToShow = 5;
     const halfMaxPagesToShow = Math.floor(maxPagesToShow / 2);
 
     let startPage = Math.max(1, currentPage - halfMaxPagesToShow);

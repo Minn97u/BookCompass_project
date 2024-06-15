@@ -10,6 +10,11 @@ const ChangePasswordForm = ({ setFormType }) => {
   const [checkPasswordText, setCheckPasswordText] = useState('');
   const [resultText, setResultText] = useState('');
 
+  const isFormValid =
+    currentPassword.trim() !== '' &&
+    newPassword.trim() !== '' &&
+    checkNewPassword.trim() !== '';
+
   const passwordCheck = (password, checkPassword) => {
     setCheckPasswordText(
       password !== checkPassword ? '비밀번호가 일치하지 않습니다.' : ''
@@ -22,12 +27,21 @@ const ChangePasswordForm = ({ setFormType }) => {
       newPassword
     };
 
-    try {
-      const res = await postChangePassword(data);
-      console.log('비밀번호 변경 완료', res);
-      setFormType('로그인');
-    } catch (error) {
-      console.error('비밀번호 변경 오류:', error);
+    if (isFormValid) {
+      try {
+        const res = await postChangePassword(data);
+        console.log('비밀번호 변경 완료', res);
+        setFormType('로그인');
+      } catch (error) {
+        console.error('비밀번호 변경 오류:', error);
+        const code = error.response?.data?.code;
+        if (code === 1) {
+          setResultText('모두 입력해 주세요.');
+        } else if (code === 2) {
+          setResultText('소셜 로그인 회원입니다.');
+        }
+      }
+    } else {
       setResultText('모두 입력해 주세요.');
     }
   };
