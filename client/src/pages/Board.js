@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useForm } from 'react-hook-form';
-import CustomModal from './Modal';
-import PostForm from './PostForm';
-import { ReactComponent as WriteIcon } from '../../assets/icons/writebutton.svg';
-import Pagination from './Pagination';
-import TagButtons from './TagButtons';
-import PostList from './PostList';
-import ModalContent from './ModalContent';
+import CustomModal from '../components/board/Modal';
+import PostForm from '../components/board/PostForm';
+import { ReactComponent as WriteIcon } from '../assets/icons/writebutton.svg';
+import Pagination from '../components/board/Pagination';
+import TagButtons from '../components/board/TagButtons';
+import PostList from '../components/board/PostList';
+import ModalContent from '../components/board/ModalContent';
 
 import {
   getPosts,
@@ -18,7 +18,7 @@ import {
   postComments,
   deleteComments,
   updateComments
-} from '../../api/BoardApi';
+} from '../api/BoardApi';
 
 const Board = () => {
   const [state, setState] = useState({

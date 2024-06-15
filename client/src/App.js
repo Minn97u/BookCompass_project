@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom';
 import Navbar from './components/common/Navbar';
 import Intro from './pages/Intro';
-import Board from './components/board/Boards';
+import Board from './pages/Board';
 import Mypage from './pages/Mypage';
 import Main from './pages/Main';
 import EditPage from './pages/EditPage';
