@@ -44,11 +44,11 @@ const App = () => {
         <Route path='/' element={<Intro />} />
         <Route path='/library' element={<Main />} />
         <Route path='/board' element={<Board />} />
+        <Route path='/additionalinfo' element={<AddInfo />} />
         {isLoggedIn ? (
           <>
             <Route path='/mypage' element={<Mypage />} />
             <Route path='/mypage/edit' element={<EditPage />} />
-            <Route path='/mypage/additionalinfo' element={<AddInfo />} />
           </>
         ) : (
           <Route path='/mypage/*' element={<Navigate to='/404' />} />

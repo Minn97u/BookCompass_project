@@ -6,22 +6,31 @@ import { postUserInfo } from '../../api/Auth';
 
 const EditInfo = ({ myInfo, setMyInfo }) => {
   const [editText, setEditText] = useState('수정');
+  const [resultText, setResultText] = useState('');
+
+  const isFormValid = myInfo.region !== '' && myInfo.foundAnswer.trim() !== '';
+
   const handleEditUserInfo = async () => {
     const data = {
       region: myInfo.region || '',
       favoriteAuthor: myInfo.foundAnswer
     };
-    try {
-      const res = await postUserInfo(data);
-      console.log('유저 정보 편집 성공:', res);
-      setEditText('완료!');
-      setTimeout(() => {
-        setEditText('수정');
-      }, 1000);
-      localStorage.setItem('userRegion', data.region);
-      localStorage.setItem('favoriteAuthor', data.favoriteAuthor);
-    } catch (error) {
-      console.error('유저 정보 편집 실패:', error);
+    if (isFormValid) {
+      try {
+        const res = await postUserInfo(data);
+        console.log('유저 정보 편집 성공:', res);
+        setResultText('');
+        setEditText('완료!');
+        setTimeout(() => {
+          setEditText('수정');
+        }, 1000);
+        localStorage.setItem('userRegion', data.region);
+        localStorage.setItem('favoriteAuthor', data.favoriteAuthor);
+      } catch (error) {
+        console.error('유저 정보 편집 실패:', error);
+      }
+    } else {
+      setResultText('모두 입력해 주세요.');
     }
   };
 
@@ -51,6 +60,7 @@ const EditInfo = ({ myInfo, setMyInfo }) => {
         </InputBox>
         <EditBtn onClick={handleEditUserInfo}>{editText}</EditBtn>
       </InfoBox>
+      {resultText && <ErrorText>{resultText}</ErrorText>}
     </EditInfoContainer>
   );
 };
@@ -120,4 +130,11 @@ const SubTitle = styled.p`
   font-weight: 400;
   margin: 15px 0px 10px 50px;
   align-self: start;
+`;
+
+const ErrorText = styled.p`
+  font-size: 0.9rem;
+  color: #ca3636;
+  text-align: left;
+  margin: 10px 0px -5px 75px;
 `;
