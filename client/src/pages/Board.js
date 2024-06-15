@@ -106,6 +106,10 @@ const Board = () => {
   };
 
   const handleWriteIconClick = () => {
+    if (userName === null) {
+      alert('로그인을 해주세요');
+      return;
+    }
     setState((prevState) => ({
       ...prevState,
       selectedItem: null,
