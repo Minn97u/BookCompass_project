@@ -18,13 +18,19 @@ const ModalContent = ({
         <ModalDate>
           {new Date(selectedItem.createdAt).toLocaleString()}
         </ModalDate>
+        {console.log(selectedItem.author.profilePic)}
         {userName === selectedItem.author.name && (
           <ActionButtons>
             <TextButton onClick={handleEditClick}>수정</TextButton>
             <TextButton onClick={handleDeleteClick}>삭제</TextButton>
           </ActionButtons>
         )}
-        <ModalAuthor>{selectedItem.author.name}</ModalAuthor>
+        <ModalAuthor>
+          <CommentAvatar>
+            <ProfileImage src={selectedItem.author.profilePic} alt='Profile' />
+          </CommentAvatar>
+          {selectedItem.author.name}
+        </ModalAuthor>
       </ModalHeader>
 
       <ModalBody>
@@ -88,6 +94,7 @@ const ModalAuthor = styled.div`
   color: #191619;
   margin-left: auto;
   font-weight: bold;
+  display: flex;
 `;
 
 const ModalBody = styled.div`
@@ -122,6 +129,28 @@ const PostImage = styled.img`
 const Text = styled.p`
   white-space: pre-wrap;
   word-wrap: break-word;
+`;
+
+const ProfileImage = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+`;
+
+const CommentAvatar = styled.div`
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  margin-right: 0.625rem;
+
+  svg {
+    width: 80%;
+    height: 80%;
+  }
 `;
 
 export default ModalContent;

@@ -41,8 +41,13 @@ const CommentSection = ({
       <CommentList>
         {selectedItem.comments.map((comment) => (
           <CommentItem key={comment._id}>
+            {console.log(comment.author)}
             <CommentAvatar>
-              <UserIcon />
+              {comment.author.profilePic ? (
+                <ProfileImage src={comment.author.profilePic} alt='Profile' />
+              ) : (
+                <UserIcon />
+              )}
             </CommentAvatar>
             <CommentContent>
               <strong>{comment.author.name}</strong>
@@ -155,6 +160,12 @@ const ActionButtons = styled.div`
   height: 1.5rem;
   margin-top: 0.5rem;
   margin-left: 1.25rem;
+`;
+
+const ProfileImage = styled.img`
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
 `;
 
 export default CommentSection;
