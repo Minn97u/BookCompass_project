@@ -5,6 +5,7 @@ import WriteReviewIcon from '../../assets/icons/WriteReviewIcon.svg';
 import BackIcon from '../../assets/icons/BackIcon.svg';
 import ReviewWrite from './ReviewWrite';
 import ReviewList from './ReviewList';
+import Pagination from './Pagination'; // Pagination 컴포넌트 임포트
 import axios from 'axios';
 
 const Review = ({ rating, placeId }) => {
@@ -12,6 +13,8 @@ const Review = ({ rating, placeId }) => {
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [reviews, setReviews] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const reviewsPerPage = 2;
 
   const handleToggleReview = () => {
     setIsWriteReviewOpen(!isWriteReviewOpen);
@@ -33,6 +36,12 @@ const Review = ({ rating, placeId }) => {
   useEffect(() => {
     refreshReviews();
   }, [placeId]);
+
+  const indexOfLastReview = currentPage * reviewsPerPage;
+  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
+  const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <Container>
@@ -56,7 +65,7 @@ const Review = ({ rating, placeId }) => {
           onClose={handleToggleReview}
         />
       ) : (
-        reviews.map((review) => (
+        currentReviews.map((review) => (
           <ReviewList
             key={review._id}
             rating={review.rating}
@@ -67,6 +76,12 @@ const Review = ({ rating, placeId }) => {
         ))
       )}
       {console.log(placeId)}
+
+      <Pagination
+        reviewsPerPage={reviewsPerPage}
+        totalReviews={reviews.length}
+        paginate={paginate}
+      />
     </Container>
   );
 };

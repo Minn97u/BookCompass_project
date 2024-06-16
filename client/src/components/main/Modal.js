@@ -9,28 +9,47 @@ import ArchiveAddedIconSrc from '../../assets/icons/ArchivePreAddIcon.svg';
 
 const Modal = ({ isOpen, closeModal, place, type }) => {
   const [archiveAdded, setArchiveAdded] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
     // 모달이 열릴 때마다 찜하기 상태를 설정
     if (place && place.favorite !== undefined) {
       setArchiveAdded(place.favorite);
     }
-  }, [isOpen, place]);
+
+    // place가 있을 때 평균 평점을 가져옴
+    if (place && type === 'library') {
+      axios
+        .get(`/api/libraries/${place._id}`)
+        .then((response) => {
+          setAverageRating(response.data.averageRating || 0);
+        })
+        .catch((error) => {
+          console.error('평균 평점을 가져오는 중 오류 발생:', error);
+        });
+    }
+  }, [isOpen, place, type]);
 
   const handleArchiveButtonClick = async () => {
     try {
-      if (!place || place.favorite === undefined) {
-        return; // place 객체가 없거나 favorite 속성이 undefined인 경우 처리
-      }
-
       let endpoint = '';
       let data = {};
+      console.log(place._id);
+      console.log('즐찾 버튼 클릭');
 
       if (type === 'library') {
-        endpoint = '/libraries/favoriteLibraries';
+        if (archiveAdded) {
+          endpoint = '/api/libraries/removeFavoriteLibrary';
+        } else {
+          endpoint = '/api/libraries/favoriteLibraries';
+        }
         data = { libraryId: place._id };
       } else if (type === 'park') {
-        endpoint = '/parks/favoriteParks';
+        if (archiveAdded) {
+          endpoint = '/api/parks/removeFavoritePark';
+        } else {
+          endpoint = '/api/parks/favoriteParks';
+        }
         data = { parkId: place._id };
       }
 
@@ -39,7 +58,7 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
       alert(response.data);
 
       // API 요청 후 찜하기 상태 업데이트
-      setArchiveAdded(true);
+      setArchiveAdded(!archiveAdded); // 상태 토글
     } catch (error) {
       if (error.response) {
         alert(error.response.data);
@@ -83,7 +102,7 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
         >
           {place.url || '홈페이지 URL 없음'}
         </PlaceURL>
-        <Review rating={4} placeId={place._id} />
+        <Review rating={averageRating} placeId={place._id} />
       </ModalContent>
     </ModalContainer>
   );
