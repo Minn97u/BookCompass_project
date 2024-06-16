@@ -2,18 +2,33 @@ import React from 'react';
 import styled from 'styled-components';
 import ReviewStar from './ReviewStar';
 
-function ReviewList({ rating, comment, user, date }) {
+function ReviewList({
+  reviewId,
+  rating,
+  comment,
+  user,
+  date,
+  loggedInUserId,
+  handleEditReview,
+  userId
+}) {
+  const isEditable = loggedInUserId === userId;
+  console.log('리뷰를 수정해야해', loggedInUserId, userId);
+
+  const handleEditClick = () => {
+    handleEditReview({ reviewId, rating, comment });
+  };
+
   return (
-    <>
-      <ReviewListContainer>
-        <ReviewStar rating={rating} />
-        <ReviewContent>{comment}</ReviewContent>
-        <ReviewInfo>
-          <span>{user}</span>
-          <span>{new Date(date).toLocaleDateString()}</span>
-        </ReviewInfo>
-      </ReviewListContainer>
-    </>
+    <ReviewListContainer>
+      <ReviewStar rating={rating} />
+      <ReviewContent>{comment}</ReviewContent>
+      <ReviewInfo>
+        <span>{user}</span>
+        <span>{new Date(date).toLocaleDateString()}</span>
+        {isEditable && <EditButton onClick={handleEditClick}>수정</EditButton>}
+      </ReviewInfo>
+    </ReviewListContainer>
   );
 }
 
@@ -34,7 +49,6 @@ const ReviewContent = styled.div`
   font-size: 14px;
   line-height: 18px;
   padding: 10px 0;
-  /* or 129% */
 `;
 
 const ReviewInfo = styled.div`
@@ -44,7 +58,17 @@ const ReviewInfo = styled.div`
   font-size: 11px;
   line-height: 18px;
   color: #868686;
+  display: flex;
+  align-items: center;
   & > span {
     margin-right: 10px;
   }
+`;
+
+const EditButton = styled.button`
+  background-color: transparent;
+  color: #007bff;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
 `;

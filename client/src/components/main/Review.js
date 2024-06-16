@@ -5,7 +5,7 @@ import WriteReviewIcon from '../../assets/icons/WriteReviewIcon.svg';
 import BackIcon from '../../assets/icons/BackIcon.svg';
 import ReviewWrite from './ReviewWrite';
 import ReviewList from './ReviewList';
-import Pagination from './Pagination'; // Pagination 컴포넌트 임포트
+import Pagination from './Pagination';
 import axios from 'axios';
 
 const Review = ({ rating, placeId }) => {
@@ -43,6 +43,16 @@ const Review = ({ rating, placeId }) => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const handleEditReview = async (editedReview) => {
+    try {
+      // Implement your edit review functionality here
+      console.log('Editing review:', editedReview);
+      // Example: You can use axios.put() to send edited review data to the server
+    } catch (error) {
+      console.error('리뷰 수정 중 오류 발생:', error);
+    }
+  };
+
   return (
     <Container>
       <ReviewTitle>
@@ -68,14 +78,17 @@ const Review = ({ rating, placeId }) => {
         currentReviews.map((review) => (
           <ReviewList
             key={review._id}
+            reviewId={review._id} // Pass reviewId to ReviewList
             rating={review.rating}
             comment={review.comment}
             user={review.user}
             date={review.date}
+            loggedInUserId={userId} // Pass loggedInUserId to ReviewList
+            handleEditReview={handleEditReview} // Pass handleEditReview function
+            userId={review.userId} // Pass userId of each review
           />
         ))
       )}
-      {console.log(placeId)}
 
       <Pagination
         reviewsPerPage={reviewsPerPage}

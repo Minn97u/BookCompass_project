@@ -34,26 +34,33 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
     try {
       let endpoint = '';
       let data = {};
-      console.log(place._id);
-      console.log('즐찾 버튼 클릭');
 
       if (type === 'library') {
         if (archiveAdded) {
-          endpoint = '/api/libraries/removeFavoriteLibrary';
+          endpoint = '/api/mypage/favoriteLibraries';
+          setArchiveAdded(!archiveAdded);
         } else {
           endpoint = '/api/libraries/favoriteLibraries';
+          setArchiveAdded(!archiveAdded);
         }
         data = { libraryId: place._id };
       } else if (type === 'park') {
         if (archiveAdded) {
-          endpoint = '/api/parks/removeFavoritePark';
+          endpoint = '/api/mypage/favoriteParks';
+          setArchiveAdded(!archiveAdded);
         } else {
           endpoint = '/api/parks/favoriteParks';
+          setArchiveAdded(!archiveAdded);
         }
         data = { parkId: place._id };
       }
 
-      const response = await axios.post(endpoint, data);
+      const method = archiveAdded ? 'delete' : 'post';
+      const response = await axios({
+        method: method,
+        url: endpoint,
+        data: data
+      });
 
       alert(response.data);
 
