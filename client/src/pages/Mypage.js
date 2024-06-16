@@ -34,12 +34,6 @@ const Mypage = () => {
   const [reviewDatas, setReviewDatas] = useState([]);
   const navigate = useNavigate();
 
-  const bookMarkList = [
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
-  ];
-
   const handleSettingClick = () => {
     navigate('/mypage/edit');
   };
@@ -107,7 +101,15 @@ const Mypage = () => {
   const fetchMyFavoriteLibraries = async () => {
     try {
       const res = await getMyFavoriteLibraries();
-      console.log('즐겨찾기 장소', res);
+      const datas = res.data.map((item) => {
+        return {
+          id: item._id,
+          name: item.name,
+          address: item.address
+        };
+      });
+      setLibraryDatas(datas);
+      console.log('즐겨찾기 장소', datas);
     } catch (error) {
       console.error('즐겨찾기 장소 실패:', error);
     }
@@ -187,7 +189,13 @@ const Mypage = () => {
         <MypageBox
           icon={BookMark}
           title='즐겨찾기 장소'
-          component={<BookMarkList datas={bookMarkList} />}
+          component={
+            <BookMarkList
+              datas={libraryDatas}
+              type={'library'}
+              setList={setLibraryDatas}
+            />
+          }
           mapIcon={MapIcon}
         />
         <MypageBox
@@ -212,7 +220,6 @@ export default Mypage;
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 60px);
 `;
 
 const ProfileConatiner = styled.div`
@@ -266,5 +273,6 @@ const MypageContainer = styled.div`
   grid-template-rows: repeat(2, 1fr);
   gap: 50px;
   align-items: center;
-  margin: auto;
+  margin: 25px auto;
+  padding: 30px;
 `;

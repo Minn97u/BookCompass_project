@@ -4,35 +4,45 @@ import LocationPing from '../../assets/icons/LocationPing.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const BookMarkList = ({ datas }) => {
+const BookMarkList = ({ datas, type, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleDeleteBtn = () => {
-    setModalOpen(true);
-  };
+  const [currentId, setCurrentId] = useState(null);
 
   const closeModal = () => {
     setModalOpen(false);
+    setCurrentId(null);
+  };
+
+  const handleDeleteBtn = (listid) => {
+    console.log('리스트 아이디', listid);
+    setCurrentId(listid);
+    setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (id) => {
+    console.log(id);
+    setList(datas.filter((data) => data.id !== id));
+    closeModal();
   };
 
   return (
     <>
       <ListContainer>
         {datas.map((data, index) => (
-          <ListGroup key={index}>
+          <ListGroup key={data.id}>
             <List>
               <EleBox>
                 <LocationIconImg src={LocationPing} alt='location-icon' />
                 <TextBox>
                   <Title>{data.name}</Title>
-                  <Location>{data.location}</Location>
+                  <Location>{data.address}</Location>
                 </TextBox>
               </EleBox>
               <CancelBookMark>
                 <DeleteIconImg
                   src={DeleteIcon}
                   alt='minus-icon'
-                  onClick={handleDeleteBtn}
+                  onClick={() => handleDeleteBtn(data.id)}
                 />
               </CancelBookMark>
             </List>
@@ -40,7 +50,14 @@ const BookMarkList = ({ datas }) => {
           </ListGroup>
         ))}
       </ListContainer>
-      {modalOpen && <DeleteModal onClose={closeModal} />}
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeModal}
+          id={currentId}
+          type={type}
+          deleteSuccess={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };
@@ -89,7 +106,7 @@ const Title = styled.span`
 `;
 
 const Location = styled.span`
-  font-size: 0.9;
+  font-size: 0.9rem;
   color: #868686;
 `;
 

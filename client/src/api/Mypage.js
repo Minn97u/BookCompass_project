@@ -25,6 +25,7 @@ export const getMyFavoriteLibraries = () => {
 };
 
 export const deleteMyFavoriteLibraries = (data) => {
+  console.log('삭제?', data);
   return axios.delete('/api/mypage/favoriteLibraries', data);
 };
 
@@ -37,7 +38,6 @@ export const getMyReviews = () => {
 };
 
 export const deleteMyReviews = (id) => {
-  console.log(`주소: /api/mypage/myReviews/${id}`);
   return axios.delete(`/api/mypage/myReviews/${id}`);
 };
 

@@ -4,13 +4,14 @@ import closebutton from '../../assets/icons/closebutton.svg';
 import {
   deleteMyPost,
   deleteMyComment,
-  deleteMyReviews
+  deleteMyReviews,
+  deleteMyFavoriteLibraries
 } from '../../api/Mypage';
 
 const DeleteType = {
   POST: 'post',
   COMMENT: 'comment',
-  PLACE: 'place',
+  LIBRARY: 'library',
   REVIEW: 'review'
 };
 
@@ -19,12 +20,18 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
     try {
       if (type === DeleteType.POST) {
         await deleteMyPost(id);
-      } else if (type === DeleteType.COMMENT) {
+      }
+      if (type === DeleteType.COMMENT) {
         await deleteMyComment(id);
-      } else if (type === DeleteType.REVIEW) {
+      }
+      if (type === DeleteType.LIBRARY) {
+        await deleteMyFavoriteLibraries(id);
+      }
+      if (type === DeleteType.REVIEW) {
         await deleteMyReviews(id);
       }
       deleteSuccess(id);
+      console.log('삭제성공', id);
       onClose();
     } catch (error) {
       console.error('삭제 실패:', error);
