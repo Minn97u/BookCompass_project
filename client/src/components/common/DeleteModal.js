@@ -31,7 +31,6 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
         await deleteMyReviews(id);
       }
       deleteSuccess(id);
-      console.log('삭제성공', id);
       onClose();
     } catch (error) {
       console.error('삭제 실패:', error);
