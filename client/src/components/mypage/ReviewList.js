@@ -26,7 +26,7 @@ const ReviewList = ({ datas, type, setList }) => {
 
   return (
     <>
-      {datas.map((data) => (
+      {datas.map((data, index) => (
         <ReviewGroup key={data.id}>
           <StarContainer>
             {[...Array(data.rating)].map((i) => (
@@ -50,9 +50,7 @@ const ReviewList = ({ datas, type, setList }) => {
               />
             </DeleteWrite>
           </TextContainer>
-          {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
-            <Hr />
-          )}
+          {datas.length > 1 && index !== datas.length - 1 && <Hr />}
         </ReviewGroup>
       ))}
       {modalOpen && (

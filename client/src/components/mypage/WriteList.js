@@ -34,7 +34,7 @@ const WriteList = ({ datas, type, setList }) => {
   return (
     <>
       <ListContainer>
-        {datas.map((data) => (
+        {datas.map((data, index) => (
           <ListGroup key={data.id}>
             <List>
               <TextBox>
@@ -51,9 +51,7 @@ const WriteList = ({ datas, type, setList }) => {
                 />
               </DeleteWrite>
             </List>
-            {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
-              <Hr />
-            )}
+            {datas.length > 1 && index !== datas.length - 1 && <Hr />}
           </ListGroup>
         ))}
       </ListContainer>

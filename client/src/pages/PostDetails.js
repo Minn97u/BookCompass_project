@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import DetailPageContent from '../components/board/DetailPageContent';
 
 import {
   viewPosts,
+  updatePosts,
   deletePosts,
   postComments,
   deleteComments,
   updateComments
 } from '../api/BoardApi';
-import { useParams } from 'react-router-dom';
 
 const PostDetails = () => {
   const { shortId } = useParams();
   const [selectedItem, setSelectedItem] = useState(null);
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPostDetails = async () => {
@@ -33,6 +35,7 @@ const PostDetails = () => {
     if (selectedItem) {
       try {
         const response = await deletePosts(selectedItem.shortId);
+        navigate('/mypage');
         console.log('삭제 완료', response.data);
         // 선택한 게시물 삭제 후 보드 페이지로 돌아가거나 상태 업데이트 처리
       } catch (error) {
@@ -126,7 +129,7 @@ const PostDetails = () => {
 const PostDetailsContainer = styled.div`
   width: 100%;
   margin: 0 auto;
-  padding: 1.25rem;
+  padding: 30px 0px 180px 0px;
   box-sizing: border-box;
 `;
 

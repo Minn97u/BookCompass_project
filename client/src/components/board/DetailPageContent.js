@@ -15,17 +15,17 @@ const DetailPageContent = ({
     <Container>
       <Header>
         <Title>{selectedItem.title}</Title>
-        {console.log(selectedItem.author.profilePic)}
         {userName === selectedItem.author.name && (
           <ActionButtons>
             <TextButton onClick={handleEditClick}>수정</TextButton>
+            <Divider>|</Divider>
             <TextButton onClick={handleDeleteClick}>삭제</TextButton>
           </ActionButtons>
         )}
         <Author>
-          <CommentAvatar>
+          <UserAvatar>
             <ProfileImage src={selectedItem.author.profilePic} alt='Profile' />
-          </CommentAvatar>
+          </UserAvatar>
           {selectedItem.author.name}
         </Author>
       </Header>
@@ -67,7 +67,7 @@ const Container = styled.div`
   height: auto;
   max-height: 80vh;
   margin: 0 auto;
-  padding-top: 30px;
+
   display: flex;
   flex-direction: column;
   position: relative;
@@ -77,7 +77,6 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 5px;
 `;
 
 const Title = styled.p`
@@ -141,15 +140,15 @@ const ProfileImage = styled.img`
   border-radius: 50%;
 `;
 
-const CommentAvatar = styled.div`
-  width: 2rem;
-  height: 2rem;
+const UserAvatar = styled.div`
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  margin-right: 0.625rem;
+  margin-right: 0.3rem;
 
   svg {
     width: 80%;
@@ -161,10 +160,14 @@ const Hr = styled.hr`
   border: none;
   border-top: 1px solid #ededed;
   width: 100%;
-
   margin-bottom: 10px;
 `;
 
 const CommentBox = styled.div`
   text-align: left;
+`;
+
+const Divider = styled.span`
+  color: #d7d7d7;
+  margin: 0px -5px;
 `;
