@@ -123,8 +123,8 @@ const Button = styled.button`
   background-color: ${(props) => (props.isActive ? '#543D20' : 'white')};
   color: ${(props) => (props.isActive ? 'white' : '#8a5a2b')};
   border: 0.063rem solid #8a5a2b;
-  padding: 0.5rem 1rem;
-  border-radius: 1.25rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.875rem;
   margin-right: 0.325rem;

@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useForm } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import DetailPageContent from '../components/board/DetailPageContent';
+import PostForm from '../components/board/PostForm';
 
 import {
   viewPosts,
@@ -14,8 +16,23 @@ import {
 
 const PostDetails = () => {
   const { shortId } = useParams();
+  const [state, setState] = useState({
+    activeTag: '전체',
+    isEditing: false
+  });
+
+  const { isEditing } = state;
   const [selectedItem, setSelectedItem] = useState(null);
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
+  const { handleSubmit, setValue, reset, watch } = useForm({
+    defaultValues: {
+      title: '',
+      content: '',
+      tag: '잡담',
+      commentText: '',
+      selectedFile: null
+    }
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,6 +47,36 @@ const PostDetails = () => {
 
     fetchPostDetails();
   }, [shortId]);
+
+  const onSubmit = async (data) => {
+    try {
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('content', data.content);
+      formData.append('tag', data.tag);
+      if (data.selectedFile) {
+        formData.append('postImg', data.selectedFile);
+      }
+
+      const res = await updatePosts(formData, selectedItem.shortId);
+      window.location.href = `/board/${shortId}`;
+
+      console.log('Post submitted successfully:', res.data);
+    } catch (error) {
+      console.error('Error submitting post:', error);
+    }
+  };
+
+  const handleEditClick = () => {
+    setValue('title', selectedItem.title);
+    setValue('content', selectedItem.content);
+    setValue('tag', selectedItem.tag);
+    setState((prevState) => ({
+      ...prevState,
+      isEditing: true,
+      modalIsOpen: true
+    }));
+  };
 
   const handleDeleteClick = async () => {
     if (selectedItem) {
@@ -108,9 +155,41 @@ const PostDetails = () => {
     }
   };
 
+  const fileInputRef = useRef(null);
+
+  const handleFileInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handlePicAddIconClick = (event) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      setValue('selectedFile', file);
+    }
+  };
+
   return (
     <PostDetailsContainer>
-      {selectedItem ? (
+      {selectedItem === null ? (
+        <p>Loading...</p> // 로딩 상태 표시
+      ) : isEditing ? (
+        <PostForm
+          title={watch('title')}
+          content={watch('content')}
+          tag={watch('tag')}
+          onTitleChange={(e) => setValue('title', e.target.value)}
+          onContentChange={(e) => setValue('content', e.target.value)}
+          onTagChange={(tag) => setValue('tag', tag)}
+          onSubmit={handleSubmit(onSubmit)}
+          fileInputRef={fileInputRef}
+          onFileInputClick={handleFileInputClick}
+          onFileChange={handlePicAddIconClick}
+          selectedFile={watch('selectedFile')}
+        />
+      ) : (
         <DetailPageContent
           selectedItem={selectedItem}
           userName={userName}
@@ -118,9 +197,8 @@ const PostDetails = () => {
           handleCommentSubmit={handleCommentSubmit}
           handleCommentDelete={handleCommentDelete}
           handleCommentUpdate={handleCommentUpdate}
+          handleEditClick={handleEditClick}
         />
-      ) : (
-        <p>Loading...</p> // 로딩 상태 표시
       )}
     </PostDetailsContainer>
   );
@@ -128,9 +206,9 @@ const PostDetails = () => {
 
 const PostDetailsContainer = styled.div`
   width: 100%;
+  height: 100vh;
   margin: 0 auto;
   padding: 30px 0px 180px 0px;
-  box-sizing: border-box;
 `;
 
 export default PostDetails;
