@@ -38,7 +38,11 @@ router.get("/", async (req, res, next) => {
             .populate("park");
 
         const formattedReviews = reviews.map((review) => ({
-            user: review.user.name,
+            _id: review._id,
+            user: {
+                _id: review.user._id,
+                name: review.user.name,
+            },
             rating: review.rating,
             comment: review.comment,
             date: review.createdAt,

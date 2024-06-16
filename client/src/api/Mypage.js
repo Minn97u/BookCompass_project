@@ -26,7 +26,9 @@ export const getMyFavoriteLibraries = () => {
 
 export const deleteMyFavoriteLibraries = (data) => {
   console.log('삭제?', data);
-  return axios.delete('/api/mypage/favoriteLibraries', data);
+  return axios.delete('/api/mypage/favoriteLibraries', {
+    data: { libraryId: data }
+  });
 };
 
 export const getMyFavoriteParksList = () => {
