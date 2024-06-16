@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import styled from 'styled-components';
 import closebutton from '../../assets/icons/closebutton.svg';
 
-const DefaultModal = ({ title, component, onClose }) => {
+const DefaultModal = ({ title, onClose, children }) => {
   const [modalOpen, setModalOpen] = useState(true);
   const modalElement = document.getElementById('modal');
 
@@ -21,7 +21,7 @@ const DefaultModal = ({ title, component, onClose }) => {
                 <CloseBtn src={closebutton} alt='close-btn' onClick={onClose} />
                 <Container>
                   <Title>{title}</Title>
-                  <ContentWrapper>{component}</ContentWrapper>
+                  <ContentWrapper>{children}</ContentWrapper>
                 </Container>
               </Modal>
             </ModalContainer>

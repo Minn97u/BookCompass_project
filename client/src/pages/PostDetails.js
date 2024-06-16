@@ -105,20 +105,20 @@ const PostDetails = () => {
     }
   };
 
-  if (!selectedItem) {
-    return <LoadingSpinner />; // 로딩 중인 상태를 나타내는 placeholder
-  }
-
   return (
     <PostDetailsContainer>
-      <DetailPageContent
-        selectedItem={selectedItem}
-        userName={userName}
-        handleDeleteClick={handleDeleteClick}
-        handleCommentSubmit={handleCommentSubmit}
-        handleCommentDelete={handleCommentDelete}
-        handleCommentUpdate={handleCommentUpdate}
-      />
+      {selectedItem ? (
+        <DetailPageContent
+          selectedItem={selectedItem}
+          userName={userName}
+          handleDeleteClick={handleDeleteClick}
+          handleCommentSubmit={handleCommentSubmit}
+          handleCommentDelete={handleCommentDelete}
+          handleCommentUpdate={handleCommentUpdate}
+        />
+      ) : (
+        <p>Loading...</p> // 로딩 상태 표시
+      )}
     </PostDetailsContainer>
   );
 };
@@ -128,10 +128,6 @@ const PostDetailsContainer = styled.div`
   margin: 0 auto;
   padding: 1.25rem;
   box-sizing: border-box;
-`;
-
-const LoadingSpinner = styled.div`
-  /* 로딩 스피너나 placeholder 스타일 구현 */
 `;
 
 export default PostDetails;

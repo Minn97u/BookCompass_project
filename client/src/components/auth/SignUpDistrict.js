@@ -3,9 +3,10 @@ import styled from 'styled-components';
 import DropDown from '../../assets/icons/DropDown.svg';
 import UpIcon from '../../assets/icons/UpIcon.svg';
 
+const defaultText = '서울특별시';
+
 const SignUpDistrict = ({ options, selectedOption, setSelectedOption }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const defaultText = '서울특별시';
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);

@@ -33,14 +33,12 @@ const DetailPageContent = ({
       <DateText>{new Date(selectedItem.createdAt).toLocaleString()}</DateText>
       <ContentBody>
         <div>
-          <PostImage
-            src={
-              selectedItem.postImg
-                ? `uploads/${selectedItem.postImg.split('/public')[1]}`
-                : './No_image_available.png'
-            }
-            alt={selectedItem.title}
-          />
+          {selectedItem.postImg && (
+            <PostImage
+              src={`${selectedItem.postImg.split('/public')[1]}`}
+              alt={selectedItem.title}
+            />
+          )}
           <Text>{selectedItem.content}</Text>
         </div>
       </ContentBody>
@@ -107,7 +105,7 @@ const ContentBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 50px 0px;
+  padding: 50px 0px 30px 0px;
 `;
 
 const TextButton = styled.span`
