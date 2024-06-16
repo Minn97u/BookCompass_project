@@ -1,41 +1,164 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import MypageBox from '../components/mypage/MypageBox';
-import AuthModalController from '../components/auth/AuthModalController';
+import AuthModal from '../components/auth/AuthModal';
 import WriteList from '../components/mypage/WriteList';
 import BookMarkList from '../components/mypage/BookMarkList';
 import ReviewList from '../components/mypage/ReviewList';
-import ProfileIcon from '../assets/icons/ProfileIcon.svg';
 import SettingIcon from '../assets/icons/SettingIcon.svg';
 import WriteListIcon from '../assets/icons/WriteListIcon.svg';
 import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
+import {
+  getProfileInfo,
+  getMyPosts,
+  getMyComments,
+  getMyFavoriteLibraries,
+  getMyReviews
+} from '../api/Mypage';
 
 const Mypage = () => {
-  const [name, setName] = useState('이름');
-  const [email, setEmail] = useState('aaa@naver.com');
-  const [description, setDescription] = useState('내용을 추가하세요.');
+  const [myInfo, setMyInfo] = useState({
+    profileImg: '',
+    name: '',
+    email: '',
+    description: ''
+  });
   const [showModal, setShowModal] = useState(false);
-  const [initialFormType, setInitialFormType] = useState('로그인');
+  const [postDatas, setPostDatas] = useState([]);
+  const [commentDatas, setCommentDatas] = useState([]);
+  const [libraryDatas, setLibraryDatas] = useState([]);
+  const [reviewDatas, setReviewDatas] = useState([]);
+  const navigate = useNavigate();
+
+  const bookMarkList = [
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
+    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
+  ];
 
   const handleSettingClick = () => {
-    setInitialFormType('기본 정보 수정');
-    setShowModal(true);
+    navigate('/mypage/edit');
   };
 
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
+  const fetchProfileInfo = async () => {
+    try {
+      const res = await getProfileInfo();
+      const { profilePic, name, email, profileMsg } = res.data;
+
+      setMyInfo({
+        profileImg: profilePic,
+        name,
+        email,
+        description: profileMsg
+      });
+    } catch (error) {
+      console.error('프로필 가져오기 실패:', error);
+    }
+  };
+
+  const fetchMyPosts = async () => {
+    try {
+      const res = await getMyPosts();
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item.shortId,
+          title: item.title,
+          date: localDate
+        };
+      });
+      setPostDatas(datas);
+      console.log('내가 쓴 글', datas);
+    } catch (error) {
+      console.error('내가 쓴 글 실패:', error);
+    }
+  };
+
+  const fetchMyComments = async () => {
+    try {
+      const res = await getMyComments();
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item._id,
+          title: item.content,
+          date: localDate
+        };
+      });
+      setCommentDatas(datas);
+      console.log('내가 쓴 댓글', datas);
+    } catch (error) {
+      console.error('내가 쓴 댓글 실패:', error);
+    }
+  };
+
+  const fetchMyFavoriteLibraries = async () => {
+    try {
+      const res = await getMyFavoriteLibraries();
+      console.log('즐겨찾기 장소', res);
+    } catch (error) {
+      console.error('즐겨찾기 장소 실패:', error);
+    }
+  };
+
+  const fetchMyReviews = async () => {
+    try {
+      const res = await getMyReviews();
+      const datas = res.data.map((item) => {
+        const createAt = new Date(item.createdAt);
+        const localDate = createAt.toLocaleString();
+
+        return {
+          id: item._id,
+          comment: item.comment,
+          rating: item.rating,
+          date: localDate
+        };
+      });
+      setReviewDatas(datas);
+      console.log('내가 쓴 리뷰', datas);
+    } catch (error) {
+      console.error('내가 쓴 리뷰 실패:', error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchAllData = async () => {
+      try {
+        await Promise.all([
+          fetchProfileInfo(),
+          fetchMyPosts(),
+          fetchMyComments(),
+          fetchMyFavoriteLibraries(),
+          fetchMyReviews()
+        ]);
+      } catch (error) {
+        console.error('데이터 가져오기 실패:', error);
+      }
+    };
+
+    fetchAllData();
+  }, []);
+
   return (
     <Container>
       <ProfileConatiner>
-        <ProfileImg src={ProfileIcon} alt='profile'></ProfileImg>
-        <UserName>{name}</UserName>
-        <UserEmail>{email}</UserEmail>
-        <UserDescription>{description}</UserDescription>
+        <ProfileImg src={myInfo.profileImg} alt='profile'></ProfileImg>
+        <UserName>{myInfo.name}</UserName>
+        <UserEmail>{myInfo.email}</UserEmail>
+        <UserDescription>{myInfo.description}</UserDescription>
         <SettingBtn
           src={SettingIcon}
           alt='setting'
@@ -46,36 +169,40 @@ const Mypage = () => {
         <MypageBox
           icon={WriteListIcon}
           title='내가 쓴 글'
-          component={<WriteList title='제목' date='2024-06-05' />}
+          component={
+            <WriteList datas={postDatas} type={'post'} setList={setPostDatas} />
+          }
         />
         <MypageBox
           icon={CommentIcon}
           title='내가 쓴 댓글'
-          component={<WriteList title='제목' date='2024-06-05' />}
+          component={
+            <WriteList
+              datas={commentDatas}
+              type={'comment'}
+              setList={setCommentDatas}
+            />
+          }
         />
         <MypageBox
           icon={BookMark}
           title='즐겨찾기 장소'
-          component={
-            <BookMarkList
-              title='성동구립성수도서관'
-              location='서울 성동구 뚝섬로1길 43 성수문화복지회관 7층'
-            />
-          }
+          component={<BookMarkList datas={bookMarkList} />}
           mapIcon={MapIcon}
         />
         <MypageBox
           icon={ReviewIcon}
           title='작성한 리뷰'
-          component={<ReviewList />}
+          component={
+            <ReviewList
+              datas={reviewDatas}
+              type={'review'}
+              setList={setReviewDatas}
+            />
+          }
         />
       </MypageContainer>
-      {showModal && (
-        <AuthModalController
-          onClose={handleCloseModal}
-          initialFormType={initialFormType}
-        />
-      )}
+      {showModal && <AuthModal onClose={handleCloseModal} />}
     </Container>
   );
 };
@@ -95,13 +222,14 @@ const ProfileConatiner = styled.div`
   justify-content: center;
   text-align: center;
   background-color: #eed8bc;
-  width: 21.5rem;
+  min-width: 21.5rem;
   position: relative;
 `;
 
 const ProfileImg = styled.img`
-  width: 7rem;
-  margin: 75px 0px 8px 0px;
+  width: 8.8rem;
+  margin: 75px 0px 5px 0px;
+  border-radius: 50%;
 `;
 
 const UserName = styled.p`
@@ -112,8 +240,8 @@ const UserName = styled.p`
 
 const UserEmail = styled.p`
   font-size: 1rem;
-  color: #565656;
-  margin-top: -20px;
+  color: #787878;
+  margin-top: -15px;
 `;
 
 const UserDescription = styled.p`

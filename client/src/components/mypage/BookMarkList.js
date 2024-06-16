@@ -1,24 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import LocationPing from '../../assets/icons/LocationPing.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
+import DeleteModal from '../common/DeleteModal';
 
-const BookMarkList = ({ title, location }) => {
+const BookMarkList = ({ datas }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleDeleteBtn = () => {
+    setModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+  };
+
   return (
-    <ListContainer>
-      <List>
-        <EleBox>
-          <LocationIconImg src={LocationPing} alt='location-icon' />
-          <TextBox>
-            <Title>{title}</Title>
-            <Location>{location}</Location>
-          </TextBox>
-        </EleBox>
-        <CancelBookMark>
-          <DeleteIconImg src={DeleteIcon} alt='minus-icon' />
-        </CancelBookMark>
-      </List>
-    </ListContainer>
+    <>
+      <ListContainer>
+        {datas.map((data, index) => (
+          <ListGroup key={index}>
+            <List>
+              <EleBox>
+                <LocationIconImg src={LocationPing} alt='location-icon' />
+                <TextBox>
+                  <Title>{data.name}</Title>
+                  <Location>{data.location}</Location>
+                </TextBox>
+              </EleBox>
+              <CancelBookMark>
+                <DeleteIconImg
+                  src={DeleteIcon}
+                  alt='minus-icon'
+                  onClick={handleDeleteBtn}
+                />
+              </CancelBookMark>
+            </List>
+            {datas.length > 1 && index !== datas.length - 1 && <Hr />}
+          </ListGroup>
+        ))}
+      </ListContainer>
+      {modalOpen && <DeleteModal onClose={closeModal} />}
+    </>
   );
 };
 
@@ -30,10 +53,16 @@ const ListContainer = styled.div`
   position: relative;
 `;
 
+const ListGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
 const List = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin: 7px 0px;
 `;
 
 const EleBox = styled.div`
@@ -50,6 +79,7 @@ const LocationIconImg = styled.img`
 const TextBox = styled.div`
   display: flex;
   flex-direction: column;
+  text-align: left;
 `;
 
 const Title = styled.span`
@@ -72,4 +102,12 @@ const CancelBookMark = styled.button`
 const DeleteIconImg = styled.img`
   width: 1.2rem;
   cursor: pointer;
+`;
+
+const Hr = styled.hr`
+  border: none;
+  border-top: 1px solid #ededed;
+  width: 100%;
+  margin-top: 10px;
+  margin-bottom: 10px;
 `;

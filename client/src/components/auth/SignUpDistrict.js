@@ -3,10 +3,9 @@ import styled from 'styled-components';
 import DropDown from '../../assets/icons/DropDown.svg';
 import UpIcon from '../../assets/icons/UpIcon.svg';
 
-const SignUpDistrict = ({ options, location }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const SignUpDistrict = ({ options, selectedOption, setSelectedOption }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [defaultText, setDefaultTExt] = useState(location);
+  const defaultText = '서울특별시';
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -19,6 +18,7 @@ const SignUpDistrict = ({ options, location }) => {
 
   return (
     <DropdownContainer>
+      <Label>기본 위치 설정</Label>
       <DropdownBox onClick={toggleDropdown}>
         <TextContainer>{selectedOption || defaultText}</TextContainer>
         <IconContainer>
@@ -46,16 +46,22 @@ export default SignUpDistrict;
 
 const DropdownContainer = styled.div`
   position: relative;
-  width: 11rem;
-  margin-top: -2px;
+  width: 9rem;
+  margin-top: -6px;
+`;
+
+const Label = styled.p`
+  font-size: 0.9rem;
+  color: #191619;
+  margin-bottom: 3px;
 `;
 
 const DropdownBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 9.5rem;
-  height: 1.3rem;
+  width: 8.5rem;
+  height: 1.35rem;
   color: #191619;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
@@ -81,6 +87,7 @@ const IconContainer = styled.div`
 const DropdownList = styled.ul`
   position: absolute;
   border-radius: 5px;
+  width: 10rem;
   top: 100%;
   left: 0;
   right: 0;

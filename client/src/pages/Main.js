@@ -1,26 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import Papa from 'papaparse';
 import styled from 'styled-components';
-import LibraryData from '../../src/assets/data/Libraries.csv';
 import FindLibrary from '../../src/assets/icons/FindLibrary.svg';
-import LibraryPing from '../../src/assets/icons/LibraryPing.svg';
 import LibraryParkMap from '../components/main/LibraryParkMap';
-import DetailModal from '../../src/components/main/DetailModal';
+import Modal from '../components/main/Modal';
+import LibraryList from '../components/main/LibraryList';
+import ParkList from '../components/main/ParkList';
+
+const districts = [
+  { name: '강남구', center: { lat: 37.5172, lng: 127.0473 } },
+  { name: '강동구', center: { lat: 37.5301, lng: 127.1237 } },
+  { name: '강북구', center: { lat: 37.6396, lng: 127.0255 } },
+  { name: '강서구', center: { lat: 37.5509, lng: 126.8495 } },
+  { name: '관악구', center: { lat: 37.4784, lng: 126.9516 } },
+  { name: '광진구', center: { lat: 37.5384, lng: 127.0822 } },
+  { name: '구로구', center: { lat: 37.4955, lng: 126.887 } },
+  { name: '금천구', center: { lat: 37.4569, lng: 126.8958 } },
+  { name: '노원구', center: { lat: 37.6543, lng: 127.0568 } },
+  { name: '도봉구', center: { lat: 37.6688, lng: 127.0467 } },
+  { name: '동대문구', center: { lat: 37.5743, lng: 127.0395 } },
+  { name: '동작구', center: { lat: 37.5124, lng: 126.9396 } },
+  { name: '마포구', center: { lat: 37.5663, lng: 126.901 } },
+  { name: '서대문구', center: { lat: 37.5791, lng: 126.9368 } },
+  { name: '서초구', center: { lat: 37.4836, lng: 127.0327 } },
+  { name: '성동구', center: { lat: 37.5634, lng: 127.0366 } },
+  { name: '성북구', center: { lat: 37.5894, lng: 127.0164 } },
+  { name: '송파구', center: { lat: 37.5145, lng: 127.1059 } },
+  { name: '양천구', center: { lat: 37.5169, lng: 126.8666 } },
+  { name: '영등포구', center: { lat: 37.5262, lng: 126.8961 } },
+  { name: '용산구', center: { lat: 37.5324, lng: 126.99 } },
+  { name: '은평구', center: { lat: 37.6028, lng: 126.9293 } },
+  { name: '종로구', center: { lat: 37.572, lng: 126.9794 } },
+  { name: '중구', center: { lat: 37.5633, lng: 126.9978 } },
+  { name: '중랑구', center: { lat: 37.6063, lng: 127.0922 } }
+];
 
 const Main = () => {
   const [keyword, setKeyword] = useState('');
   const [libraries, setLibraries] = useState([]);
-  const [selectedLibrary, setSelectedLibrary] = useState(null); // 선택된 도서관 상태
-  const [isModalOpen, setIsModalOpen] = useState(false); // 모달 열림 상태
+  const [parks, setParks] = useState([]);
+  const [selectedLibrary, setSelectedLibrary] = useState(null);
+  const [selectedPark, setSelectedPark] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedButton, setSelectedButton] = useState('library');
+  const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.978 });
+  const [selectedGu, setSelectedGu] = useState('');
 
   useEffect(() => {
-    fetch(LibraryData)
-      .then((response) => response.text())
-      .then((csvText) => {
-        const parsedData = Papa.parse(csvText, { header: true });
-        setLibraries(parsedData.data);
-      });
-  }, []); // 빈 배열을 전달하여 컴포넌트가 처음 렌더링될 때만 실행
+    fetch('/api/libraries')
+      .then((response) => response.json())
+      .then((data) => {
+        setLibraries(data);
+      })
+      .catch((error) => console.error('Error fetching libraries:', error));
+
+    fetch('/api/parks')
+      .then((response) => response.json())
+      .then((data) => {
+        setParks(data);
+      })
+      .catch((error) => console.error('Error fetching parks:', error));
+  }, []);
 
   const handleFindLibraryClick = () => {
     console.log(keyword);
@@ -31,18 +70,55 @@ const Main = () => {
       console.log(keyword);
     }
   };
-  const filterLibraries = (libraries, keyword) => {
-    return libraries.filter((library) => library['도서관명'].includes(keyword));
-  };
+
   const handleLibraryItemClick = (library) => {
     setSelectedLibrary(library);
+    setMapCenter({ lat: library.latitude, lng: library.longitude });
+  };
+
+  const handleParkItemClick = (park) => {
+    setSelectedPark(park);
+    setMapCenter({ lat: park.latitude, lng: park.longitude });
+  };
+
+  const handleLibraryClick = (library) => {
+    setSelectedLibrary(library);
+    setIsModalOpen(true);
+    console.log('selectedLibrary:', selectedLibrary);
+  };
+
+  const handleButtonClick = (button) => {
+    setSelectedButton(button);
+    setKeyword('');
+  };
+
+  const handleParkClick = (park) => {
+    setSelectedPark(park);
     setIsModalOpen(true);
   };
+
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    const selectedDistrict = districts.find(
+      (district) => district.name === selectedGu
+    );
+    if (selectedDistrict) {
+      setMapCenter(selectedDistrict.center);
+    }
+  }, [selectedGu]);
+
+  const filteredLibraries = libraries.filter(
+    (library) => selectedGu === '' || library.district === selectedGu
+  );
+
+  const filteredParks = parks.filter(
+    (park) => selectedGu === '' || park.district === selectedGu
+  );
 
   return (
     <FullHeightContainer>
       <Guide as={HBox}>
-        {/* Container */}
         <Flex flex={1}>
           <>
             <InputContainer>
@@ -60,40 +136,70 @@ const Main = () => {
               </KeywordInputContainer>
               <LabelContainer>
                 <Label>설정한 위치</Label>
-                <Label style={{ color: '#563C0A' }}>00구</Label>
+                <Select
+                  value={selectedGu}
+                  onChange={(e) => setSelectedGu(e.target.value)}
+                >
+                  <option value=''>전체</option>
+                  {districts.map((gu) => (
+                    <option key={gu.name} value={gu.name}>
+                      {gu.name}
+                    </option>
+                  ))}
+                </Select>
               </LabelContainer>
             </InputContainer>
-
-            <LibraryListContainer>
-              <LibraryList>
-                {filterLibraries(libraries, keyword).map((library, index) => (
-                  <LibraryListItem
-                    key={index}
-                    onClick={() => handleLibraryItemClick(library)}
-                  >
-                    <LibraryIcon src={LibraryPing} alt='LibraryPing' />
-                    <LibraryInfo>
-                      <LibraryName>{library['도서관명']}</LibraryName>
-                      <LibraryAddress>{library['주소']}</LibraryAddress>
-                    </LibraryInfo>
-                  </LibraryListItem>
-                ))}
-              </LibraryList>
-            </LibraryListContainer>
+            <ListContainer>
+              {selectedButton === 'library' ? (
+                <LibraryList
+                  libraries={filteredLibraries}
+                  keyword={keyword}
+                  handleLibraryItemClick={handleLibraryItemClick}
+                />
+              ) : (
+                <ParkList
+                  parks={filteredParks}
+                  keyword={keyword}
+                  handleParkItemClick={handleParkItemClick}
+                />
+              )}
+            </ListContainer>
           </>
         </Flex>
-        {/* Content */}
         <Flex flex={4}>
           <LibraryParkMapContainer>
-            <LibraryParkMap libraries={libraries} keyword={keyword} />
+            <LibraryParkMap
+              libraries={filteredLibraries}
+              parks={filteredParks}
+              searchTerm={keyword}
+              onLibraryClick={handleLibraryClick}
+              onParkClick={handleParkClick}
+              selectedButton={selectedButton}
+              center={mapCenter}
+            />
+            <ButtonContainer>
+              <Button
+                onClick={() => handleButtonClick('library')}
+                selected={selectedButton === 'library'}
+              >
+                도서관
+              </Button>
+              <Button
+                onClick={() => handleButtonClick('park')}
+                selected={selectedButton === 'park'}
+              >
+                공원
+              </Button>
+            </ButtonContainer>
           </LibraryParkMapContainer>
         </Flex>
-        {/* Content */}
       </Guide>
-      <DetailModal
+      <Modal
         isOpen={isModalOpen}
         closeModal={() => setIsModalOpen(false)}
-        library={selectedLibrary}
+        place={selectedButton === 'library' ? selectedLibrary : selectedPark}
+        type={selectedButton === 'library' ? 'library' : 'park'}
+        userId={userId}
       />
     </FullHeightContainer>
   );
@@ -102,18 +208,37 @@ export default Main;
 
 const LibraryParkMapContainer = styled.div`
   position: relative;
-  z-index: 0; /* 모달의 z-index 값보다 낮아야 합니다. */
+  z-index: 0;
+`;
+
+const ButtonContainer = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  margin: 8px 0px 0px 15px;
+`;
+
+const Button = styled.button`
+  background: ${(props) => (props.selected ? '#563C0A' : 'white')};
+  color: ${(props) => (props.selected ? 'white' : '#563C0A')};
+  border: 1px solid #563c0a;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 20px;
+  font-size: 14px;
+  padding: 7px 15px;
+  margin-right: 10px;
+  cursor: pointer;
 `;
 
 const FullHeightContainer = styled.div`
-  height: 100vh; /* 화면 전체 높이 */
   display: flex;
   flex-direction: column;
 `;
 
 const HBox = styled.div`
   display: flex;
-  flex-direction: row; /* 가로로 배치 */
+  flex-direction: row;
   align-items: stretch;
   flex: 1;
 `;
@@ -122,6 +247,15 @@ const Flex = styled.div`
   flex: ${(props) => props.flex || 1};
   display: flex;
   flex-direction: column;
+
+  ::-webkit-scrollbar {
+    width: 7px;
+    background-color: #f1f1f1;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바의 색상 설정 */
+    border-radius: 5px; /* 스크롤바의 모서리 반경 설정 */
+  }
 `;
 
 const Guide = styled.div`
@@ -138,12 +272,12 @@ const InputContainer = styled.div`
 `;
 
 const Input = styled.input`
-  width: 16rem;
+  width: 17.5rem;
   height: 1.5rem;
   border: 1px solid #d0d0d0;
   border-radius: 8px;
-  padding: 5px 12px 5px 12px;
-  margin-bottom: 15px;
+  padding: 5px 12px;
+  margin: 0px 0px 15px 8px;
 
   &::placeholder {
     color: #bababa;
@@ -167,7 +301,9 @@ const FindLibraryIcon = styled.img`
 `;
 
 const LabelContainer = styled.div`
-  margin-top: 10px;
+  display: flex;
+  align-items: center; // 수직 방향 중앙 정렬
+  justify-content: center; // 수평 방향 중앙 정렬
 `;
 
 const Label = styled.span`
@@ -177,59 +313,22 @@ const Label = styled.span`
   font-weight: 400;
   font-size: 15px;
   line-height: 16px;
-
   color: ${(props) => props.color || '#191619'};
 `;
 
-const LibraryListContainer = styled.div`
-  flex: 1;
-  overflow-y: auto;
-  max-height: 60vh; /* 화면의 60% 높이로 제한 */
+const Select = styled.select`
+  height: 1.6rem;
+  margin-top: 0px;
+  padding: 5px;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  font-size: 11px;
+  font-family: 'SUIT';
 `;
 
-const LibraryList = styled.ul`
-  list-style: none;
-  padding-left: 0.5rem;
-`;
-
-const LibraryListItem = styled.li`
+const ListContainer = styled.div`
   display: flex;
-  align-items: center;
-  padding-bottom: 20px;
-  margin-bottom: 20px; /* 여유로운 margin 추가 */
-  border-bottom: 0.5px solid #dfdfdf; /* Line 7 */
-`;
-
-const LibraryIcon = styled.img`
-  width: 34px;
-  height: 34px;
-  margin-right: 10px;
-`;
-
-const LibraryInfo = styled.div`
-  display: flex;
-  text-align: left;
   flex-direction: column;
-`;
-
-const LibraryName = styled.span`
-  font-family: 'SUIT';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 16px;
-  color: #191619;
-  text-align: left;
-  margin: 5px 0;
-`;
-
-const LibraryAddress = styled.span`
-  font-family: 'SUIT';
-  font-style: normal;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  margin-right: 5px;
-
-  color: #868686;
+  justify-content: center;
+  padding: 0px 15px;
 `;

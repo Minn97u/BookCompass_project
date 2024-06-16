@@ -12,6 +12,7 @@ const librarySchema = new Schema({
     holidays: String,
     latitude: Number,
     longitude: Number,
+    averageRating: { type: Number, default: 0 },
 });
 
 module.exports = mongoose.model("Library", librarySchema);

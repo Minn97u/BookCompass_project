@@ -3,104 +3,136 @@ import styled from 'styled-components';
 import SignUpDistrict from './SignUpDistrict';
 import Districts from './Districts';
 import GoogleIcon from '../../assets/icons/GoogleLogo.svg';
+import { LongInput } from '../common/LongInput';
+import { ShortInput } from '../common/ShortInput';
+import { postSignup, getGoogleLogin, getUserInfo } from '../../api/Auth';
 
-const SignUpForm = ({ setFormType }) => {
+const emailRegEx =
+  /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
+
+const SignUpForm = ({ setFormType, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [checkPassword, setCheckPassword] = useState('');
   const [foundAnswer, setFoundAnswer] = useState('');
   const [name, setName] = useState('');
+  const [region, setRegion] = useState('');
   const [checkEmailText, setCheckEmailText] = useState('');
   const [checkPasswordText, setCheckPasswordText] = useState('');
-
-  const emailRegEx =
-    /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
+  const [signupError, setSignupError] = useState('');
 
   const emailCheck = (email) => {
     const isValid = emailRegEx.test(email);
-    if (!isValid) {
-      setCheckEmailText('이메일 형식이 일치하지 않습니다.');
-    } else {
-      setCheckEmailText('');
-    }
+    setCheckEmailText(isValid ? '' : '이메일 형식이 일치하지 않습니다.');
+
     return isValid;
   };
 
   const passwordCheck = (password, checkPassword) => {
-    if (password !== checkPassword) {
-      setCheckPasswordText('비밀번호가 일치하지 않습니다.');
-      return;
-    } else {
-      setCheckPasswordText('');
+    setCheckPasswordText(
+      password !== checkPassword ? '비밀번호가 일치하지 않습니다.' : ''
+    );
+  };
+
+  const handleSignup = async () => {
+    const data = {
+      name,
+      email,
+      password,
+      region,
+      favoriteAuthor: foundAnswer
+    };
+
+    try {
+      const res = await postSignup(data);
+      console.log('회원가입 완료', res);
+      setFormType('로그인');
+    } catch (error) {
+      console.error('회원가입 오류:', error);
+      setSignupError('모두 입력해 주세요.');
+    }
+  };
+
+  const handleGoogleSignup = async () => {
+    try {
+      await getGoogleLogin();
+      const res = await getUserInfo();
+      console.log('구글 회원가입 성공', res);
+      localStorage.setItem('userId', res.data.user.id);
+      localStorage.setItem('userName', res.data.user.name);
+      localStorage.setItem('userRegion', res.data.user.region);
+      localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      onClose();
+      window.location.href = '/';
+    } catch (error) {
+      console.error('구글 회원가입 실패:', error);
     }
   };
 
   return (
     <>
-      <InputContainer>
-        <LabelContainer>
-          <Label>이메일</Label>
-          <CheckText>{checkEmailText}</CheckText>
-        </LabelContainer>
-        <Input
-          label='이메일'
-          type='email'
-          placeholder='이메일 입력'
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            emailCheck(e.target.value);
-          }}
+      <LongInput
+        title='이메일'
+        type='email'
+        placeholder='이메일 입력'
+        value={email}
+        onChange={(e) => {
+          setEmail(e.target.value);
+          emailCheck(e.target.value);
+        }}
+        checkText={checkEmailText}
+        height='1.8rem'
+      />
+      <LongInput
+        title='비밀번호'
+        type='password'
+        placeholder='비밀번호 입력'
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        height='1.8rem'
+      />
+      <LongInput
+        title='비밀번호 확인'
+        type='password'
+        placeholder='비밀번호 입력'
+        value={checkPassword}
+        onChange={(e) => {
+          setCheckPassword(e.target.value);
+          passwordCheck(password, e.target.value);
+        }}
+        checkText={checkPasswordText}
+        height='1.8rem'
+      />
+      <LongInput
+        title='아이디 찾기 질문'
+        type='text'
+        placeholder='가장 좋아하는 작가 이름'
+        value={foundAnswer}
+        onChange={(e) => setFoundAnswer(e.target.value)}
+        height='1.8rem'
+      />
+      <BottomInputBox>
+        <ShortInput
+          title='이름'
+          type='name'
+          placeholder='이름 입력'
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          height='1.8rem'
         />
-        <Label>비밀번호</Label>
-        <Input
-          label='비밀번호'
-          type='password'
-          placeholder='비밀번호 입력'
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <LabelContainer>
-          <Label>비밀번호 확인</Label>
-          <CheckText>{checkPasswordText}</CheckText>
-        </LabelContainer>
-        <Input
-          label='비밀번호 확인'
-          type='password'
-          placeholder='비밀번호 입력'
-          value={checkPassword}
-          onChange={(e) => {
-            setCheckPassword(e.target.value);
-            passwordCheck(password, e.target.value);
-          }}
-        />
-        <Label>아이디 찾기 질문</Label>
-        <Input
-          label='아이디 찾기 질문'
-          type='text'
-          placeholder='가장 좋아하는 작가 이름'
-          value={foundAnswer}
-          onChange={(e) => setFoundAnswer(e.target.value)}
-        />
-        <BottomInputBox>
-          <BottomBox>
-            <Label>이름</Label>
-            <NameInput
-              label='이름'
-              type='name'
-              placeholder='이름 입력'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </BottomBox>
-          <BottomBox>
-            <Label>기본 위치 설정</Label>
-            <SignUpDistrict options={Districts} location='서울특별시' />
-          </BottomBox>
-        </BottomInputBox>
-      </InputContainer>
-      <SignUpButton>회원가입</SignUpButton>
-      <GoogleButton>
+        <DistrictBox>
+          <SignUpDistrict
+            options={Districts}
+            location='서울특별시'
+            selectedOption={region}
+            setSelectedOption={setRegion}
+          />
+        </DistrictBox>
+      </BottomInputBox>
+      {signupError && <ErrorText>{signupError}</ErrorText>}
+
+      <SignUpButton onClick={handleSignup}>회원가입</SignUpButton>
+      <GoogleButton onClick={handleGoogleSignup}>
         <GoogleIconImg src={GoogleIcon} alt='google-icon' />
         Google로 시작하기
       </GoogleButton>
@@ -113,52 +145,11 @@ const SignUpForm = ({ setFormType }) => {
 
 export default SignUpForm;
 
-const InputContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  margin-top: -10px;
-`;
-
-const LabelContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-`;
-
-const Label = styled.p`
+const ErrorText = styled.p`
   font-size: 0.9rem;
-  color: #191619;
-  margin-bottom: 6px;
-`;
-
-const CheckText = styled.p`
-  font-size: 0.8rem;
   color: #ca3636;
-  margin-bottom: 5px;
-`;
-
-const Input = styled.input`
-  width: 22rem;
-  height: 1.8rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  padding: 5px 12px 5px 12px;
-  margin-top: -2px;
-  margin-bottom: -5px;
-
-  &::placeholder {
-    color: #bababa;
-  }
-`;
-
-const NameInput = styled.input`
-  width: 10rem;
-  height: 1.7rem;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
-  padding: 5px 12px 5px 12px;
-  margin: -2px 10px 5px 0px;
+  align-self: center;
+  margin: 20px 0px -5px 0px;
 `;
 
 const SignUpButton = styled.button`
@@ -210,9 +201,11 @@ const TextButton = styled.button`
 const BottomInputBox = styled.div`
   display: flex;
   flex-direction: row;
+  width: 100%;
 `;
 
-const BottomBox = styled.div`
+const DistrictBox = styled.div`
   display: flex;
   flex-direction: column;
+  margin-left: 11px;
 `;

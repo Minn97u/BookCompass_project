@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ReactComponent as LogoSVG } from '../../assets/icons/Logo.svg';
-import AuthModalController from '../auth/AuthModalController';
+import AuthModal from '../auth/AuthModal';
+import { getLogout, getLoginStatus } from '../../api/Auth';
 
 function Button({ children, isActive, onClick }) {
   return (
@@ -15,10 +16,40 @@ function Button({ children, isActive, onClick }) {
 function Navbar() {
   const [activeButton, setActiveButton] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginText, setLoginText] = useState('로그인');
+  const userId = localStorage.getItem('userId');
+  const navigate = useNavigate();
+
+  const handelLoginStatus = async () => {
+    try {
+      await getLoginStatus();
+      if (!userId) {
+        setLoginText('로그인');
+      } else {
+        setIsLoggedIn(true);
+        setLoginText('로그아웃');
+      }
+    } catch (error) {
+      console.error('로그아웃 오류:', error);
+    }
+  };
+
+  useEffect(() => {
+    handelLoginStatus();
+  }, []);
 
   const handleButtonClick = (buttonName) => {
-    setActiveButton(buttonName);
-    setShowModal(false);
+    if (buttonName === 'mypage') {
+      if (!isLoggedIn) {
+        setShowModal(true);
+      } else {
+        navigate('/mypage');
+        setActiveButton(buttonName);
+      }
+    } else {
+      setActiveButton(buttonName);
+    }
   };
 
   const handleLogoClick = () => {
@@ -26,8 +57,21 @@ function Navbar() {
     setShowModal(false);
   };
 
-  const handleLoginClick = () => {
-    setShowModal(true);
+  const handleLoginClick = async () => {
+    if (loginText === '로그인') {
+      setShowModal(true);
+    } else {
+      try {
+        await getLogout();
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRegion');
+        localStorage.removeItem('favoriteAuthor');
+        window.location.href = '/';
+      } catch (error) {
+        console.error('로그아웃 오류:', error);
+      }
+    }
   };
 
   const handleCloseModal = () => {
@@ -48,7 +92,7 @@ function Navbar() {
                 isActive={activeButton === 'library'}
                 onClick={() => handleButtonClick('library')}
               >
-                도서관찾기
+                도서관 찾기
               </Button>
             </Link>
             <Link to={'/board'}>
@@ -59,24 +103,19 @@ function Navbar() {
                 게시판
               </Button>
             </Link>
-            <Link to={'/mypage'}>
-              <Button
-                isActive={activeButton === 'mypage'}
-                onClick={() => handleButtonClick('mypage')}
-              >
-                마이페이지
-              </Button>
-            </Link>
 
-            <Button onClick={handleLoginClick}>로그인</Button>
+            <Button
+              isActive={activeButton === 'mypage' && isLoggedIn}
+              onClick={() => handleButtonClick('mypage')}
+            >
+              마이페이지
+            </Button>
+            <Button onClick={handleLoginClick}>{loginText}</Button>
           </ButtonContainer>
         </NavbarContainer>
       </NavbarWrapper>
       {showModal && (
-        <AuthModalController
-          onClose={handleCloseModal}
-          initialFormType='로그인'
-        />
+        <AuthModal onClose={handleCloseModal} initialFormType='로그인' />
       )}
     </>
   );
@@ -94,13 +133,13 @@ const NavbarWrapper = styled.div`
   box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
   border-bottom: 1px solid #e7e7e7; /* 더 얇은 선 */
   margin: 0; /* 모든 마진 제거 */
-  padding: 25px 0px 35px 0px;
+  padding: 20px 0px 30px 0px;
 `;
 
 const NavbarContainer = styled.div`
   display: flex;
   align-items: center;
-  margin: 10px 70px;
+  margin: 10px 50px 10px 70px;
 `;
 
 const LogoContainer = styled(Link)`
@@ -133,7 +172,7 @@ const NavButton = styled.button`
 
 const ButtonContainer = styled.div`
   display: flex;
-  margin-top: 20px;
+  margin-top: 32px;
 `;
 
 export default Navbar;
