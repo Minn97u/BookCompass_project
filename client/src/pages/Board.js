@@ -318,7 +318,7 @@ const Board = () => {
 const BoardContainer = styled.div`
   width: 100%;
   margin: 0 auto;
-  padding: 1.25rem;
+  padding: 1.2rem 4rem 1.2rem 4rem;
   box-sizing: border-box;
 `;
 
@@ -326,13 +326,13 @@ const BoardTagsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin: 10px 0px 35px 0px;
 `;
 
 const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 1.25rem;
+  margin-top: 1.3rem;
 `;
 
 export default Board;

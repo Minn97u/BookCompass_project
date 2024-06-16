@@ -8,7 +8,9 @@ const EditInfo = ({ myInfo, setMyInfo }) => {
   const [editText, setEditText] = useState('수정');
   const [resultText, setResultText] = useState('');
 
-  const isFormValid = myInfo.region !== '' && myInfo.foundAnswer.trim() !== '';
+  const isFormValid =
+    myInfo.region !== '' &&
+    (myInfo.foundAnswer ? myInfo.foundAnswer.trim() !== '' : false);
 
   const handleEditUserInfo = async () => {
     const data = {

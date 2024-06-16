@@ -27,6 +27,8 @@ const CloseButton = styled.button`
   top: 0.25rem;
   right: 0rem;
   padding-bottom: 2rem;
+  margin: 15px;
+  cursor: pointer;
 `;
 
 const customModalStyles = {
@@ -42,8 +44,8 @@ const customModalStyles = {
     transform: 'translate(-50%, -50%)',
     width: '94%',
     maxWidth: '60rem',
-    height: 'auto',
-    maxHeight: '80vh',
+    height: '35rem',
+    maxHeight: '85vh',
     overflowY: 'auto',
     borderRadius: '1rem',
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
