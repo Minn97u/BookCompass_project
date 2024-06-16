@@ -101,8 +101,8 @@ const StyledPaginationButton = styled.button`
   background-color: ${(props) => (props.isActive ? '#543D20' : 'white')};
   color: ${(props) => (props.isActive ? 'white' : '#8a5a2b')};
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 1.25rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 50%;
   cursor: pointer;
   font-size: 0.875rem;
   margin: 0 0.325rem;

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import CommentSection from './CommentSection';
 
-const ModalContent = ({
+const DetailPageContent = ({
   selectedItem,
   userName,
   handleEditClick,
@@ -12,9 +12,9 @@ const ModalContent = ({
   handleCommentUpdate
 }) => {
   return (
-    <StyledModalContent>
-      <ModalHeader>
-        <ModalTitle>{selectedItem.title}</ModalTitle>
+    <Container>
+      <Header>
+        <Title>{selectedItem.title}</Title>
         {userName === selectedItem.author.name && (
           <ActionButtons>
             <TextButton onClick={handleEditClick}>수정</TextButton>
@@ -22,27 +22,27 @@ const ModalContent = ({
             <TextButton onClick={handleDeleteClick}>삭제</TextButton>
           </ActionButtons>
         )}
-        <ModalAuthor>
-          <CommentAvatar>
+        <Author>
+          <UserAvatar>
             <ProfileImage src={selectedItem.author.profilePic} alt='Profile' />
-          </CommentAvatar>
+          </UserAvatar>
           {selectedItem.author.name}
-        </ModalAuthor>
-      </ModalHeader>
+        </Author>
+      </Header>
       <Hr />
       <DateText>{new Date(selectedItem.createdAt).toLocaleString()}</DateText>
-      <ModalBody>
-        <ContentBox>
-          <PostImage
-            src={
-              selectedItem.postImg
-                ? `${selectedItem.postImg.split('/public')[1]}`
-                : './No_image_available.png'
-            }
-            alt={selectedItem.title}
-          />
+      <ContentBody>
+        <div>
+          {selectedItem.postImg && (
+            <PostImage
+              src={`${selectedItem.postImg.split('/public')[1]}`}
+              alt={selectedItem.title}
+            />
+          )}
           <Text>{selectedItem.content}</Text>
-        </ContentBox>
+        </div>
+      </ContentBody>
+      <CommentBox>
         <CommentSection
           selectedItem={selectedItem}
           userName={userName}
@@ -50,52 +50,61 @@ const ModalContent = ({
           handleCommentDelete={handleCommentDelete}
           handleCommentUpdate={handleCommentUpdate}
         />
-      </ModalBody>
-    </StyledModalContent>
+      </CommentBox>
+    </Container>
   );
 };
 
-const StyledModalContent = styled.div`
+export default DetailPageContent;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
   background: white;
-  padding: 2.5rem 1.25rem 2rem 1.25rem;
-  width: 92%;
-  max-width: 60rem;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 70rem;
   height: auto;
   max-height: 80vh;
   margin: 0 auto;
+
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
   position: relative;
-  background-color: transparent;
 `;
 
-const ModalHeader = styled.div`
+const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 3px;
 `;
 
-const ModalTitle = styled.h2`
-  font-size: 1.5rem;
+const Title = styled.p`
+  font-size: 1.6rem;
+  font-weight: 500;
   margin: 0;
 `;
 
-const ModalAuthor = styled.div`
+const DateText = styled.div`
+  font-size: 0.875rem;
+  color: #888;
+  text-align: right;
+`;
+
+const Author = styled.div`
   font-size: 1rem;
   color: #191619;
-  font-weight: 600;
   margin-left: auto;
+  font-weight: 600;
   display: flex;
   align-items: center;
 `;
 
-const ModalBody = styled.div`
+const ContentBody = styled.div`
   display: flex;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  margin-top: 10px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 50px 0px 30px 0px;
 `;
 
 const TextButton = styled.span`
@@ -107,9 +116,9 @@ const TextButton = styled.span`
 const ActionButtons = styled.div`
   display: flex;
   justify-content: flex-end;
-  align-items: center;
   gap: 0.625rem;
   height: 1.5rem;
+  margin-top: 0.5rem;
   margin-left: 1.25rem;
 `;
 
@@ -127,36 +136,24 @@ const Text = styled.p`
 `;
 
 const ProfileImage = styled.img`
-  width: 100%;
-  height: 100%;
+  width: 1.7rem;
   border-radius: 50%;
 `;
 
-const CommentAvatar = styled.div`
-  width: 1.8rem;
-  height: 1.8rem;
+const UserAvatar = styled.div`
+  width: 2.1rem;
+  height: 2.1rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 1rem;
-  margin-right: 0.5rem;
+  margin-right: 0.3rem;
 
   svg {
     width: 80%;
     height: 80%;
   }
-`;
-
-const ContentBox = styled.div`
-  margin-right: 30px;
-  margin-top: 15px;
-  width: 20rem;
-`;
-
-const Divider = styled.span`
-  color: #d7d7d7;
-  margin: 0px -5px;
 `;
 
 const Hr = styled.hr`
@@ -166,10 +163,11 @@ const Hr = styled.hr`
   margin-bottom: 10px;
 `;
 
-const DateText = styled.div`
-  font-size: 0.875rem;
-  color: #888;
-  text-align: right;
+const CommentBox = styled.div`
+  text-align: left;
 `;
 
-export default ModalContent;
+const Divider = styled.span`
+  color: #d7d7d7;
+  margin: 0px -5px;
+`;

@@ -8,7 +8,10 @@ const EditProfile = ({ profile, setProfile }) => {
   const imageInput = useRef();
 
   const isFormValid =
-    profile.name.trim() !== '' && profile.description.trim() !== '';
+    profile.name &&
+    profile.name.trim() !== '' &&
+    profile.description &&
+    profile.description.trim() !== '';
 
   const handleImageUploadClick = () => {
     imageInput.current.click();
