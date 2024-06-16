@@ -58,7 +58,7 @@ const HrLine = styled.hr`
 
 const ModalContent = styled.div`
   background: white;
-  padding: 1.25rem;
+  padding: 0.8rem;
   width: 94%;
   max-width: 60rem;
   height: auto;
