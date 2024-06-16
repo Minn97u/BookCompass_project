@@ -33,6 +33,10 @@ const CommentSection = ({
     }
     handleCommentSubmit(data);
     setValue('commentText', '');
+
+    const totalComments = selectedItem.comments.length + 1;
+    const totalPages = Math.ceil(totalComments / commentsPerPage);
+    setCurrentPage(totalPages);
   };
 
   const handlePageChange = (pageNumber) => {
@@ -76,7 +80,16 @@ const CommentSection = ({
                     </TextButton>
                     <Divider>|</Divider>
                     <TextButton
-                      onClick={() => handleCommentDelete(comment._id)}
+                      onClick={() => {
+                        handleCommentDelete(comment._id);
+                        const totalComments = selectedItem.comments.length - 1;
+                        const totalPages = Math.ceil(
+                          totalComments / commentsPerPage
+                        );
+                        if (currentPage > totalPages) {
+                          setCurrentPage(totalPages);
+                        }
+                      }}
                     >
                       삭제
                     </TextButton>
