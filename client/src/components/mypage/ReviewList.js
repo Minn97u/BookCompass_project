@@ -137,7 +137,7 @@ const Hr = styled.hr`
   border: none;
   border-top: 1px solid #ededed;
   width: 100%;
-  margin-top: 10px;
+  margin-top: -8px;
   margin-bottom: 10px;
 `;
 
