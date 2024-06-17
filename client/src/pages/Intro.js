@@ -56,6 +56,31 @@ function Intro() {
           </GraphContainer>
         </GraphsRow>
       </GraphSection>
+      <DescriptionContainer>
+        <DescriptionTitle>
+          서울시 시민들의 공공 도서관 방문 횟수는?
+        </DescriptionTitle>
+        <DescriptionText>
+          이 그래프는 서울시 각 구별 공공도서관 방문자 수를 나타냅니다.
+          <br />
+          <br />
+          그래프에서 보듯이 2018년부터 2022년까지 서울시 각 구의 도서관 방문자
+          수는 <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
+          감소하였으며, 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전
+          수준으로 완전히 회복되지 않았습니다.
+          <br />
+          <br />
+          특히, <strong>가까운 거리에 있는 도서관의 중요성</strong>과{' '}
+          <strong>편리한 접근성</strong>을 고려한 시민들의 요구를 반영하여, 우리
+          웹 프로젝트는 도서관 정보를 쉽게 접근할 수 있게 제공하고, 다양한 독서
+          활동과 커뮤니티 참여를 장려합니다.
+          <br />
+          <br />
+          이를 통해 <strong>도서관 이용률</strong>을 높이고,{' '}
+          <strong>독서 문화를 더욱 활성화</strong>하는 것을 목표로 하고
+          있습니다.
+        </DescriptionText>
+      </DescriptionContainer>
       <GraphSection>
         <GraphContainer>
           <iframe
@@ -66,31 +91,6 @@ function Intro() {
             title='Seoul Districts Visitors'
           />
         </GraphContainer>
-        <DescriptionContainer>
-          <DescriptionTitle>
-            서울시 시민들의 공공 도서관 방문 횟수는?
-          </DescriptionTitle>
-          <DescriptionText>
-            이 그래프는 서울시 각 구별 공공도서관 방문자 수를 나타냅니다.
-            <br />
-            <br />
-            그래프에서 보듯이 2018년부터 2022년까지 서울시 각 구의 도서관 방문자
-            수는 <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
-            감소하였으며, 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전
-            수준으로 완전히 회복되지 않았습니다.
-            <br />
-            <br />
-            특히, <strong>가까운 거리에 있는 도서관의 중요성</strong>과{' '}
-            <strong>편리한 접근성</strong>을 고려한 시민들의 요구를 반영하여,
-            우리 웹 프로젝트는 도서관 정보를 쉽게 접근할 수 있게 제공하고,
-            다양한 독서 활동과 커뮤니티 참여를 장려합니다.
-            <br />
-            <br />
-            이를 통해 <strong>도서관 이용률</strong>을 높이고,{' '}
-            <strong>독서 문화를 더욱 활성화</strong>하는 것을 목표로 하고
-            있습니다.
-          </DescriptionText>
-        </DescriptionContainer>
       </GraphSection>
     </MainContainer>
   );
