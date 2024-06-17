@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import ClickStar from './ClickStar';
 import axios from 'axios';
 
-function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
+function ReviewWrite({ type, onClose, placeId, userId, refreshReviews }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  console.log('libraryId:', libraryId); // 추가
+  // console.log('libraryId:', libraryId); // 추가
   const handleReviewChange = (e) => {
     setReviewText(e.target.value);
   };
@@ -19,24 +19,21 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
     }
 
     try {
-      console.log('리뷰 데이터:', {
+      const reviewData = {
         userId,
-        libraryId,
         rating,
         comment: reviewText
-      });
+      };
 
-      console.log('placeId:', placeId);
+      if (type === 'library') {
+        reviewData.libraryId = placeId;
+      } else if (type === 'park') {
+        reviewData.parkId = placeId;
+      }
 
       const response = await axios.post(
         'http://localhost:3001/api/reviews',
-        {
-          userId,
-          libraryId: placeId,
-          parkId: null,
-          rating,
-          comment: reviewText
-        },
+        reviewData,
         {
           withCredentials: true
         }

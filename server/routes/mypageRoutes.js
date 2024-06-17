@@ -230,9 +230,19 @@ router.delete(
 router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const comments = await Comment.find({ author: userId });
+        const comments = await Comment.find({ author: userId }).populate(
+            "postId",
+            "shortId tittle"
+        );
 
-        res.json(comments);
+        const formattedComments = comments.map((comment) => ({
+            _id: comment._id,
+            content: comment.content,
+            date: comment.createdAt,
+            postId: comment.postId ? comment.postId.shortId : null,
+            postTitle: comment.postId ? comment.postId.title : null,
+        }));
+        res.json(formattedComments);
     } catch (error) {
         next(error);
     }
@@ -312,48 +322,6 @@ router.get(
 
 /**
  * @swagger
- * /mypage/favoriteLibraries:
- *   delete:
- *     summary: 찜한 도서관 삭제
- *     tags: [MyPage]
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               libraryId:
- *                 type: string
- *     responses:
- *       200:
- *         description: 도서관을 삭제했습니다.
- */
-router.delete(
-    "/favoriteLibraries",
-    ensureAuthenticated,
-    async (req, res, next) => {
-        try {
-            const userId = req.user._id; // 인증된 사용자 ID 가져오기
-            const { libraryId } = req.body; // 클라이언트로부터 받아온 도서관 ID
-            const user = await User.findById(userId);
-            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
-
-            user.favoriteLibraries = user.favoriteLibraries.filter(
-                (id) => id.toString() !== libraryId
-            );
-            await user.save();
-            res.status(200).send("도서관을 삭제했습니다.");
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-/**
- * @swagger
  * /mypage/favoriteParksList:
  *   get:
  *     summary: 찜해둔 공원 목록
@@ -400,18 +368,29 @@ router.get(
  *       200:
  *         description: 공원을 삭제했습니다.
  */
-router.delete("/favoriteParks", ensureAuthenticated, async (req, res, next) => {
+router.delete("/favorites", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id; // 인증된 사용자 ID 가져오기
-        const { parkId } = req.body; // 클라이언트로부터 받아온 공원 ID
+        const { id, type } = req.body; // 클라이언트로부터 받아온 ID와 유형
+
         const user = await User.findById(userId);
         if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
 
-        user.favoriteParks = user.favoriteParks.filter(
-            (id) => id.toString() !== parkId
-        );
-        await user.save();
-        res.status(200).send("공원을 삭제했습니다.");
+        if (type === "library") {
+            user.favoriteLibraries = user.favoriteLibraries.filter(
+                (libraryId) => libraryId.toString() !== id
+            );
+            await user.save();
+            res.status(200).send("도서관을 삭제했습니다.");
+        } else if (type === "park") {
+            user.favoriteParks = user.favoriteParks.filter(
+                (parkId) => parkId.toString() !== id
+            );
+            await user.save();
+            res.status(200).send("공원을 삭제했습니다.");
+        } else {
+            res.status(400).send("잘못된 유형입니다.");
+        }
     } catch (error) {
         next(error);
     }
@@ -432,9 +411,19 @@ router.delete("/favoriteParks", ensureAuthenticated, async (req, res, next) => {
 router.get("/myReviews", ensureAuthenticated, async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const reviews = await Review.find({ user: userId });
+        const reviews = await Review.find({ user: userId })
+            .populate("library")
+            .populate("park");
 
-        res.json(reviews);
+        const formattedReviews = reviews.map((review) => ({
+            _id: review._id,
+            rating: review.rating,
+            comment: review.comment,
+            date: review.createdAt,
+            libraryName: review.library ? review.library.name : null,
+            parkName: review.park ? review.park.name : null,
+        }));
+        res.json(formattedReviews);
     } catch (error) {
         next(error);
     }

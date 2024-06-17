@@ -24,7 +24,7 @@ const errorHandler = require("./middlewares/errorHandler");
 // MongoDB Atlas 연결 설정
 mongoose
     .connect(
-        `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/TEST`,
+        `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/${process.env.DB_NAME}`,
         {
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -39,7 +39,8 @@ mongoose
 
 // CORS 설정 추가
 const corsOptions = {
-    origin: "http://localhost:3000", // 클라이언트 도메인 명시
+    // origin: process.env.CORS_ORIGIN || "http://localhost:3000", // 클라이언트 도메인 명시
+    origin: "http://localhost:3000",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // withCredentials 지원
     allowedHeaders: "Content-Type,Authorization",
@@ -64,7 +65,7 @@ app.use(
         resave: false,
         saveUninitialized: false,
         store: MongoStore.create({
-            mongoUrl: `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/TEST`,
+            mongoUrl: `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/${process.env.DB_NAME}`,
             collectionName: "sessions",
         }),
         cookie: {

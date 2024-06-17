@@ -42,7 +42,7 @@ const ReviewList = ({ datas, type, setList }) => {
               <ReviewText>{data.comment}</ReviewText>
               <BottomTextBox>
                 <Date>{data.date}</Date>
-                <PlaceText>00도서관</PlaceText>
+                <PlaceText>{data.libraryName || data.parkName}</PlaceText>
               </BottomTextBox>
             </CommentBox>
             <DeleteWrite>
@@ -137,7 +137,7 @@ const Hr = styled.hr`
   border: none;
   border-top: 1px solid #ededed;
   width: 100%;
-  margin-top: 10px;
+  margin-top: -8px;
   margin-bottom: 10px;
 `;
 
@@ -153,6 +153,5 @@ const PlaceText = styled.p`
   font-size: 0.9rem;
   font-weight: 500;
   color: #563c0a;
-  letter-spacing: -1px;
   margin-left: 15px;
 `;

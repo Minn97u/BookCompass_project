@@ -4,18 +4,21 @@ import LocationPing from '../../assets/icons/LocationPing.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const BookMarkList = ({ datas, type, setList }) => {
+const BookMarkList = ({ datas, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+  const [currentType, setCurrentType] = useState(null);
 
   const closeModal = () => {
     setModalOpen(false);
     setCurrentId(null);
+    setCurrentType(null);
   };
 
-  const handleDeleteBtn = (listid) => {
+  const handleDeleteBtn = (listid, type) => {
     console.log('리스트 아이디', listid);
     setCurrentId(listid);
+    setCurrentType(type);
     setModalOpen(true);
   };
 
@@ -42,7 +45,7 @@ const BookMarkList = ({ datas, type, setList }) => {
                 <DeleteIconImg
                   src={DeleteIcon}
                   alt='minus-icon'
-                  onClick={() => handleDeleteBtn(data.id)}
+                  onClick={() => handleDeleteBtn(data.id, data.type)}
                 />
               </CancelBookMark>
             </List>
@@ -54,7 +57,7 @@ const BookMarkList = ({ datas, type, setList }) => {
         <DeleteModal
           onClose={closeModal}
           id={currentId}
-          type={type}
+          type={currentType}
           deleteSuccess={handleDeleteConfirm}
         />
       )}

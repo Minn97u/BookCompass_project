@@ -43,6 +43,12 @@ const userSchema = new Schema({
             ref: "Library",
         },
     ],
+    favoriteParks: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Park",
+        },
+    ],
     reviews: [
         {
             type: Schema.Types.ObjectId,

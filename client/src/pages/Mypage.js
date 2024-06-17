@@ -32,8 +32,6 @@ const Mypage = () => {
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
   const [favoritePlaces, setFavoritePlaces] = useState([]);
-  // const [libraryDatas, setLibraryDatas] = useState([]);
-  // const [parkDatas, setParkDatas] = useState([]);
   const [reviewDatas, setReviewDatas] = useState([]);
   const navigate = useNavigate();
 
@@ -85,11 +83,12 @@ const Mypage = () => {
     try {
       const res = await getMyComments();
       const datas = res.data.map((item) => {
-        const createAt = new Date(item.createdAt);
+        const createAt = new Date(item.date);
         const localDate = createAt.toLocaleString();
 
         return {
           id: item._id,
+          postId: item.postId,
           title: item.content,
           date: localDate
         };
@@ -108,7 +107,8 @@ const Mypage = () => {
         return {
           id: item._id,
           name: item.name,
-          address: item.address
+          address: item.address,
+          type: 'library'
         };
       });
       console.log('즐겨찾기 도서관', libraryDatas);
@@ -125,10 +125,11 @@ const Mypage = () => {
         return {
           id: item._id,
           name: item.name,
-          address: item.address
+          address: item.address,
+          type: 'park'
         };
       });
-      console.log('즐겨찾기 공원', parkDatas);
+      console.log('즐겨찾기 공원', res);
       return parkDatas;
     } catch (error) {
       console.error('즐겨찾기 공원 실패:', error);
@@ -139,18 +140,20 @@ const Mypage = () => {
     try {
       const res = await getMyReviews();
       const datas = res.data.map((item) => {
-        const createAt = new Date(item.createdAt);
+        const createAt = new Date(item.date);
         const localDate = createAt.toLocaleString();
 
         return {
           id: item._id,
           comment: item.comment,
           rating: item.rating,
-          date: localDate
+          date: localDate,
+          libraryName: item.libraryName,
+          parkName: item.parkName
         };
       });
       setReviewDatas(datas);
-      console.log('내가 쓴 리뷰', datas);
+      console.log('내가 쓴 리뷰', res);
     } catch (error) {
       console.error('내가 쓴 리뷰 실패:', error);
     }
@@ -166,13 +169,14 @@ const Mypage = () => {
           fetchMyReviews()
         ]);
 
-        const [libraries, parks] = await Promise.all([
+        const [libraryDatas, parkDatas] = await Promise.all([
           fetchMyFavoriteLibraries(),
           fetchMyFavoriteParks()
         ]);
 
-        setFavoritePlaces([...libraries, ...parks]);
-        console.log('전체 찜한 장소', favoritePlaces);
+        const allFavoritePlaces = [...libraryDatas, ...parkDatas];
+        setFavoritePlaces(allFavoritePlaces);
+        console.log('전체 찜한 장소', allFavoritePlaces);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);
       }
@@ -217,11 +221,7 @@ const Mypage = () => {
           icon={BookMark}
           title='즐겨찾기 장소'
           component={
-            <BookMarkList
-              datas={favoritePlaces}
-              type={'library'}
-              setList={setFavoritePlaces}
-            />
+            <BookMarkList datas={favoritePlaces} setList={setFavoritePlaces} />
           }
           mapIcon={MapIcon}
         />
