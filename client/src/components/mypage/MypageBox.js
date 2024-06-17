@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const MypageBox = ({ icon, title, component, mapIcon }) => {
+const MypageBox = ({ icon, title, component, mapIcon, onMapOpen }) => {
   return (
     <Container>
       <TitleBox>
@@ -10,7 +10,7 @@ const MypageBox = ({ icon, title, component, mapIcon }) => {
       </TitleBox>
       <ContentWrapper>{component}</ContentWrapper>
       {mapIcon && (
-        <MapBtn>
+        <MapBtn onClick={onMapOpen}>
           <img src={mapIcon} alt='map-icon' />
         </MapBtn>
       )}

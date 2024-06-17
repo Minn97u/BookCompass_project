@@ -12,6 +12,8 @@ import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
+import DefaultModal from '../components/common/DefaultModal';
+import BookMarkMap from '../components/mypage/BookMarkMap';
 import {
   getProfileInfo,
   getMyPosts,
@@ -29,6 +31,7 @@ const Mypage = () => {
     description: ''
   });
   const [showModal, setShowModal] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
   const [favoritePlaces, setFavoritePlaces] = useState([]);
@@ -39,8 +42,13 @@ const Mypage = () => {
     navigate('/mypage/edit');
   };
 
+  const handleMapOpen = () => {
+    setShowMapModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
+    setShowMapModal(false);
   };
 
   const fetchProfileInfo = async () => {
@@ -108,6 +116,8 @@ const Mypage = () => {
           id: item._id,
           name: item.name,
           address: item.address,
+          latitude: item.latitude,
+          longitude: item.longitude,
           type: 'library'
         };
       });
@@ -126,10 +136,12 @@ const Mypage = () => {
           id: item._id,
           name: item.name,
           address: item.address,
+          latitude: item.latitude,
+          longitude: item.longitude,
           type: 'park'
         };
       });
-      console.log('즐겨찾기 공원', res);
+      console.log('즐겨찾기 공원', parkDatas);
       return parkDatas;
     } catch (error) {
       console.error('즐겨찾기 공원 실패:', error);
@@ -224,6 +236,7 @@ const Mypage = () => {
             <BookMarkList datas={favoritePlaces} setList={setFavoritePlaces} />
           }
           mapIcon={MapIcon}
+          onMapOpen={handleMapOpen}
         />
         <MypageBox
           icon={ReviewIcon}
@@ -237,6 +250,19 @@ const Mypage = () => {
           }
         />
       </MypageContainer>
+      {showMapModal && (
+        <DefaultModal title={'즐겨찾기 장소'} onClose={handleCloseModal}>
+          <BookMarkMap
+            libraries={favoritePlaces.filter(
+              (place) => place.type === 'library'
+            )}
+            parks={favoritePlaces.filter((place) => place.type === 'park')}
+            onLibraryClick={() => {}}
+            onParkClick={() => {}}
+            center={{ lat: 37.5665, lng: 126.978 }}
+          />
+        </DefaultModal>
+      )}
       {showModal && <AuthModal onClose={handleCloseModal} />}
     </Container>
   );
