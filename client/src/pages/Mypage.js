@@ -17,6 +17,7 @@ import {
   getMyPosts,
   getMyComments,
   getMyFavoriteLibraries,
+  getMyFavoriteParksList,
   getMyReviews
 } from '../api/Mypage';
 
@@ -30,7 +31,9 @@ const Mypage = () => {
   const [showModal, setShowModal] = useState(false);
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
-  const [libraryDatas, setLibraryDatas] = useState([]);
+  const [favoritePlaces, setFavoritePlaces] = useState([]);
+  // const [libraryDatas, setLibraryDatas] = useState([]);
+  // const [parkDatas, setParkDatas] = useState([]);
   const [reviewDatas, setReviewDatas] = useState([]);
   const navigate = useNavigate();
 
@@ -101,17 +104,34 @@ const Mypage = () => {
   const fetchMyFavoriteLibraries = async () => {
     try {
       const res = await getMyFavoriteLibraries();
-      const datas = res.data.map((item) => {
+      const libraryDatas = res.data.map((item) => {
         return {
           id: item._id,
           name: item.name,
           address: item.address
         };
       });
-      setLibraryDatas(datas);
-      console.log('즐겨찾기 장소', datas);
+      console.log('즐겨찾기 도서관', libraryDatas);
+      return libraryDatas;
     } catch (error) {
-      console.error('즐겨찾기 장소 실패:', error);
+      console.error('즐겨찾기 도서관 실패:', error);
+    }
+  };
+
+  const fetchMyFavoriteParks = async () => {
+    try {
+      const res = await getMyFavoriteParksList();
+      const parkDatas = res.data.map((item) => {
+        return {
+          id: item._id,
+          name: item.name,
+          address: item.address
+        };
+      });
+      console.log('즐겨찾기 공원', parkDatas);
+      return parkDatas;
+    } catch (error) {
+      console.error('즐겨찾기 공원 실패:', error);
     }
   };
 
@@ -143,9 +163,16 @@ const Mypage = () => {
           fetchProfileInfo(),
           fetchMyPosts(),
           fetchMyComments(),
-          fetchMyFavoriteLibraries(),
           fetchMyReviews()
         ]);
+
+        const [libraries, parks] = await Promise.all([
+          fetchMyFavoriteLibraries(),
+          fetchMyFavoriteParks()
+        ]);
+
+        setFavoritePlaces([...libraries, ...parks]);
+        console.log('전체 찜한 장소', favoritePlaces);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);
       }
@@ -191,9 +218,9 @@ const Mypage = () => {
           title='즐겨찾기 장소'
           component={
             <BookMarkList
-              datas={libraryDatas}
+              datas={favoritePlaces}
               type={'library'}
-              setList={setLibraryDatas}
+              setList={setFavoritePlaces}
             />
           }
           mapIcon={MapIcon}
