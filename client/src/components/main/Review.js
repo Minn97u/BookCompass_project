@@ -8,7 +8,7 @@ import ReviewList from './ReviewList';
 import Pagination from './Pagination';
 import axios from 'axios';
 
-const Review = ({ rating, placeId }) => {
+const Review = ({ rating, placeId, type }) => {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
@@ -69,6 +69,7 @@ const Review = ({ rating, placeId }) => {
 
       {isWriteReviewOpen ? (
         <ReviewWrite
+          type={type}
           placeId={placeId}
           userId={userId}
           refreshReviews={refreshReviews}

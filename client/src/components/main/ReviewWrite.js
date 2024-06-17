@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import ClickStar from './ClickStar';
 import axios from 'axios';
 
-function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
+function ReviewWrite({ type, onClose, placeId, userId, refreshReviews }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  console.log('libraryId:', libraryId); // 추가
+  // console.log('libraryId:', libraryId); // 추가
   const handleReviewChange = (e) => {
     setReviewText(e.target.value);
   };
@@ -25,9 +25,9 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
         comment: reviewText
       };
 
-      if (libraryId) {
+      if (type === 'library') {
         reviewData.libraryId = placeId;
-      } else {
+      } else if (type === 'park') {
         reviewData.parkId = placeId;
       }
 
