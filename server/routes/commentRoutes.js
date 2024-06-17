@@ -64,8 +64,8 @@ router.post("/", ensureAuthenticated, async (req, res) => {
         const newComment = new Comment({
             author: req.user._id,
             content: content,
+            postId: post._id,
         });
-
         await newComment.save();
         post.comments.push(newComment._id);
         await post.save();

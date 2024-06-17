@@ -5,8 +5,7 @@ import {
   deleteMyPost,
   deleteMyComments,
   deleteMyReviews,
-  deleteMyFavoriteLibraries,
-  deleteMyFavoriteParksList
+  deleteMyFavorite
 } from '../../api/Mypage';
 
 const DeleteType = {
@@ -22,17 +21,11 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
     try {
       if (type === DeleteType.POST) {
         await deleteMyPost(id);
-      }
-      if (type === DeleteType.COMMENT) {
+      } else if (type === DeleteType.COMMENT) {
         await deleteMyComments(id);
-      }
-      if (type === DeleteType.LIBRARY) {
-        await deleteMyFavoriteLibraries(id);
-      }
-      if (type === DeleteType.PARK) {
-        await deleteMyFavoriteParksList(id);
-      }
-      if (type === DeleteType.REVIEW) {
+      } else if (type === DeleteType.LIBRARY || type === DeleteType.PARK) {
+        await deleteMyFavorite({ id, type: type.toLowerCase() });
+      } else if (type === DeleteType.REVIEW) {
         await deleteMyReviews(id);
       }
       deleteSuccess(id);

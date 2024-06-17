@@ -42,7 +42,7 @@ const ReviewList = ({ datas, type, setList }) => {
               <ReviewText>{data.comment}</ReviewText>
               <BottomTextBox>
                 <Date>{data.date}</Date>
-                <PlaceText>00도서관</PlaceText>
+                <PlaceText>{data.libraryName || data.parkName}</PlaceText>
               </BottomTextBox>
             </CommentBox>
             <DeleteWrite>
