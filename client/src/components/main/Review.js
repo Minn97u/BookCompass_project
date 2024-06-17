@@ -81,11 +81,11 @@ const Review = ({ rating, placeId }) => {
             reviewId={review._id} // Pass reviewId to ReviewList
             rating={review.rating}
             comment={review.comment}
-            user={review.user}
+            user={review.user.name}
             date={review.date}
             loggedInUserId={userId} // Pass loggedInUserId to ReviewList
             handleEditReview={handleEditReview} // Pass handleEditReview function
-            userId={review.userId} // Pass userId of each review
+            userId={review.user._id} // Pass userId of each review
           />
         ))
       )}

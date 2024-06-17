@@ -17,6 +17,7 @@ import {
   getMyPosts,
   getMyComments,
   getMyFavoriteLibraries,
+  getMyFavoriteParksList,
   getMyReviews
 } from '../api/Mypage';
 
@@ -30,15 +31,11 @@ const Mypage = () => {
   const [showModal, setShowModal] = useState(false);
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
-  const [libraryDatas, setLibraryDatas] = useState([]);
+  const [favoritePlaces, setFavoritePlaces] = useState([]);
+  // const [libraryDatas, setLibraryDatas] = useState([]);
+  // const [parkDatas, setParkDatas] = useState([]);
   const [reviewDatas, setReviewDatas] = useState([]);
   const navigate = useNavigate();
-
-  const bookMarkList = [
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
-  ];
 
   const handleSettingClick = () => {
     navigate('/mypage/edit');
@@ -107,9 +104,34 @@ const Mypage = () => {
   const fetchMyFavoriteLibraries = async () => {
     try {
       const res = await getMyFavoriteLibraries();
-      console.log('즐겨찾기 장소', res);
+      const libraryDatas = res.data.map((item) => {
+        return {
+          id: item._id,
+          name: item.name,
+          address: item.address
+        };
+      });
+      console.log('즐겨찾기 도서관', libraryDatas);
+      return libraryDatas;
     } catch (error) {
-      console.error('즐겨찾기 장소 실패:', error);
+      console.error('즐겨찾기 도서관 실패:', error);
+    }
+  };
+
+  const fetchMyFavoriteParks = async () => {
+    try {
+      const res = await getMyFavoriteParksList();
+      const parkDatas = res.data.map((item) => {
+        return {
+          id: item._id,
+          name: item.name,
+          address: item.address
+        };
+      });
+      console.log('즐겨찾기 공원', parkDatas);
+      return parkDatas;
+    } catch (error) {
+      console.error('즐겨찾기 공원 실패:', error);
     }
   };
 
@@ -141,9 +163,16 @@ const Mypage = () => {
           fetchProfileInfo(),
           fetchMyPosts(),
           fetchMyComments(),
-          fetchMyFavoriteLibraries(),
           fetchMyReviews()
         ]);
+
+        const [libraries, parks] = await Promise.all([
+          fetchMyFavoriteLibraries(),
+          fetchMyFavoriteParks()
+        ]);
+
+        setFavoritePlaces([...libraries, ...parks]);
+        console.log('전체 찜한 장소', favoritePlaces);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);
       }
@@ -187,7 +216,13 @@ const Mypage = () => {
         <MypageBox
           icon={BookMark}
           title='즐겨찾기 장소'
-          component={<BookMarkList datas={bookMarkList} />}
+          component={
+            <BookMarkList
+              datas={favoritePlaces}
+              type={'library'}
+              setList={setFavoritePlaces}
+            />
+          }
           mapIcon={MapIcon}
         />
         <MypageBox
@@ -212,7 +247,6 @@ export default Mypage;
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 60px);
 `;
 
 const ProfileConatiner = styled.div`
@@ -266,5 +300,6 @@ const MypageContainer = styled.div`
   grid-template-rows: repeat(2, 1fr);
   gap: 50px;
   align-items: center;
-  margin: auto;
+  margin: 25px auto;
+  padding: 30px;
 `;

@@ -26,7 +26,7 @@ const ReviewList = ({ datas, type, setList }) => {
 
   return (
     <>
-      {datas.map((data) => (
+      {datas.map((data, index) => (
         <ReviewGroup key={data.id}>
           <StarContainer>
             {[...Array(data.rating)].map((i) => (
@@ -40,7 +40,10 @@ const ReviewList = ({ datas, type, setList }) => {
           <TextContainer>
             <CommentBox>
               <ReviewText>{data.comment}</ReviewText>
-              <Date>{data.date}</Date>
+              <BottomTextBox>
+                <Date>{data.date}</Date>
+                <PlaceText>00도서관</PlaceText>
+              </BottomTextBox>
             </CommentBox>
             <DeleteWrite>
               <DeleteIconImg
@@ -50,9 +53,7 @@ const ReviewList = ({ datas, type, setList }) => {
               />
             </DeleteWrite>
           </TextContainer>
-          {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
-            <Hr />
-          )}
+          {datas.length > 1 && index !== datas.length - 1 && <Hr />}
         </ReviewGroup>
       ))}
       {modalOpen && (
@@ -79,7 +80,7 @@ const StarContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 13px;
 `;
 
 const Star = styled(StarIcon)`
@@ -108,6 +109,7 @@ const TextContainer = styled.div`
 
 const ReviewText = styled.div`
   font-size: 1.1rem;
+  margin-left: 3px;
 `;
 
 const CommentBox = styled.div`
@@ -118,7 +120,6 @@ const CommentBox = styled.div`
 const Date = styled.span`
   font-size: 0.8rem;
   color: #afafaf;
-  margin-top: 6px;
 `;
 
 const DeleteWrite = styled.button`
@@ -138,4 +139,20 @@ const Hr = styled.hr`
   width: 100%;
   margin-top: 10px;
   margin-bottom: 10px;
+`;
+
+const BottomTextBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 3px;
+  margin-top: -5px;
+`;
+
+const PlaceText = styled.p`
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #563c0a;
+  letter-spacing: -1px;
+  margin-left: 15px;
 `;

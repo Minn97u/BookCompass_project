@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
 import { ReactComponent as LogoSVG } from '../../assets/icons/Logo.svg';
 import AuthModal from '../auth/AuthModal';
 import { getLogout, getLoginStatus } from '../../api/Auth';
@@ -23,8 +23,9 @@ function Navbar() {
 
   const handelLoginStatus = async () => {
     try {
-      await getLoginStatus();
-      if (!userId) {
+      const res = await getLoginStatus();
+      const logined = res.data.loggedIn;
+      if (!logined) {
         setLoginText('로그인');
       } else {
         setIsLoggedIn(true);
@@ -117,6 +118,7 @@ function Navbar() {
       {showModal && (
         <AuthModal onClose={handleCloseModal} initialFormType='로그인' />
       )}
+      <Outlet />
     </>
   );
 }

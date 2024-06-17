@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import styled from 'styled-components';
 import DefaultModal from '../common/DefaultModal';
 import LoginForm from './LoginForm';
 import SignUpForm from './SignUpForm';
@@ -36,11 +37,9 @@ const AuthModal = ({ onClose, initialFormType }) => {
   };
 
   return (
-    <DefaultModal
-      title={formType}
-      component={renderForm()}
-      onClose={onClose}
-    ></DefaultModal>
+    <DefaultModal title={formType} onClose={onClose}>
+      {renderForm()}
+    </DefaultModal>
   );
 };
 
