@@ -9,7 +9,7 @@ export const getLoginStatus = () => {
 };
 
 export const getGoogleLogin = () => {
-  window.location.href = 'http://localhost:3000/api/google';
+  window.location.href = 'http://kdt-ai-10-team04.elicecoding.com/api/google';
 };
 
 export const postSignup = (data) => {
