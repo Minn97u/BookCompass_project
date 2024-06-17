@@ -32,10 +32,27 @@ router.get("/", async (req, res, next) => {
                 .json({ error: "placeId 파라미터가 필요합니다." });
         }
 
-        const reviews = await Review.find({ library: placeId })
-            .populate("user")
-            .populate("library")
-            .populate("park");
+        // 도서관인지 공원인지 확인
+        const libraryExists = await Library.exists({ _id: placeId });
+        const parkExists = await Park.exists({ _id: placeId });
+
+        let reviews;
+
+        if (libraryExists) {
+            reviews = await Review.find({ library: placeId })
+                .populate("user")
+                .populate("library")
+                .populate("park");
+        } else if (parkExists) {
+            reviews = await Review.find({ park: placeId })
+                .populate("user")
+                .populate("library")
+                .populate("park");
+        } else {
+            return res
+                .status(404)
+                .json({ error: "해당 장소를 찾을 수 없습니다." });
+        }
 
         const formattedReviews = reviews.map((review) => ({
             _id: review._id,
