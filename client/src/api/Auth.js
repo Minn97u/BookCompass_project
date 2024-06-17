@@ -33,7 +33,7 @@ export const postChangePassword = (data) => {
 };
 
 export const getUserInfo = () => {
-  return axios.get('/api/additional-info');
+  return axios.get('/api/userinfo');
 };
 
 export const postUserInfo = (data) => {

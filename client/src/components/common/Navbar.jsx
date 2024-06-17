@@ -23,8 +23,9 @@ function Navbar() {
 
   const handelLoginStatus = async () => {
     try {
-      await getLoginStatus();
-      if (!userId) {
+      const res = await getLoginStatus();
+      const logined = res.data.loggedIn;
+      if (!logined) {
         setLoginText('로그인');
       } else {
         setIsLoggedIn(true);
