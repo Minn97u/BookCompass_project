@@ -153,6 +153,5 @@ const PlaceText = styled.p`
   font-size: 0.9rem;
   font-weight: 500;
   color: #563c0a;
-  letter-spacing: -1px;
   margin-left: 15px;
 `;

@@ -32,12 +32,6 @@ export const getMyFavoriteLibraries = () => {
   return axios.get('/api/mypage/favoriteLibrariesList');
 };
 
-// export const deleteMyFavoriteLibraries = (data) => {
-//   return axios.delete('/api/mypage/favoriteLibraries', {
-//     data: { libraryId: data }
-//   });
-// };
-
 export const getMyFavoriteParksList = () => {
   return axios.get('/api/mypage/favoriteParksList');
 };

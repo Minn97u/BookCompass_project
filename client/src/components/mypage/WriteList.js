@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { navigate, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
@@ -38,7 +38,11 @@ const WriteList = ({ datas, type, setList }) => {
           <ListGroup key={data.id}>
             <List>
               <TextBox>
-                <Title onClick={() => handleTitleClick(data.id)}>
+                <Title
+                  onClick={() =>
+                    handleTitleClick(type === 'comment' ? data.postId : data.id)
+                  }
+                >
                   {data.title}
                 </Title>
                 <Date>{data.date}</Date>

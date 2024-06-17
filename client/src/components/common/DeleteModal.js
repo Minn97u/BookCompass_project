@@ -25,6 +25,7 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
         await deleteMyComments(id);
       } else if (type === DeleteType.LIBRARY || type === DeleteType.PARK) {
         await deleteMyFavorite({ id, type: type.toLowerCase() });
+        console.log('삭제??', type);
       } else if (type === DeleteType.REVIEW) {
         await deleteMyReviews(id);
       }
