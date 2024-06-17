@@ -28,6 +28,16 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
           console.error('평균 평점을 가져오는 중 오류 발생:', error);
         });
     }
+    if (place && type === 'park') {
+      axios
+        .get(`/api/parks/${place._id}`)
+        .then((response) => {
+          setAverageRating(response.data.averageRating || 0);
+        })
+        .catch((error) => {
+          console.error('평균 평점을 가져오는 중 오류 발생:', error);
+        });
+    }
   }, [isOpen, place, type]);
 
   const handleArchiveButtonClick = async () => {
