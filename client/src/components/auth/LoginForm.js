@@ -34,7 +34,7 @@ const LoginForm = ({ setFormType, onClose }) => {
 
   const handleGoogleLogin = async () => {
     try {
-      getGoogleLogin();
+      await getGoogleLogin();
       const res = await getUserInfo();
       console.log('구글 로그인 성공:', res);
       localStorage.setItem('userId', res.data.user.id);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import SignUpDistrict from './SignUpDistrict';
 import Districts from './Districts';
@@ -9,7 +9,7 @@ import { postSignup, getGoogleLogin, getUserInfo } from '../../api/Auth';
 
 const emailRegEx =
   /^[A-Za-z0-9]([-_.]?[A-Za-z0-9])*@[A-Za-z0-9]([-_.]?[A-Za-z0-9])*\.[A-Za-z]{2,3}$/i;
-
+const passwordRegEx = /^.{8,}$/;
 const SignUpForm = ({ setFormType, onClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -19,8 +19,43 @@ const SignUpForm = ({ setFormType, onClose }) => {
   const [region, setRegion] = useState('');
   const [checkEmailText, setCheckEmailText] = useState('');
   const [checkPasswordText, setCheckPasswordText] = useState('');
-  const [signupError, setSignupError] = useState('');
+  const [checkPasswordReg, setCheckPasswordReg] = useState('');
+  const [signupError, setSignupError] = useState('모두 입력해 주세요.');
+  const [isFormValid, setIsFormValid] = useState(false);
 
+  useEffect(() => {
+    const validateForm = () => {
+      const isValid =
+        emailCheck(email) &&
+        passwordRegCheck(password) &&
+        password === checkPassword &&
+        name.trim() !== '' &&
+        region.trim() !== '' &&
+        foundAnswer.trim() !== '' &&
+        checkEmailText === '' &&
+        checkPasswordText === '' &&
+        checkPasswordReg === '';
+      setIsFormValid(isValid);
+
+      if (isValid) {
+        setSignupError('');
+      } else {
+        setSignupError('모두 입력해 주세요.');
+      }
+    };
+
+    validateForm();
+  }, [
+    email,
+    password,
+    checkPassword,
+    name,
+    region,
+    foundAnswer,
+    checkEmailText,
+    checkPasswordText,
+    checkPasswordReg
+  ]);
   const emailCheck = (email) => {
     const isValid = emailRegEx.test(email);
     setCheckEmailText(isValid ? '' : '이메일 형식이 일치하지 않습니다.');
@@ -29,9 +64,20 @@ const SignUpForm = ({ setFormType, onClose }) => {
   };
 
   const passwordCheck = (password, checkPassword) => {
-    setCheckPasswordText(
-      password !== checkPassword ? '비밀번호가 일치하지 않습니다.' : ''
+    if (password !== checkPassword) {
+      setCheckPasswordText('비밀번호가 일치하지 않습니다.');
+    } else {
+      setCheckPasswordText('');
+    }
+  };
+
+  const passwordRegCheck = (password) => {
+    const isValid = passwordRegEx.test(password);
+    setCheckPasswordReg(
+      isValid ? '' : '비밀번호는 최소 8자 이상으로 설정해주세요.'
     );
+
+    return isValid;
   };
 
   const handleSignup = async () => {
@@ -49,13 +95,17 @@ const SignUpForm = ({ setFormType, onClose }) => {
       setFormType('로그인');
     } catch (error) {
       console.error('회원가입 오류:', error);
-      setSignupError('모두 입력해 주세요.');
+      if (error.response && error.response.data && error.response.data.msg) {
+        setSignupError(error.response.data.msg); // 서버에서 전달된 에러 메시지 설정
+      } else {
+        setSignupError('회원가입 중 오류가 발생했습니다. 다시 시도해 주세요.'); // 일반적인 에러 메시지 설정
+      }
     }
   };
 
   const handleGoogleSignup = async () => {
     try {
-      await getGoogleLogin();
+      getGoogleLogin();
       const res = await getUserInfo();
       console.log('구글 회원가입 성공', res);
       localStorage.setItem('userId', res.data.user.id);
@@ -88,7 +138,11 @@ const SignUpForm = ({ setFormType, onClose }) => {
         type='password'
         placeholder='비밀번호 입력'
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => {
+          setPassword(e.target.value);
+          passwordRegCheck(e.target.value);
+        }}
+        checkText={checkPasswordReg}
         height='1.8rem'
       />
       <LongInput
@@ -131,7 +185,9 @@ const SignUpForm = ({ setFormType, onClose }) => {
       </BottomInputBox>
       {signupError && <ErrorText>{signupError}</ErrorText>}
 
-      <SignUpButton onClick={handleSignup}>회원가입</SignUpButton>
+      <SignUpButton onClick={handleSignup} disabled={!isFormValid}>
+        회원가입
+      </SignUpButton>
       <GoogleButton onClick={handleGoogleSignup}>
         <GoogleIconImg src={GoogleIcon} alt='google-icon' />
         Google로 시작하기
@@ -155,11 +211,11 @@ const ErrorText = styled.p`
 const SignUpButton = styled.button`
   width: 13rem;
   height: 2.7rem;
-  background-color: #563c0a;
-  color: white;
+  background-color: ${(props) => (props.disabled ? '#d3d3d3' : '#563c0a')};
+  color: ${(props) => (props.disabled ? '#a9a9a9' : 'white')};
   border-radius: 10px;
   border: none;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   margin-top: 30px;
   font-size: 1rem;
   font-weight: 500;
