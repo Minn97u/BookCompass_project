@@ -242,7 +242,6 @@ router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
             postId: comment.postId ? comment.postId.shortId : null,
             postTitle: comment.postId ? comment.postId.title : null,
         }));
-        console.log("목록:", formattedComments);
         res.json(formattedComments);
     } catch (error) {
         next(error);
