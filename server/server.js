@@ -39,8 +39,11 @@ mongoose
 
 // CORS 설정 추가
 const corsOptions = {
-    // origin: process.env.CORS_ORIGIN || "http://localhost:3000", // 클라이언트 도메인 명시
-    origin: "http://localhost:3000",
+    origin:
+        process.env.NODE_ENV === "development"
+            ? "http://localhost:3000"
+            : process.env.CORS_ORIGIN,
+
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // withCredentials 지원
     allowedHeaders: "Content-Type,Authorization",
