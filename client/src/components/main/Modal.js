@@ -24,11 +24,8 @@ const Modal = ({
   setArchiveAdded
 }) => {
   const [averageRating, setAverageRating] = useState(0);
-  const [clickBookMark, setClickBookMark] = useState(false);
-  const [archiveIcon, setArchiveIcon] = useState(false);
 
   useEffect(() => {
-    console.log('즐찾???', archiveAdded);
     const fetchAverageRating = async () => {
       try {
         if (place) {
@@ -51,28 +48,44 @@ const Modal = ({
   const handleArchiveButtonClick = async () => {
     try {
       let response;
+
       if (type === 'library') {
-        if (archiveAdded) {
+        const isFavoriteIndex = archiveAdded.libraryFavs.findIndex(
+          (item) => item.id === place._id
+        );
+        console.log('나올까?', isFavoriteIndex !== -1);
+        if (isFavoriteIndex !== -1) {
           response = await deleteLibraryFavorite(place._id);
-          setArchiveAdded((prev) => ({ ...prev, [place._id]: false }));
-          setClickBookMark(false);
+          setArchiveAdded((prev) => ({
+            ...prev,
+            libraryFavs: prev.libraryFavs.filter(
+              (item, index) => index !== isFavoriteIndex
+            )
+          }));
         } else {
           response = await addLibraryFavorite(place._id);
-          setArchiveAdded((prev) => ({ ...prev, [place._id]: true }));
-          setClickBookMark(true);
+          setArchiveAdded((prev) => ({
+            ...prev,
+            libraryFavs: [...prev.libraryFavs, { id: place._id }]
+          }));
         }
       } else if (type === 'park') {
-        if (archiveAdded) {
+        if (archiveAdded.parkFavs.some((item) => item.id === place._id)) {
+          // 이미 즐겨찾기에 추가된 경우 삭제
           response = await deleteParkFavorite(place._id);
-          setArchiveAdded((prev) => ({ ...prev, [place._id]: false }));
-          setClickBookMark(false);
+          setArchiveAdded((prev) => ({
+            ...prev,
+            parkFavs: prev.parkFavs.filter((item) => item.id !== place._id)
+          }));
         } else {
+          // 즐겨찾기에 추가되지 않은 경우 추가
           response = await addParkFavorite(place._id);
-          setArchiveAdded((prev) => ({ ...prev, [place._id]: true }));
-          setClickBookMark(true);
+          setArchiveAdded((prev) => ({
+            ...prev,
+            parkFavs: [...prev.parkFavs, { id: place._id }]
+          }));
         }
       }
-
       alert(response.data);
     } catch (error) {
       if (error.response) {
@@ -85,10 +98,12 @@ const Modal = ({
 
   if (!isOpen || !place) return null;
 
-  const archiveIconSrc =
-    clickBookMark || (archiveAdded && archiveAdded[place._id])
-      ? ArchiveAddedIconSrc
-      : ArchiveAddIconSrc;
+  const isLibraryFavorite = archiveAdded.libraryFavs.some(
+    (item) => item.id === place._id
+  );
+  const isParkFavorite = archiveAdded.parkFavs.some(
+    (item) => item.id === place._id
+  );
 
   return (
     <ModalContainer onClick={closeModal}>
@@ -105,7 +120,15 @@ const Modal = ({
           {place.address || '주소 없음'}
           <ArchiveAddButton onClick={handleArchiveButtonClick}>
             <img
-              src={archiveAdded ? ArchiveAddedIconSrc : ArchiveAddIconSrc}
+              src={
+                type === 'library'
+                  ? isLibraryFavorite
+                    ? ArchiveAddedIconSrc
+                    : ArchiveAddIconSrc
+                  : isParkFavorite
+                    ? ArchiveAddedIconSrc
+                    : ArchiveAddIconSrc
+              }
               alt='ArchiveIcon'
             />
           </ArchiveAddButton>

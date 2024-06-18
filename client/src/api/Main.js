@@ -45,7 +45,6 @@ export const getLibraryFav = async (userId) => {
     const response = await axios.get('/api/mypage/favoriteLibrariesList', {
       params: { userId }
     });
-    console.log('도서관 즐찾', response.data);
     return response.data;
   } catch (error) {
     console.error('도서관 즐겨찾기 목록을 가져오는 중 오류 발생:', error);

@@ -74,14 +74,14 @@ const Main = () => {
     const fetchLibraryFavs = async () => {
       try {
         const libraryFavs = await getLibraryFav();
-        const libraryFavsMap = libraryFavs.reduce((acc, item) => {
-          acc[item._id] = true; // ID를 키로 하고 값을 true로 설정
-          return acc;
-        }, {});
-        console.log('도서관 즐찾', libraryFavsMap);
+        const libraryFavsMap = libraryFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
         setArchiveAdded((prevState) => ({
           ...prevState,
-          ...libraryFavsMap
+          libraryFavs: libraryFavsMap
         }));
       } catch (error) {
         console.error('Error fetching library favorites:', error);
@@ -91,13 +91,14 @@ const Main = () => {
     const fetchParkFavs = async () => {
       try {
         const parkFavs = await getParkFav();
-        const parkFavsMap = parkFavs.reduce((acc, item) => {
-          acc[item._id] = true; // ID를 키로 하고 값을 true로 설정
-          return acc;
-        }, {});
+        const parkFavsMap = parkFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
         setArchiveAdded((prevState) => ({
           ...prevState,
-          ...parkFavsMap
+          parkFavs: parkFavsMap
         }));
       } catch (error) {
         console.error('Error fetching park favorites:', error);
@@ -108,7 +109,6 @@ const Main = () => {
     fetchParkPings();
     fetchLibraryFavs();
     fetchParkFavs();
-    console.log('즐찾???', archiveAdded);
   }, []);
 
   const handleFindLibraryClick = () => {
@@ -248,23 +248,11 @@ const Main = () => {
         place={selectedButton === 'library' ? selectedLibrary : selectedPark}
         type={selectedButton === 'library' ? 'library' : 'park'}
         userId={userId}
-        archiveAdded={
-          archiveAdded[
-            selectedButton === 'library'
-              ? selectedLibrary?._id
-              : selectedPark?._id
-          ] || false
-        } // 개별 장소별 archiveAdded 상태 전달
+        archiveAdded={archiveAdded} // Boolean 값만 전달
         setArchiveAdded={(isAdded) => {
-          const id =
-            selectedButton === 'library'
-              ? selectedLibrary._id
-              : selectedPark._id;
-          setArchiveAdded((prevState) => ({
-            ...prevState,
-            [id]: isAdded
-          }));
-        }} // archiveAdded 상태를 개별 장소별로 설정
+          // 필요에 따라 상태를 업데이트
+          setArchiveAdded(isAdded);
+        }}
       />
     </FullHeightContainer>
   );
