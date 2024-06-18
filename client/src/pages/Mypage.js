@@ -6,7 +6,6 @@ import AuthModal from '../components/auth/AuthModal';
 import WriteList from '../components/mypage/WriteList';
 import BookMarkList from '../components/mypage/BookMarkList';
 import ReviewList from '../components/mypage/ReviewList';
-import SettingIcon from '../assets/icons/SettingIcon.svg';
 import WriteListIcon from '../assets/icons/WriteListIcon.svg';
 import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
@@ -81,7 +80,6 @@ const Mypage = () => {
         };
       });
       setPostDatas(datas);
-      console.log('내가 쓴 글', datas);
     } catch (error) {
       console.error('내가 쓴 글 실패:', error);
     }
@@ -102,7 +100,6 @@ const Mypage = () => {
         };
       });
       setCommentDatas(datas);
-      console.log('내가 쓴 댓글', datas);
     } catch (error) {
       console.error('내가 쓴 댓글 실패:', error);
     }
@@ -121,7 +118,6 @@ const Mypage = () => {
           type: 'library'
         };
       });
-      console.log('즐겨찾기 도서관', libraryDatas);
       return libraryDatas;
     } catch (error) {
       console.error('즐겨찾기 도서관 실패:', error);
@@ -141,7 +137,6 @@ const Mypage = () => {
           type: 'park'
         };
       });
-      console.log('즐겨찾기 공원', parkDatas);
       return parkDatas;
     } catch (error) {
       console.error('즐겨찾기 공원 실패:', error);
@@ -165,7 +160,6 @@ const Mypage = () => {
         };
       });
       setReviewDatas(datas);
-      console.log('내가 쓴 리뷰', res);
     } catch (error) {
       console.error('내가 쓴 리뷰 실패:', error);
     }
@@ -188,7 +182,6 @@ const Mypage = () => {
 
         const allFavoritePlaces = [...libraryDatas, ...parkDatas];
         setFavoritePlaces(allFavoritePlaces);
-        console.log('전체 찜한 장소', allFavoritePlaces);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);
       }
@@ -204,11 +197,7 @@ const Mypage = () => {
         <UserName>{myInfo.name}</UserName>
         <UserEmail>{myInfo.email}</UserEmail>
         <UserDescription>{myInfo.description}</UserDescription>
-        <SettingBtn
-          src={SettingIcon}
-          alt='setting'
-          onClick={handleSettingClick}
-        ></SettingBtn>
+        <SettingBtn onClick={handleSettingClick}>Edit</SettingBtn>
       </ProfileConatiner>
       <MypageContainer>
         <MypageBox
@@ -310,14 +299,19 @@ const UserDescription = styled.p`
   margin-top: 35px;
 `;
 
-const SettingBtn = styled.img`
-  width: 3rem;
-  padding: 5px 10px 5px 10px;
+const SettingBtn = styled.button`
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: white;
+  width: 2.5rem;
+  padding: 5px;
   border: none;
-  position: absolute;
-  bottom: 50px;
-  left: 20px;
+  border-radius: 7px;
+  background-color: #563c0a;
+  align-self: flex-end;
   cursor: pointer;
+  margin-top: 25px;
+  margin-bottom: 2px;
 `;
 
 const MypageContainer = styled.div`

@@ -42,6 +42,12 @@ const FindEmailForm = ({ setFormType }) => {
     }
   };
 
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      handleFindEmail();
+    }
+  };
+
   return (
     <>
       <ShortInputContainer>
@@ -68,6 +74,7 @@ const FindEmailForm = ({ setFormType }) => {
         placeholder='가장 좋아하는 작가 이름'
         value={foundAnswer}
         onChange={(e) => setFoundAnswer(e.target.value)}
+        handleEnter={handleEnter}
       />
       <ResultText>{resultText}</ResultText>
       <FindButton onClick={handleFindEmail}>찾기</FindButton>

@@ -8,6 +8,7 @@ export const LongInput = ({
   value,
   onChange,
   checkText,
+  handleEnter,
   height
 }) => {
   return (
@@ -22,6 +23,7 @@ export const LongInput = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onKeyDown={handleEnter}
         height={height}
       />
     </InputContainer>

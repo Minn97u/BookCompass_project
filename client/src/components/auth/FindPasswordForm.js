@@ -17,7 +17,7 @@ const FindPasswordForm = ({ setFormType }) => {
       setEmailError('임시 비밀번호가 전송되었습니다.');
     } catch (error) {
       console.error('비밀번호 찾기 실패:', error);
-      const status = error.res?.status;
+      const status = error.response.status;
       if (status === 404) {
         setEmailError('가입되지 않은 이메일입니다.');
       } else if (status === 400) {
@@ -25,6 +25,12 @@ const FindPasswordForm = ({ setFormType }) => {
       } else {
         console.error('비밀번호 찾기 실패:', error);
       }
+    }
+  };
+
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      handleFindPassword();
     }
   };
 
@@ -37,6 +43,7 @@ const FindPasswordForm = ({ setFormType }) => {
           placeholder='이메일 입력'
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          handleEnter={handleEnter}
         />
         {emailError && <ErrorText>{emailError}</ErrorText>}
       </InputContainer>

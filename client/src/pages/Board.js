@@ -260,7 +260,9 @@ const Board = () => {
     <BoardContainer>
       <BoardTagsContainer>
         <TagButtons activeTag={activeTag} handleTagClick={handleTagClick} />
-        <WriteIcon onClick={handleWriteIconClick} />
+        <IconBox>
+          <WriteIcon onClick={handleWriteIconClick} />
+        </IconBox>
       </BoardTagsContainer>
       <PostList posts={posts} openModal={openModal} />
       <PaginationContainer>
@@ -333,6 +335,10 @@ const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 1.3rem;
+`;
+
+const IconBox = styled.div`
+  cursor: pointer;
 `;
 
 export default Board;

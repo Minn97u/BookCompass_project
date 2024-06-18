@@ -21,12 +21,14 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
     try {
       if (type === DeleteType.POST) {
         await deleteMyPost(id);
-      } else if (type === DeleteType.COMMENT) {
+      }
+      if (type === DeleteType.COMMENT) {
         await deleteMyComments(id);
-      } else if (type === DeleteType.LIBRARY || type === DeleteType.PARK) {
+      }
+      if (type === DeleteType.LIBRARY || type === DeleteType.PARK) {
         await deleteMyFavorite({ id, type: type.toLowerCase() });
-        console.log('삭제??', type);
-      } else if (type === DeleteType.REVIEW) {
+      }
+      if (type === DeleteType.REVIEW) {
         await deleteMyReviews(id);
       }
       deleteSuccess(id);

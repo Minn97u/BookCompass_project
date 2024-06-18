@@ -20,8 +20,6 @@ const BookMarkMap = ({
       return;
     }
 
-    console.log('지도정보 들어오나', libraries, parks);
-
     const mapContainer = document.getElementById('map');
     const mapOption = {
       center: new kakao.maps.LatLng(37.5665, 126.978),

@@ -26,7 +26,6 @@ const EditPage = () => {
   const fetchProfileInfo = async () => {
     try {
       const res = await getProfileInfo();
-      console.log('프로필 가져오기:', res);
       const { profilePic, name, profileMsg } = res.data;
       setMyProfile({
         profileImg: profilePic,

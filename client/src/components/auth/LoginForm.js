@@ -12,6 +12,12 @@ const LoginForm = ({ setFormType, onClose }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loginError, setLoginError] = useState('');
 
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   const handleLogin = async () => {
     const data = {
       email: email,
@@ -64,6 +70,7 @@ const LoginForm = ({ setFormType, onClose }) => {
           placeholder='비밀번호 입력'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          handleEnter={handleEnter}
         />
         <VisibilityIcon
           src={isPasswordVisible ? VisibleIcon : InvisibleIcon}

@@ -23,6 +23,7 @@ const PostDetails = () => {
 
   const { isEditing } = state;
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isDeleted, setIsDeleted] = useState(false);
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
   const { handleSubmit, setValue, reset, watch } = useForm({
     defaultValues: {
@@ -42,6 +43,7 @@ const PostDetails = () => {
         setSelectedItem(res);
       } catch (error) {
         console.error('게시물 상세 정보 가져오기 오류:', error);
+        setIsDeleted(true); // 데이터가 null인 경우 삭제된 페이지로 설정
       }
     };
 
@@ -174,7 +176,11 @@ const PostDetails = () => {
   return (
     <PostDetailsContainer>
       {selectedItem === null ? (
-        <p>Loading...</p> // 로딩 상태 표시
+        isDeleted ? (
+          <p>삭제된 페이지입니다.</p> // 삭제된 페이지 표시
+        ) : (
+          <p>Loading...</p> // 로딩 상태 표시
+        )
       ) : isEditing ? (
         <PostForm
           title={watch('title')}
