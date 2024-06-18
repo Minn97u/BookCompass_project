@@ -21,29 +21,39 @@ const googleStrategy = new GoogleStrategy(
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
-      let user = await User.findOne({ googleId: profile.id });
+      // 먼저 googleId로 사용자를 찾고, 없다면 email로 찾습니다.
+      let user = await User.findOne({
+        $or: [
+          { googleId: profile.id },
+          { email: profile.emails[0].value },
+        ],
+      });
 
-      if (!user) {
-        user = await User.findOne({ email: profile.emails[0].value });
-        if (user) {
-          user.googleId = profile.id;
-          user.googleAccessToken = accessToken;
-          user.googleRefreshToken = refreshToken;
-          await user.save();
-        } else {
-          user = new User({
-            googleId: profile.id,
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            profilePic:
-              profile.photos && profile.photos.length > 0
-                ? profile.photos[0].value
-                : null,
-            googleAccessToken: accessToken,
-            googleRefreshToken: refreshToken
-          });
-          await user.save();
+      if (user) {
+        // isDeleted가 true이면 로그인 불가
+        if (user.isDeleted) {
+          return done(null, false, { message: 'This account has been deleted.' });
         }
+
+        // 기존 사용자가 있고 googleId가 없으면 업데이트
+        if (!user.googleId) {
+          user.googleId = profile.id;
+        }
+        user.googleAccessToken = accessToken;
+        await user.save();
+      } else {
+        // 새로운 사용자 생성
+        user = new User({
+          googleId: profile.id,
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          profilePic:
+            profile.photos && profile.photos.length > 0
+              ? profile.photos[0].value
+              : null,
+          googleAccessToken: accessToken,
+        });
+        await user.save();
       }
 
       return done(null, user);
@@ -52,6 +62,8 @@ const googleStrategy = new GoogleStrategy(
     }
   }
 );
+
+module.exports = googleStrategy;
 
 passport.use(googleStrategy);
 
