@@ -7,13 +7,18 @@ import ReviewWrite from './ReviewWrite';
 import ReviewList from './ReviewList';
 import Pagination from './Pagination';
 import axios from 'axios';
+import ReviewEdit from './ReviewEdit'; // 추가된 부분
+import { getReviews, editReview } from '../../api/Main'; // 경로에 따라 실제 경로로 수정 필요
 
-const Review = ({ rating, placeId, type }) => {
+const Review = ({ rating, placeId }) => {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentReview, setCurrentReview] = useState(null);
+
   const reviewsPerPage = 2;
 
   const handleToggleReview = () => {
@@ -24,9 +29,7 @@ const Review = ({ rating, placeId, type }) => {
 
   const refreshReviews = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:3001/api/reviews?placeId=${placeId}`
-      );
+      const response = await getReviews(placeId);
       setReviews(response.data);
     } catch (error) {
       console.error('리뷰를 불러오는 데 실패했습니다:', error);
@@ -37,17 +40,32 @@ const Review = ({ rating, placeId, type }) => {
     refreshReviews();
   }, [placeId]);
 
+  useEffect(() => {
+    setIconImage(isWriteReviewOpen || isEditing ? BackIcon : WriteReviewIcon);
+  }, [isWriteReviewOpen, isEditing]);
+
   const indexOfLastReview = currentPage * reviewsPerPage;
   const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
   const currentReviews = reviews.slice(indexOfFirstReview, indexOfLastReview);
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const handleEditReview = async (editedReview) => {
+  const handleEditClick = (review) => {
+    setCurrentReview(review);
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    setCurrentReview(null);
+    setIsEditing(false);
+  };
+
+  const handleSaveEdit = async (editedReview) => {
     try {
-      // Implement your edit review functionality here
-      console.log('Editing review:', editedReview);
-      // Example: You can use axios.put() to send edited review data to the server
+      await editReview(editedReview); // 실제 리뷰 수정 API 호출
+      alert('리뷰가 수정되었습니다.');
+      refreshReviews();
+      handleCancelEdit();
     } catch (error) {
       console.error('리뷰 수정 중 오류 발생:', error);
     }
@@ -69,24 +87,29 @@ const Review = ({ rating, placeId, type }) => {
 
       {isWriteReviewOpen ? (
         <ReviewWrite
-          type={type}
           placeId={placeId}
           userId={userId}
           refreshReviews={refreshReviews}
           onClose={handleToggleReview}
         />
+      ) : isEditing && currentReview ? (
+        <ReviewEdit
+          reviewId={currentReview._id}
+          onClose={handleCancelEdit}
+          refreshReviews={refreshReviews}
+        />
       ) : (
         currentReviews.map((review) => (
           <ReviewList
             key={review._id}
-            reviewId={review._id} // Pass reviewId to ReviewList
+            reviewId={review._id}
             rating={review.rating}
             comment={review.comment}
             user={review.user.name}
             date={review.date}
-            loggedInUserId={userId} // Pass loggedInUserId to ReviewList
-            handleEditReview={handleEditReview} // Pass handleEditReview function
-            userId={review.user._id} // Pass userId of each review
+            loggedInUserId={userId}
+            handleEditReview={() => handleEditClick(review)}
+            userId={review.user._id}
           />
         ))
       )}

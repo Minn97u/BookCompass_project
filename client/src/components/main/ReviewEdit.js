@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ClickStar from './ClickStar';
-import axios from 'axios';
-import { postReview } from '../../api/Main';
+import { editReview } from '../../api/Main'; // import your API function
 
-function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
+const EditForm = ({ reviewId, onClose, refreshReviews }) => {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  console.log('libraryId:', libraryId); // 추가
 
   const handleReviewChange = (e) => {
     setReviewText(e.target.value);
   };
 
-  console.log('userId:', userId);
   const handleSubmit = async () => {
     if (rating === 0) {
       alert('평점을 선택해주세요.');
@@ -21,27 +18,23 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
     }
 
     try {
-      console.log('리뷰 데이터:', {
-        userId,
-        libraryId,
+      console.log('Sending data to server:', {
+        reviewId,
         rating,
         comment: reviewText
       });
-
-      const response = await postReview(
-        userId,
-        libraryId,
-        placeId,
-        rating,
-        reviewText
-      );
-
-      alert('리뷰가 성공적으로 작성되었습니다.');
+      const response = await editReview(reviewId, rating, reviewText);
+      alert('리뷰가 성공적으로 수정되었습니다.');
       onClose();
       refreshReviews(); // 리뷰 목록 갱신 함수 호출
     } catch (error) {
-      console.error('리뷰 작성에 실패했습니다:', error);
-      alert('리뷰 작성에 실패했습니다.');
+      if (error.response) {
+        console.error('서버 응답 오류:', error.response.data);
+        alert('서버 응답 오류: ' + error.response.data);
+      } else {
+        console.error('네트워크 오류:', error.message);
+        alert('네트워크 오류: ' + error.message);
+      }
     }
   };
 
@@ -49,7 +42,7 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
     <ReviewWriteContainer>
       <Header>
         <ClickStar setRating={setRating} />
-        <Button onClick={handleSubmit}>등록</Button>
+        <Button onClick={handleSubmit}>수정</Button>
       </Header>
       <ReviewInput>
         <input
@@ -61,9 +54,9 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
       </ReviewInput>
     </ReviewWriteContainer>
   );
-}
+};
 
-export default ReviewWrite;
+export default EditForm;
 
 const ReviewWriteContainer = styled.div`
   display: flex;

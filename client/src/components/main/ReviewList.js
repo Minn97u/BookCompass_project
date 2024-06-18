@@ -15,10 +15,6 @@ function ReviewList({
   const isEditable = loggedInUserId === userId;
   console.log('리뷰를 수정해야해', loggedInUserId, userId);
 
-  const handleEditClick = () => {
-    handleEditReview({ reviewId, rating, comment });
-  };
-
   return (
     <ReviewListContainer>
       <ReviewStar rating={rating} />
@@ -26,7 +22,7 @@ function ReviewList({
       <ReviewInfo>
         <span>{user}</span>
         <span>{new Date(date).toLocaleDateString()}</span>
-        {isEditable && <EditButton onClick={handleEditClick}>수정</EditButton>}
+        {isEditable && <EditButton onClick={handleEditReview}>수정</EditButton>}
       </ReviewInfo>
     </ReviewListContainer>
   );

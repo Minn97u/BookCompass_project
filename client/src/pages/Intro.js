@@ -4,26 +4,146 @@ import { ReactComponent as BigLogo } from '../../src/assets/icons/IntroLogo.svg'
 
 function Intro() {
   return (
-    <div>
-      <Container>
+    <MainContainer>
+      <Header>
         <StyledBigLogo />
-      </Container>
-      <StyledLeftDiv>
-        <TextWithMargin>당신의 이야기가 시작되는 곳,</TextWithMargin>
-        <TextWithMargin>서재나침반</TextWithMargin>
-      </StyledLeftDiv>
-      <StyledRightDiv>
-        <TextWithMargin>당신의 서재를 찾아보세요</TextWithMargin>
-      </StyledRightDiv>
-    </div>
+      </Header>
+      <GraphSection>
+        <DescriptionContainer>
+          <DescriptionTitle>연령대별 독서 통계</DescriptionTitle>
+          <DescriptionText>
+            지난 10년 동안 서울시의 독서인구 비율은 2013년{' '}
+            <strong>62.4%</strong>에서 2023년 <strong>48.5%</strong>로 꾸준히{' '}
+            <strong>감소</strong> 해왔습니다.
+            <br />
+            <br /> 또한, 지난 1년 동안 독서 인구 1인당 평균 독서 권수는{' '}
+            <strong>14.8권</strong>으로, 2년 전에 비해{' '}
+            <strong>0.4권 감소</strong>한 상황입니다. <br />
+            <br />
+            이러한 추세는 현대 사회에서 <strong>독서의 중요성</strong>이 점점 더
+            간과되고 있음을 보여줍니다.
+          </DescriptionText>
+        </DescriptionContainer>
+      </GraphSection>
+      <GraphSection>
+        <GraphsRow>
+          <GraphContainer>
+            <iframe
+              src='/books_per_person_by_age.html'
+              width='100%'
+              height='500px'
+              style={{ border: 'none' }}
+              title='연령대별 1인당 평균 독서 권수'
+            />
+          </GraphContainer>
+          <GraphContainer>
+            <iframe
+              src='/reading_population_by_age.html'
+              width='100%'
+              height='500px'
+              style={{ border: 'none' }}
+              title='연령대별 평균 독서 인구 비율'
+            />
+          </GraphContainer>
+        </GraphsRow>
+      </GraphSection>
+      <DescriptionContainer>
+        <DescriptionTitle>서울시 독서문화 실태 조사 결과</DescriptionTitle>
+        <DescriptionText>
+          <br />
+          서울시민들의 도서관 이용 실태 조사를 바탕으로, 우리는 도서관이
+          제공해야 할 <strong>다양한 정보</strong>와 <strong>프로그램</strong>,
+          그리고 <strong>접근성</strong>의 중요성을 확인할 수 있었습니다.
+          <br />
+        </DescriptionText>
+      </DescriptionContainer>
+      <GraphSection>
+        <GraphsRow>
+          <GraphContainer>
+            <iframe
+              src='/fig_q29_pie2.html'
+              width='100%'
+              height='500px'
+              style={{ border: 'none' }}
+              title='Pie Chart Q29'
+            />
+          </GraphContainer>
+          <GraphContainer>
+            <iframe
+              src='/fig_q28_pie2.html'
+              width='100%'
+              height='500px'
+              style={{ border: 'none' }}
+              title='Pie Chart Q28'
+            />
+          </GraphContainer>
+        </GraphsRow>
+      </GraphSection>
+      <DescriptionContainer>
+        <DescriptionTitle>
+          서울시 시민들의 공공 도서관 방문 횟수는?
+        </DescriptionTitle>
+        <DescriptionText>
+          <br />
+          2018년부터 2022년까지 서울시 각 구의 도서관 방문자 수는{' '}
+          <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
+          감소하였으며, <br />
+          <br /> 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전 수준으로
+          완전히 회복되지 않았습니다.
+          <br />
+        </DescriptionText>
+      </DescriptionContainer>
+      <GraphSection>
+        <GraphContainer>
+          <iframe
+            src='/seoul_districts_visitors.html'
+            width='100%'
+            height='500px'
+            style={{ border: 'none' }}
+            title='Seoul Districts Visitors'
+          />
+        </GraphContainer>
+      </GraphSection>
+      <DescriptionContainer>
+        <DescriptionTitle>서재 나침반의 기획 의도</DescriptionTitle>
+        <DescriptionText>
+          서재 나침반은 이러한 문제를 해결하고{' '}
+          <strong>독서 문화를 활성화</strong>하기 위해 만들어졌습니다.
+          <br />
+          <br /> 시민들이 <strong>도서관 정보를 쉽게</strong> 접근 할 수 있도록
+          하며, <strong>다양한 독서 활동과 커뮤니티 환경</strong>을 제공합니다.
+          <br />
+          <br />
+          이를 통해 <strong>도서관 이용률</strong>을 높이고, 시민들이 더 많은
+          책을 읽을 수 있도록 돕는 것이 우리의 <strong>목표</strong>입니다.{' '}
+          <br />
+          <br />
+        </DescriptionText>
+      </DescriptionContainer>
+      <Content>
+        <StyledLeftDiv>
+          <TextWithMargin>당신의 이야기가 시작되는 곳,</TextWithMargin>
+          <TextWithMargin>서재나침반</TextWithMargin>
+        </StyledLeftDiv>
+        <StyledRightDiv>
+          <TextWithMargin>당신의 서재를 찾아보세요</TextWithMargin>
+        </StyledRightDiv>
+      </Content>
+    </MainContainer>
   );
 }
 
-const Container = styled.div`
+const MainContainer = styled.div`
   display: flex;
-  justify-content: center; /* 가로 중앙 정렬 */
-  align-items: center; /* 세로 중앙 정렬 */
-  height: 100vh; /* 화면 전체 높이를 차지하도록 설정 */
+  flex-direction: column;
+  align-items: center;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
 `;
 
 const StyledBigLogo = styled(BigLogo)`
@@ -31,66 +151,90 @@ const StyledBigLogo = styled(BigLogo)`
   height: 290.62px;
 `;
 
+const Content = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 20px;
+`;
+
 const StyledLeftDiv = styled.div`
-  /* Rectangle 290 */
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
-
-  position: absolute;
-  width: 50%;
-  height: 388px;
-  left: 0px;
-  top: 800px;
-
   background: rgba(215, 184, 144, 0.7);
-
-  /* 당신의 이야기가 시작되는 곳, 서재 나침반 */
+  padding: 20px;
 
   font-family: 'SUITE';
   font-style: normal;
   font-weight: 500;
   font-size: 36px;
   line-height: 40px;
-  /* or 44% */
   text-align: right;
-
   color: #543d20;
-
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
 const StyledRightDiv = styled.div`
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-
-  position: absolute;
-  width: 50%;
-  height: 388px;
-  right: 0px;
-  top: 800px;
-
   background: rgba(86, 60, 10, 0.7);
-  /* 당신만의 서재를 찾아보세요 */
+  padding: 20px;
 
   font-family: 'SUITE';
   font-style: normal;
   font-weight: 600;
   font-size: 36px;
-  line-height: 16px;
-  /* identical to box height, or 44% */
+  line-height: 40px;
   text-align: left;
-
   color: #fffefc;
-
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 `;
 
 const TextWithMargin = styled.div`
   margin: 20px;
+`;
+
+const GraphSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 50px;
+`;
+
+const GraphsRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+`;
+
+const GraphContainer = styled.div`
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+`;
+
+const DescriptionContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+`;
+
+const DescriptionTitle = styled.h2`
+  font-size: 29px;
+  margin-bottom: 10px;
+`;
+
+const DescriptionText = styled.p`
+  font-size: 19px;
 `;
 
 export default Intro;
