@@ -142,7 +142,6 @@ const ReviewTitle = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 20px;
   width: 100%;
   border-bottom: 0.5px solid #c0c0c0;
   box-sizing: border-box;
@@ -160,7 +159,6 @@ const TitleText = styled.div`
 
 const WriteReviewIconWrapper = styled.span`
   display: flex;
-  align-items: center;
+  align-self: flex-end;
   cursor: pointer;
-  margin-right: 0;
 `;

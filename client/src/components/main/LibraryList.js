@@ -29,7 +29,7 @@ export default LibraryList;
 const Container = styled.div`
   flex: 1;
   overflow-y: auto;
-  max-height: 60vh;
+  height: 100%;
 `;
 
 const List = styled.ul`
@@ -55,7 +55,7 @@ const LibraryInfo = styled.div`
   display: flex;
   text-align: left;
   flex-direction: column;
-  width: 80%;
+  width: 77%;
 `;
 
 const LibraryName = styled.span`

@@ -30,12 +30,13 @@ const StarRatingContainer = styled.div`
   /* 별 아이콘 및 별점 숫자 컨테이너 스타일 */
   display: flex;
   align-items: center;
+  margin-bottom: 4px;
 `;
 
 const StarContainer = styled.div`
   /* 별 아이콘 컨테이너 스타일 */
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   width: 120px;
   height: 20px;
@@ -67,6 +68,8 @@ const VerticalLine = styled.div`
   width: 1px;
   height: 15px;
   background-color: #ccc;
+  margin-left: -10px;
+  margin-right: 5px;
 `;
 
 const RatingContainer = styled.div`
@@ -82,4 +85,5 @@ const Rating = styled.span`
   font-size: 13px;
   color: #333333;
   order: 5;
+  margin-top: 3px;
 `;
