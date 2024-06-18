@@ -61,7 +61,7 @@ const BookMarkMap = ({
           image: libraryMarkerImage,
           name: location.name
         });
-        const content = `<div style="padding:10px; font-size:0.9rem;">${location.name}</div>`;
+        const content = `<div style="padding:10px; font-size:0.9rem; text-align:center;">${location.name}</div>`;
         const infowindow = new kakao.maps.InfoWindow({
           content: content
         });
@@ -94,7 +94,7 @@ const BookMarkMap = ({
           image: parkMarkerImage,
           name: location.name
         });
-        const content = `<div style="padding:10px; font-size:0.9rem;">${location.name}</div>`;
+        const content = `<div style="padding:10px; font-size:0.9rem; text-align:center;">${location.name}</div>`;
         const infowindow = new kakao.maps.InfoWindow({
           content: content
         });
