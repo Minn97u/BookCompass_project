@@ -1,8 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as BigLogo } from '../../src/assets/icons/IntroLogo.svg';
+import { getUserInfo } from '../api/Auth';
 
 function Intro() {
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await getUserInfo();
+        console.log('사용자 정보:', res);
+        localStorage.setItem('userId', res.data.user._id);
+        localStorage.setItem('userName', res.data.user.name);
+        localStorage.setItem('userRegion', res.data.user.region);
+        localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      } catch (error) {
+        console.error('사용자 정보 가져오기 실패:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   return (
     <div>
       <Container>

@@ -116,7 +116,10 @@ router.get("/", async (req, res) => {
     const tag = req.query.tag;
 
     try {
-        let query = {};
+        let query = { $or: [
+            { isDeleted: false },
+            { isDeleted: { $exists: false } }
+        ]};
         if (tag) {
             query.tag = tag;
         }
@@ -191,7 +194,7 @@ router.get("/:shortId", async (req, res) => {
             })
             .lean();
 
-        if (!post) {
+        if (!post || post.isDeleted) {
             return res.status(404).json({ msg: "Post not found" });
         }
 
@@ -288,7 +291,7 @@ router.put(
         try {
             const post = await Post.findOne({ shortId });
 
-            if (!post) {
+            if (!post || post.isDeleted) {
                 return res.status(404).json({ msg: "Post not found" });
             }
             // 로그 추가
@@ -348,7 +351,7 @@ router.delete("/:shortId", ensureAuthenticated, async (req, res) => {
     try {
         const post = await Post.findOne({ shortId });
 
-        if (!post) {
+        if (!post || post.isDeleted ) {
             return res.status(404).json({ msg: "Post not found" });
         }
 

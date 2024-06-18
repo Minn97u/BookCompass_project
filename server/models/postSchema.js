@@ -27,6 +27,10 @@ const PostSchema = new Schema(
             default: null,
         },
         comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+        isDeleted: {
+            type: Boolean,
+            default: false
+        },
     },
     {
         timestamps: true,

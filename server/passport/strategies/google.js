@@ -4,7 +4,9 @@ const User = require('../../models/userSchema');
 
 const clientID = process.env.GOOGLE_CLIENT_ID;
 const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
-// clientID와 clientSecret이 제대로 설정되었는지 확인합니다.
+const clientUrl = process.env.NODE_ENV === "development" 
+      ? "http://localhost:3000" 
+      : process.env.CORS_ORIGIN;
 if (!clientID || !clientSecret) {
   throw new Error(
     'GOOGLE_CLIENT_ID와 GOOGLE_CLIENT_SECRET 환경 변수가 필요합니다.'
@@ -15,7 +17,7 @@ const googleStrategy = new GoogleStrategy(
   {
     clientID: clientID,
     clientSecret: clientSecret,
-    callbackURL: 'http://localhost:3001/api/google/callback',
+    callbackURL: `${clientUrl}/api/google/callback`,
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
@@ -25,6 +27,8 @@ const googleStrategy = new GoogleStrategy(
         user = await User.findOne({ email: profile.emails[0].value });
         if (user) {
           user.googleId = profile.id;
+          user.googleAccessToken = accessToken;
+          user.googleRefreshToken = refreshToken;
           await user.save();
         } else {
           user = new User({
@@ -35,7 +39,8 @@ const googleStrategy = new GoogleStrategy(
               profile.photos && profile.photos.length > 0
                 ? profile.photos[0].value
                 : null,
-            // 다른 필요한 필드들
+            googleAccessToken: accessToken,
+            googleRefreshToken: refreshToken
           });
           await user.save();
         }

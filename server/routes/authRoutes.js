@@ -3,8 +3,12 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const User = require('../models/userSchema');
+const Post = require('../models/postSchema');
+const Comment = require('../models/commentSchema');
+const Review = require('../models/reviewSchema');
 const { ensureAuthenticated } = require('../middlewares/checklogin');
 const sendMail = require('../utils/sendmail');
+const revokeToken = require('../utils/revokeToken');
 
 /**
  * @swagger
@@ -14,41 +18,6 @@ const sendMail = require('../utils/sendmail');
  */
 
 //회원가입
-/**
- * @swagger
- * /api/register:
- *   post:
- *     summary: Register a new user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - email
- *               - password
- *               - region
- *               - favoriteAuthor
- *             properties:
- *               name:
- *                 type: string
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               region:
- *                 type: string
- *               favoriteAuthor:
- *                 type: string
- *     responses:
- *       201:
- *         description: User registered successfully
- *       400:
- *         description: Input validation error or email already exists
- */
 router.post('/register', async (req, res, next) => {
   const { name, email, password, region, favoriteAuthor } = req.body;
   try {
@@ -79,32 +48,6 @@ router.post('/register', async (req, res, next) => {
 });
 
 // 로그인 라우트
-/**
- * @swagger
- * /api/login:
- *   post:
- *     summary: Log in a user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Logged in successfully
- *       400:
- *         description: Invalid credentials
- */
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (err, user) => {
     if (err) {
@@ -134,37 +77,6 @@ router.post('/login', (req, res, next) => {
 });
 
 // 로그아웃 라우트
-/**
- * @swagger
- * /api/logout:
- *   get:
- *     summary: Log out a user
- *     tags: [Auth]
- *     responses:
- *       200:
- *         description: 로그아웃 되었습니다
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 msg:
- *                   type: string
- *                   example: 로그아웃 되었습니다
- *       500:
- *         description: 로그아웃 실패 또는 세션 삭제에 실패했습니다
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 msg:
- *                   type: string
- *                   example: 로그아웃 실패했습니다
- *                 error:
- *                   type: string
- *                   example: 세션 삭제에 실패했습니다
- */
 router.get('/logout', ensureAuthenticated, (req, res) => {
   req.logout((err) => {
     if (err) {
@@ -183,31 +95,6 @@ router.get('/logout', ensureAuthenticated, (req, res) => {
 });
 
 // 비밀번호 초기화 라우트
-/**
- * @swagger
- * /api/reset-password:
- *   post:
- *     summary: Reset a user's password
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *             properties:
- *               email:
- *                 type: string
- *     responses:
- *       200:
- *         description: Password reset successfully
- *       404:
- *         description: User not found
- *       500:
- *         description: Server error
- */
 router.post('/reset-password', async (req, res) => {
   const { email } = req.body;
   try {
@@ -252,36 +139,6 @@ router.post('/reset-password', async (req, res) => {
 });
 
 // 비밀번호 변경 라우트
-/**
- * @swagger
- * /api/change-password:
- *   post:
- *     summary: Change the current user's password
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - currentPassword
- *               - newPassword
- *             properties:
- *               currentPassword:
- *                 type: string
- *               newPassword:
- *                 type: string
- *     responses:
- *       200:
- *         description: Password changed successfully
- *       400:
- *         description: Invalid current password or input validation error
- *       404:
- *         description: User not found
- *       500:
- *         description: Server error
- */
 router.post('/change-password', ensureAuthenticated, async (req, res) => {
   const { currentPassword, newPassword } = req.body;
   try {
@@ -321,16 +178,6 @@ router.post('/change-password', ensureAuthenticated, async (req, res) => {
 });
 
 //구글 로그인
-/**
- * @swagger
- * /api/google:
- *   get:
- *     summary: Authenticate with Google
- *     tags: [Auth]
- *     responses:
- *       302:
- *         description: Redirect to Google for authentication
- */
 router.get(
   '/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -366,34 +213,6 @@ router.get('/userinfo', async (req, res) => {
 });
 
 //추가정보제출
-/**
- * @swagger
- * /api/additional-info:
- *   post:
- *     summary: Add additional information for the user
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - region
- *               - favoriteAuthor
- *             properties:
- *               region:
- *                 type: string
- *               favoriteAuthor:
- *                 type: string
- *     responses:
- *       200:
- *         description: Information added successfully
- *       400:
- *         description: Input validation error
- *       500:
- *         description: Server error
- */
 router.post('/additional-info', ensureAuthenticated, async (req, res) => {
   const { region, favoriteAuthor } = req.body;
   try {
@@ -412,49 +231,6 @@ router.post('/additional-info', ensureAuthenticated, async (req, res) => {
 });
 
 //이메일 찾기
-/**
- * @swagger
- * /api/find-email:
- *   post:
- *     summary: Find user email
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - name
- *               - region
- *               - favoriteAuthor
- *             properties:
- *               name:
- *                 type: string
- *               region:
- *                 type: string
- *               favoriteAuthor:
- *                 type: string
- *     responses:
- *       200:
- *         description: Email found and masked
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   email:
- *                     type: string
- *                   createdAt:
- *                     type: string
- *                     format: date-time
- *       404:
- *         description: User not found
- *       500:
- *         description: Server error
- */
 router.post('/find-email', async (req, res) => {
   const { name, region, favoriteAuthor } = req.body;
 
@@ -487,39 +263,42 @@ router.post('/find-email', async (req, res) => {
 });
 
 //로그인 확인
-/**
- * @swagger
- * /status:
- *   get:
- *     summary: Check login status
- *     tags: [Auth]
- *     responses:
- *       200:
- *         description: User is logged in
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 loggedIn:
- *                   type: boolean
- *                   example: true
- *       401:
- *         description: User is not logged in
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 loggedIn:
- *                   type: boolean
- *                   example: false
- */
 router.get('/status', async (req, res) => {
   if (req.isAuthenticated()) {
     res.status(200).json({ loggedIn: true });
   } else {
     res.status(401).json({ loggedIn: false });
+  }
+});
+
+//회원탈퇴
+router.delete('/deleteUser', ensureAuthenticated, async (req, res) => {
+  try {
+      const user = await User.findById(req.user._id);
+      if (!user) {
+          return res.status(404).json({ msg: '유저가 없습니다.' });
+      }
+      user.isDeleted = true;
+      if (user.googleId) {
+          if (user.googleAccessToken) {
+              await revokeToken(user.googleAccessToken);
+              user.googleId = undefined;
+              user.googleAccessToken = undefined;
+          }
+      } 
+      await user.save();
+      // 사용자와 관련된 게시글, 댓글, 리뷰 소프트 삭제 처리
+      await Post.updateMany({ "author.id": user._id }, { isDeleted: true });
+      await Comment.updateMany({ "author": user._id }, { isDeleted: true });
+      await Review.updateMany({ user: user._id }, { isDeleted: true });
+      
+      const userPosts = await Post.find({ "author.id": user._id });
+      const postIds = userPosts.map(post => post._id);
+      await Comment.updateMany({ postId: { $in: postIds } }, { isDeleted: true });
+      res.status(200).json({ msg: '회원탈퇴 완료되었습니다.' });
+  } catch (err) {
+      console.error(err);
+      res.status(500).json({ msg: 'Server error' });
   }
 });
 
