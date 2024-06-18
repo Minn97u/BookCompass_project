@@ -17,6 +17,38 @@ function Intro() {
           <TextWithMargin>당신의 서재를 찾아보세요</TextWithMargin>
         </StyledRightDiv>
       </Content>
+      <GraphSection>
+        <DescriptionContainer>
+          <DescriptionTitle>연령대별 독서 통계</DescriptionTitle>
+          <DescriptionText>
+            이 두 그래프는 각각 연령대별 1인당 평균 독서 권수와 연령대별 평균
+            독서 인구 비율을 나타냅니다. 이를 통해 각 연령대의 독서 습관과 독서
+            인구의 분포를 시각적으로 이해할 수 있습니다.
+          </DescriptionText>
+        </DescriptionContainer>
+      </GraphSection>
+      <GraphSection>
+        <GraphsRow>
+          <GraphContainer>
+            <iframe
+              src='/fig_book_count.html'
+              width='100%'
+              height='500px'
+              style={{ border: 'none' }}
+              title='연령대별 1인당 평균 독서 권수'
+            />
+          </GraphContainer>
+          <GraphContainer>
+            <iframe
+              src='/fig_book_people.html'
+              width='100%'
+              height='500px'
+              style={{ border: 'none' }}
+              title='연령대별 평균 독서 인구 비율'
+            />
+          </GraphContainer>
+        </GraphsRow>
+      </GraphSection>
       <DescriptionContainer>
         <DescriptionTitle>서울시 독서문화 실태 조사 결과</DescriptionTitle>
         <DescriptionText>
