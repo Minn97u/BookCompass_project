@@ -8,15 +8,6 @@ function Intro() {
       <Header>
         <StyledBigLogo />
       </Header>
-      <Content>
-        <StyledLeftDiv>
-          <TextWithMargin>당신의 이야기가 시작되는 곳,</TextWithMargin>
-          <TextWithMargin>서재나침반</TextWithMargin>
-        </StyledLeftDiv>
-        <StyledRightDiv>
-          <TextWithMargin>당신의 서재를 찾아보세요</TextWithMargin>
-        </StyledRightDiv>
-      </Content>
       <GraphSection>
         <DescriptionContainer>
           <DescriptionTitle>연령대별 독서 통계</DescriptionTitle>
@@ -59,18 +50,11 @@ function Intro() {
       <DescriptionContainer>
         <DescriptionTitle>서울시 독서문화 실태 조사 결과</DescriptionTitle>
         <DescriptionText>
+          <br />
           서울시민들의 도서관 이용 실태 조사를 바탕으로, 우리는 도서관이
           제공해야 할 <strong>다양한 정보</strong>와 <strong>프로그램</strong>,
-          그리고 <strong>접근성</strong>의 중요성을 확인할 수 있었습니다. <br />
+          그리고 <strong>접근성</strong>의 중요성을 확인할 수 있었습니다.
           <br />
-          이러한 요구를 반영하여, 우리 웹 프로젝트는{' '}
-          <strong>서울시 도서관</strong> 및 <strong>독서 커뮤니티 정보</strong>
-          를 쉽게 접근할 수 있도록 하며, 시민들이 필요한 정보를 빠르게 찾고{' '}
-          <strong>다양한 독서 활동</strong>에 참여할 수 있도록 지원하고자
-          합니다.
-          <br />
-          <br /> 이를 통해 <strong>독서 문화</strong>를 더욱 활성화하고,
-          도서관의 <strong>이용률</strong>을 높이는 것이 목표입니다!.
         </DescriptionText>
       </DescriptionContainer>
       <GraphSection>
@@ -101,21 +85,11 @@ function Intro() {
         </DescriptionTitle>
         <DescriptionText>
           <br />
-          그래프에서 보듯이 2018년부터 2022년까지 서울시 각 구의 도서관 방문자
-          수는 <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
+          2018년부터 2022년까지 서울시 각 구의 도서관 방문자 수는{' '}
+          <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
           감소하였으며, 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전
           수준으로 완전히 회복되지 않았습니다.
           <br />
-          <br />
-          특히, <strong>가까운 거리에 있는 도서관의 중요성</strong>과{' '}
-          <strong>편리한 접근성</strong>을 고려한 시민들의 요구를 반영하여, 우리
-          웹 프로젝트는 도서관 정보를 쉽게 접근할 수 있게 제공하고, 다양한 독서
-          활동과 커뮤니티 참여를 장려합니다.
-          <br />
-          <br />
-          이를 통해 <strong>도서관 이용률</strong>을 높이고,{' '}
-          <strong>독서 문화를 더욱 활성화</strong>하는 것을 목표로 하고
-          있습니다.
         </DescriptionText>
       </DescriptionContainer>
       <GraphSection>
@@ -129,6 +103,30 @@ function Intro() {
           />
         </GraphContainer>
       </GraphSection>
+      <DescriptionContainer>
+        <DescriptionTitle>서재 나침반의 기획 의도</DescriptionTitle>
+        <DescriptionText>
+          서재 나침반은 이러한 문제를 해결하고{' '}
+          <strong>독서 문화를 활성화</strong>하기 위해 만들어졌습니다. 우리는
+          시민들이 <strong>도서관 정보를 쉽게</strong> 접근 할 수 있도록 하며,{' '}
+          <strong>다양한 독서 활동과 커뮤니티 환경</strong>을 제공합니다.
+          <br />
+          <br />
+          이를 통해 <strong>도서관 이용률</strong>을 높이고, 시민들이 더 많은
+          책을 읽을 수 있도록 돕는 것이 우리의 <strong>목표</strong>입니다.{' '}
+          <br />
+          <br />
+        </DescriptionText>
+      </DescriptionContainer>
+      <Content>
+        <StyledLeftDiv>
+          <TextWithMargin>당신의 이야기가 시작되는 곳,</TextWithMargin>
+          <TextWithMargin>서재나침반</TextWithMargin>
+        </StyledLeftDiv>
+        <StyledRightDiv>
+          <TextWithMargin>당신의 서재를 찾아보세요</TextWithMargin>
+        </StyledRightDiv>
+      </Content>
     </MainContainer>
   );
 }
