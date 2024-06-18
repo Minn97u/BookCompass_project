@@ -38,7 +38,7 @@ function Intro() {
         <GraphsRow>
           <GraphContainer>
             <iframe
-              src='/fig_book_count.html'
+              src='/books_per_person_by_age.html'
               width='100%'
               height='500px'
               style={{ border: 'none' }}
@@ -47,7 +47,7 @@ function Intro() {
           </GraphContainer>
           <GraphContainer>
             <iframe
-              src='/fig_book_people.html'
+              src='/reading_population_by_age.html'
               width='100%'
               height='500px'
               style={{ border: 'none' }}
@@ -100,8 +100,6 @@ function Intro() {
           서울시 시민들의 공공 도서관 방문 횟수는?
         </DescriptionTitle>
         <DescriptionText>
-          이 그래프는 서울시 각 구별 공공도서관 방문자 수를 나타냅니다.
-          <br />
           <br />
           그래프에서 보듯이 2018년부터 2022년까지 서울시 각 구의 도서관 방문자
           수는 <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
