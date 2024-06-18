@@ -1,5 +1,4 @@
 require("dotenv").config();
-require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -24,11 +23,7 @@ const errorHandler = require("./middlewares/errorHandler");
 // MongoDB Atlas 연결 설정
 mongoose
     .connect(
-        `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/${process.env.DB_NAME}`,
-        {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        }
+        `mongodb+srv://${process.env.MONGOID}:${process.env.MONGOPWD}@cluster0.wnsz2zq.mongodb.net/${process.env.DB_NAME}`
     )
     .then(() => {
         console.log("MongoDB에 성공적으로 연결되었습니다.");
@@ -39,8 +34,11 @@ mongoose
 
 // CORS 설정 추가
 const corsOptions = {
-    // origin: process.env.CORS_ORIGIN || "http://localhost:3000", // 클라이언트 도메인 명시
-    origin: "http://localhost:3000",
+    origin:
+        process.env.NODE_ENV === "development"
+            ? "http://localhost:3000"
+            : process.env.CORS_ORIGIN,
+
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     credentials: true, // withCredentials 지원
     allowedHeaders: "Content-Type,Authorization",
