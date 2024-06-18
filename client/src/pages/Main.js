@@ -74,10 +74,11 @@ const Main = () => {
     const fetchLibraryFavs = async () => {
       try {
         const libraryFavs = await getLibraryFav();
-        const libraryFavsMap = libraryFavs.data.reduce((acc, fav) => {
-          acc[fav._id] = true;
+        const libraryFavsMap = libraryFavs.reduce((acc, item) => {
+          acc[item._id] = true; // ID를 키로 하고 값을 true로 설정
           return acc;
         }, {});
+        console.log('도서관 즐찾', libraryFavsMap);
         setArchiveAdded((prevState) => ({
           ...prevState,
           ...libraryFavsMap
@@ -90,8 +91,8 @@ const Main = () => {
     const fetchParkFavs = async () => {
       try {
         const parkFavs = await getParkFav();
-        const parkFavsMap = parkFavs.data.reduce((acc, fav) => {
-          acc[fav._id] = true;
+        const parkFavsMap = parkFavs.reduce((acc, item) => {
+          acc[item._id] = true; // ID를 키로 하고 값을 true로 설정
           return acc;
         }, {});
         setArchiveAdded((prevState) => ({
@@ -107,6 +108,7 @@ const Main = () => {
     fetchParkPings();
     fetchLibraryFavs();
     fetchParkFavs();
+    console.log('즐찾???', archiveAdded);
   }, []);
 
   const handleFindLibraryClick = () => {

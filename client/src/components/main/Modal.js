@@ -24,8 +24,11 @@ const Modal = ({
   setArchiveAdded
 }) => {
   const [averageRating, setAverageRating] = useState(0);
+  const [clickBookMark, setClickBookMark] = useState(false);
+  const [archiveIcon, setArchiveIcon] = useState(false);
 
   useEffect(() => {
+    console.log('즐찾???', archiveAdded);
     const fetchAverageRating = async () => {
       try {
         if (place) {
@@ -51,27 +54,26 @@ const Modal = ({
       if (type === 'library') {
         if (archiveAdded) {
           response = await deleteLibraryFavorite(place._id);
+          setArchiveAdded((prev) => ({ ...prev, [place._id]: false }));
+          setClickBookMark(false);
         } else {
           response = await addLibraryFavorite(place._id);
+          setArchiveAdded((prev) => ({ ...prev, [place._id]: true }));
+          setClickBookMark(true);
         }
       } else if (type === 'park') {
         if (archiveAdded) {
           response = await deleteParkFavorite(place._id);
+          setArchiveAdded((prev) => ({ ...prev, [place._id]: false }));
+          setClickBookMark(false);
         } else {
           response = await addParkFavorite(place._id);
+          setArchiveAdded((prev) => ({ ...prev, [place._id]: true }));
+          setClickBookMark(true);
         }
       }
 
       alert(response.data);
-
-      // setArchiveAdded 업데이트
-      setArchiveAdded((prevState) => {
-        const newState = {
-          ...prevState,
-          [place._id]: !archiveAdded
-        };
-        return newState;
-      });
     } catch (error) {
       if (error.response) {
         alert(error.response.data);
@@ -82,6 +84,11 @@ const Modal = ({
   };
 
   if (!isOpen || !place) return null;
+
+  const archiveIconSrc =
+    clickBookMark || (archiveAdded && archiveAdded[place._id])
+      ? ArchiveAddedIconSrc
+      : ArchiveAddIconSrc;
 
   return (
     <ModalContainer onClick={closeModal}>

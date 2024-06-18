@@ -42,9 +42,10 @@ export const getParkAvgRating = async (id) => {
 
 export const getLibraryFav = async (userId) => {
   try {
-    const response = await axios.get('/api/libraries/favoriteLibraries', {
+    const response = await axios.get('/api/mypage/favoriteLibrariesList', {
       params: { userId }
     });
+    console.log('도서관 즐찾', response.data);
     return response.data;
   } catch (error) {
     console.error('도서관 즐겨찾기 목록을 가져오는 중 오류 발생:', error);
@@ -54,7 +55,7 @@ export const getLibraryFav = async (userId) => {
 
 export const getParkFav = async (userId) => {
   try {
-    const response = await axios.get('/api/parks/favoriteParks', {
+    const response = await axios.get('/api/mypage/favoriteParksList', {
       params: { userId }
     });
     return response.data;
