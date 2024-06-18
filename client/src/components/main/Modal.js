@@ -53,7 +53,7 @@ const Modal = ({
         const isFavoriteIndex = archiveAdded.libraryFavs.findIndex(
           (item) => item.id === place._id
         );
-        console.log('나올까?', isFavoriteIndex !== -1);
+
         if (isFavoriteIndex !== -1) {
           response = await deleteLibraryFavorite(place._id);
           setArchiveAdded((prev) => ({
