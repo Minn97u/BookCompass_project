@@ -87,8 +87,9 @@ function Intro() {
           <br />
           2018년부터 2022년까지 서울시 각 구의 도서관 방문자 수는{' '}
           <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
-          감소하였으며, 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전
-          수준으로 완전히 회복되지 않았습니다.
+          감소하였으며, <br />
+          <br /> 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전 수준으로
+          완전히 회복되지 않았습니다.
           <br />
         </DescriptionText>
       </DescriptionContainer>
@@ -107,9 +108,10 @@ function Intro() {
         <DescriptionTitle>서재 나침반의 기획 의도</DescriptionTitle>
         <DescriptionText>
           서재 나침반은 이러한 문제를 해결하고{' '}
-          <strong>독서 문화를 활성화</strong>하기 위해 만들어졌습니다. 우리는
-          시민들이 <strong>도서관 정보를 쉽게</strong> 접근 할 수 있도록 하며,{' '}
-          <strong>다양한 독서 활동과 커뮤니티 환경</strong>을 제공합니다.
+          <strong>독서 문화를 활성화</strong>하기 위해 만들어졌습니다.
+          <br />
+          <br /> 시민들이 <strong>도서관 정보를 쉽게</strong> 접근 할 수 있도록
+          하며, <strong>다양한 독서 활동과 커뮤니티 환경</strong>을 제공합니다.
           <br />
           <br />
           이를 통해 <strong>도서관 이용률</strong>을 높이고, 시민들이 더 많은
@@ -227,12 +229,12 @@ const DescriptionContainer = styled.div`
 `;
 
 const DescriptionTitle = styled.h2`
-  font-size: 24px;
+  font-size: 29px;
   margin-bottom: 10px;
 `;
 
 const DescriptionText = styled.p`
-  font-size: 16px;
+  font-size: 19px;
 `;
 
 export default Intro;
