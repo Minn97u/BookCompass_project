@@ -5,6 +5,12 @@ import LibraryParkMap from '../components/main/LibraryParkMap';
 import Modal from '../components/main/Modal';
 import LibraryList from '../components/main/LibraryList';
 import ParkList from '../components/main/ParkList';
+import {
+  getLibraryPings,
+  getParkPings,
+  getLibraryFav,
+  getParkFav
+} from '../api/Main';
 
 const districts = [
   { name: '강남구', center: { lat: 37.5172, lng: 127.0473 } },
@@ -44,21 +50,63 @@ const Main = () => {
   const [selectedButton, setSelectedButton] = useState('library');
   const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.978 });
   const [selectedGu, setSelectedGu] = useState('');
+  const [archiveAdded, setArchiveAdded] = useState({}); // archiveAdded 상태를 객체로 관리
 
   useEffect(() => {
-    fetch('/api/libraries')
-      .then((response) => response.json())
-      .then((data) => {
-        setLibraries(data);
-      })
-      .catch((error) => console.error('Error fetching libraries:', error));
+    const fetchLibraryPings = async () => {
+      try {
+        const libraryData = await getLibraryPings();
+        setLibraries(libraryData);
+      } catch (error) {
+        console.error('Error fetching libraries:', error);
+      }
+    };
 
-    fetch('/api/parks')
-      .then((response) => response.json())
-      .then((data) => {
-        setParks(data);
-      })
-      .catch((error) => console.error('Error fetching parks:', error));
+    const fetchParkPings = async () => {
+      try {
+        const parkData = await getParkPings();
+        setParks(parkData);
+      } catch (error) {
+        console.error('Error fetching parks:', error);
+      }
+    };
+
+    const fetchLibraryFavs = async () => {
+      try {
+        const libraryFavs = await getLibraryFav();
+        const libraryFavsMap = libraryFavs.data.reduce((acc, fav) => {
+          acc[fav._id] = true;
+          return acc;
+        }, {});
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          ...libraryFavsMap
+        }));
+      } catch (error) {
+        console.error('Error fetching library favorites:', error);
+      }
+    };
+
+    const fetchParkFavs = async () => {
+      try {
+        const parkFavs = await getParkFav();
+        const parkFavsMap = parkFavs.data.reduce((acc, fav) => {
+          acc[fav._id] = true;
+          return acc;
+        }, {});
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          ...parkFavsMap
+        }));
+      } catch (error) {
+        console.error('Error fetching park favorites:', error);
+      }
+    };
+
+    fetchLibraryPings();
+    fetchParkPings();
+    fetchLibraryFavs();
+    fetchParkFavs();
   }, []);
 
   const handleFindLibraryClick = () => {
@@ -84,17 +132,15 @@ const Main = () => {
   const handleLibraryClick = (library) => {
     setSelectedLibrary(library);
     setIsModalOpen(true);
-    console.log('selectedLibrary:', selectedLibrary);
-  };
-
-  const handleButtonClick = (button) => {
-    setSelectedButton(button);
-    setKeyword('');
   };
 
   const handleParkClick = (park) => {
     setSelectedPark(park);
     setIsModalOpen(true);
+  };
+
+  const handleButtonClick = (buttonType) => {
+    setSelectedButton(buttonType);
   };
 
   const userId = localStorage.getItem('userId');
@@ -200,10 +246,28 @@ const Main = () => {
         place={selectedButton === 'library' ? selectedLibrary : selectedPark}
         type={selectedButton === 'library' ? 'library' : 'park'}
         userId={userId}
+        archiveAdded={
+          archiveAdded[
+            selectedButton === 'library'
+              ? selectedLibrary?._id
+              : selectedPark?._id
+          ] || false
+        } // 개별 장소별 archiveAdded 상태 전달
+        setArchiveAdded={(isAdded) => {
+          const id =
+            selectedButton === 'library'
+              ? selectedLibrary._id
+              : selectedPark._id;
+          setArchiveAdded((prevState) => ({
+            ...prevState,
+            [id]: isAdded
+          }));
+        }} // archiveAdded 상태를 개별 장소별로 설정
       />
     </FullHeightContainer>
   );
 };
+
 export default Main;
 
 const LibraryParkMapContainer = styled.div`

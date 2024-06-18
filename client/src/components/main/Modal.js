@@ -1,92 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import BookIcon from '../../assets/icons/BookIcon.svg';
 import CloseIcon from '../../assets/icons/CloseIcon.svg';
 import Review from './Review';
 import ArchiveAddIconSrc from '../../assets/icons/ArchiveAdd.svg';
 import ArchiveAddedIconSrc from '../../assets/icons/ArchivePreAddIcon.svg';
+import {
+  addLibraryFavorite,
+  deleteLibraryFavorite,
+  addParkFavorite,
+  deleteParkFavorite,
+  getLibraryAvgRating,
+  getParkAvgRating
+} from '../../api/Main';
 
-const Modal = ({ isOpen, closeModal, place, type }) => {
-  const [archiveAdded, setArchiveAdded] = useState(false);
+const Modal = ({
+  isOpen,
+  closeModal,
+  place,
+  type,
+  userId,
+  archiveAdded,
+  setArchiveAdded
+}) => {
   const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
-    // 모달이 열릴 때마다 찜하기 상태를 설정
-    if (place && place.favorite !== undefined) {
-      setArchiveAdded(place.favorite);
-    }
+    const fetchAverageRating = async () => {
+      try {
+        if (place) {
+          const rating =
+            type === 'library'
+              ? await getLibraryAvgRating(place._id)
+              : await getParkAvgRating(place._id);
+          setAverageRating(rating);
+        }
+      } catch (error) {
+        console.error('평균 평점을 가져오는 중 오류 발생:', error);
+      }
+    };
 
-    // place가 있을 때 평균 평점을 가져옴
-    if (place && type === 'library') {
-      axios
-        .get(`/api/libraries/${place._id}`)
-        .then((response) => {
-          setAverageRating(response.data.averageRating || 0);
-        })
-        .catch((error) => {
-          console.error('평균 평점을 가져오는 중 오류 발생:', error);
-        });
-    }
-    if (place && type === 'park') {
-      axios
-        .get(`/api/parks/${place._id}`)
-        .then((response) => {
-          setAverageRating(response.data.averageRating || 0);
-        })
-        .catch((error) => {
-          console.error('평균 평점을 가져오는 중 오류 발생:', error);
-        });
+    if (isOpen) {
+      fetchAverageRating();
     }
   }, [isOpen, place, type]);
 
   const handleArchiveButtonClick = async () => {
     try {
-      let endpoint = '';
-      let data = {};
-
+      let response;
       if (type === 'library') {
         if (archiveAdded) {
-          endpoint = '/api/mypage/favoriteLibraries';
-          setArchiveAdded(!archiveAdded);
+          response = await deleteLibraryFavorite(place._id);
         } else {
-          endpoint = '/api/libraries/favoriteLibraries';
-          setArchiveAdded(!archiveAdded);
+          response = await addLibraryFavorite(place._id);
         }
-        data = { libraryId: place._id };
       } else if (type === 'park') {
         if (archiveAdded) {
-          endpoint = '/api/mypage/favoriteParks';
-          setArchiveAdded(!archiveAdded);
+          response = await deleteParkFavorite(place._id);
         } else {
-          endpoint = '/api/parks/favoriteParks';
-          setArchiveAdded(!archiveAdded);
+          response = await addParkFavorite(place._id);
         }
-        data = { parkId: place._id };
       }
-
-      const method = archiveAdded ? 'delete' : 'post';
-      const response = await axios({
-        method: method,
-        url: endpoint,
-        data: data
-      });
 
       alert(response.data);
 
-      // API 요청 후 찜하기 상태 업데이트
-      setArchiveAdded(!archiveAdded); // 상태 토글
+      // setArchiveAdded 업데이트
+      setArchiveAdded((prevState) => {
+        const newState = {
+          ...prevState,
+          [place._id]: !archiveAdded
+        };
+        return newState;
+      });
     } catch (error) {
       if (error.response) {
         alert(error.response.data);
       } else {
-        console.error('찜하기 중 오류 발생:', error.message);
         alert('오류가 발생했습니다. 다시 시도해주세요.');
       }
     }
   };
 
-  if (!isOpen || !place) return null; // isOpen이 false이거나 place가 null인 경우 모달 닫기
+  if (!isOpen || !place) return null;
 
   return (
     <ModalContainer onClick={closeModal}>
@@ -119,7 +114,12 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
         >
           {place.url || '홈페이지 URL 없음'}
         </PlaceURL>
-        <Review rating={averageRating} placeId={place._id} type={type} />
+        <Review
+          rating={averageRating}
+          placeId={place._id}
+          type={type}
+          archiveAdded={archiveAdded}
+        />
       </ModalContent>
     </ModalContainer>
   );
