@@ -21,9 +21,16 @@ function Intro() {
         <DescriptionContainer>
           <DescriptionTitle>연령대별 독서 통계</DescriptionTitle>
           <DescriptionText>
-            이 두 그래프는 각각 연령대별 1인당 평균 독서 권수와 연령대별 평균
-            독서 인구 비율을 나타냅니다. 이를 통해 각 연령대의 독서 습관과 독서
-            인구의 분포를 시각적으로 이해할 수 있습니다.
+            지난 10년 동안 서울시의 독서인구 비율은 2013년{' '}
+            <strong>62.4%</strong>에서 2023년 <strong>48.5%</strong>로 꾸준히{' '}
+            <strong>감소</strong> 해왔습니다.
+            <br />
+            <br /> 또한, 지난 1년 동안 독서 인구 1인당 평균 독서 권수는{' '}
+            <strong>14.8권</strong>으로, 2년 전에 비해{' '}
+            <strong>0.4권 감소</strong>한 상황입니다. <br />
+            <br />
+            이러한 추세는 현대 사회에서 <strong>독서의 중요성</strong>이 점점 더
+            간과되고 있음을 보여줍니다.
           </DescriptionText>
         </DescriptionContainer>
       </GraphSection>
