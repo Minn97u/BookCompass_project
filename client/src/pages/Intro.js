@@ -175,12 +175,12 @@ function Intro() {
         <DescriptionContainer>
           <DescriptionTitle ref={titleRef}></DescriptionTitle>
           <DescriptionText ref={textRef}>
-            지난 10년 동안 서울시의 독서인구 비율은 2013년{' '}
-            <strong>62.4%</strong>에서 2023년 <strong>48.5%</strong>로 꾸준히{' '}
+            지난 10년 동안 서울시의 독서인구 비율은 2013년
+            <strong>62.4%</strong>에서 2023년 <strong>48.5%</strong>로 꾸준히
             <strong>감소</strong> 해왔습니다.
             <br />
-            <br /> 또한, 지난 1년 동안 독서 인구 1인당 평균 독서 권수는{' '}
-            <strong>14.8권</strong>으로, 2년 전에 비해{' '}
+            <br /> 또한, 지난 1년 동안 독서 인구 1인당 평균 독서 권수는
+            <strong>14.8권</strong>으로, 2년 전에 비해
             <strong>0.4권 감소</strong>한 상황입니다. <br />
             <br />
             이러한 추세는 현대 사회에서 <strong>독서의 중요성</strong>이 점점 더
@@ -246,7 +246,7 @@ function Intro() {
         <DescriptionTitle ref={title3Ref}></DescriptionTitle>
         <DescriptionText ref={text3Ref} style={{ opacity: 0 }}>
           <br />
-          2018년부터 2022년까지 서울시 각 구의 도서관 방문자 수는{' '}
+          2018년부터 2022년까지 서울시 각 구의 도서관 방문자 수는
           <strong>코로나19 팬데믹의 영향</strong>으로 2020년에 급격히
           감소하였으며, <br />
           <br /> 이후 점차 회복세를 보이고 있지만 아직 팬데믹 이전 수준으로
@@ -276,7 +276,7 @@ function Intro() {
           <br />
           <br />
           이를 통해 <strong>도서관 이용률</strong>을 높이고, 시민들이 더 많은
-          책을 읽을 수 있도록 돕는 것이 우리의 <strong>목표</strong>입니다.{' '}
+          책을 읽을 수 있도록 돕는 것이 우리의 <strong>목표</strong>입니다.
           <br />
           <br />
         </DescriptionText4>
@@ -295,7 +295,7 @@ const Header = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
-  height: 40vh;
+  height: 30vh;
   margin-bottom: -30px;
 `;
 
