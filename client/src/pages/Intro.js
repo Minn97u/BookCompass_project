@@ -56,7 +56,7 @@ function Intro() {
     // 제목1 타이핑 애니메이션
     tl.to(titleRef.current, {
       duration: 3, // 타이핑 속도
-      text: { value: '연령대별 독서 통계', speed: 0.5, stagger: 0.1 },
+      text: { value: '우리는 책을 얼마나 읽을까요?', speed: 0.5, stagger: 0.1 },
       ease: 'none',
       delay: 0.5
     });
@@ -81,7 +81,7 @@ function Intro() {
     gsap.to(title2Ref.current, {
       duration: 2,
       text: {
-        value: '서울시 독서문화 실태 조사 결과',
+        value: '서울시 독서문화 실태 조사 결과는?',
         speed: 0.5,
         stagger: 0.1
       },
