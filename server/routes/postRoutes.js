@@ -210,8 +210,8 @@ router.get("/:shortId", async (req, res) => {
             author: {
                 name: post.author.name,
                 profilePic: post.author.profilePic,
-                profileMsg: req.user.profileMsg,
-                favoriteAuthor: req.user.favoriteAuthor,
+                profileMsg: post.author.profileMsg,
+                favoriteAuthor: post.author.favoriteAuthor,
             },
             postImg: post.postImg,
             comments: post.comments.map((comment) => ({
