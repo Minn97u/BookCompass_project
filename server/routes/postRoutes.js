@@ -68,10 +68,11 @@ router.post(
                     id: req.user._id,
                     name: req.user.name,
                     profilePic: req.user.profilePic,
+                    favoriteAuthor: req.user.favoriteAuthor,
+                    profileMsg: req.user.profileMsg,
                 },
                 postImg: req.file ? req.file.path : null,
             });
-
             const savedPost = await newPost.save();
             res.status(201).json(savedPost);
         } catch (err) {
@@ -116,10 +117,7 @@ router.get("/", async (req, res) => {
     const tag = req.query.tag;
 
     try {
-        let query = { $or: [
-            { isDeleted: false },
-            { isDeleted: { $exists: false } }
-        ]};
+        let query = {};
         if (tag) {
             query.tag = tag;
         }
@@ -187,14 +185,20 @@ router.get("/:shortId", async (req, res) => {
 
     try {
         const post = await Post.findOne({ shortId })
-            .populate("author.id", "name profilePic") // 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+            .populate({
+                path: "author.id",
+                select: "name profilePic profileMsg favoriteAuthor",
+            })
             .populate({
                 path: "comments",
-                populate: { path: "author", select: "name profilePic" }, // 댓글 작성자의 이름과 프로필 사진을 가져오기 위해 populate 사용
+                populate: {
+                    path: "author",
+                    select: "name profilePic profileMsg favoriteAuthor",
+                },
             })
             .lean();
 
-        if (!post || post.isDeleted) {
+        if (!post) {
             return res.status(404).json({ msg: "Post not found" });
         }
 
@@ -206,6 +210,8 @@ router.get("/:shortId", async (req, res) => {
             author: {
                 name: post.author.name,
                 profilePic: post.author.profilePic,
+                profileMsg: req.user.profileMsg,
+                favoriteAuthor: req.user.favoriteAuthor,
             },
             postImg: post.postImg,
             comments: post.comments.map((comment) => ({
@@ -213,6 +219,8 @@ router.get("/:shortId", async (req, res) => {
                 author: {
                     name: comment.author.name,
                     profilePic: comment.author.profilePic,
+                    profileMsg: comment.author.profileMsg,
+                    favoriteAuthor: comment.author.favoriteAuthor,
                 },
                 content: comment.content,
                 createdAt: comment.createdAt,
@@ -221,7 +229,6 @@ router.get("/:shortId", async (req, res) => {
             createdAt: post.createdAt,
             updatedAt: post.updatedAt,
         };
-
         res.status(200).json(detailedPost);
     } catch (err) {
         console.error(err);
@@ -291,7 +298,7 @@ router.put(
         try {
             const post = await Post.findOne({ shortId });
 
-            if (!post || post.isDeleted) {
+            if (!post) {
                 return res.status(404).json({ msg: "Post not found" });
             }
             // 로그 추가
@@ -351,7 +358,7 @@ router.delete("/:shortId", ensureAuthenticated, async (req, res) => {
     try {
         const post = await Post.findOne({ shortId });
 
-        if (!post || post.isDeleted ) {
+        if (!post) {
             return res.status(404).json({ msg: "Post not found" });
         }
 

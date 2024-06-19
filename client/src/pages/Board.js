@@ -28,8 +28,11 @@ const Board = () => {
     currentPage: 1,
     isEditing: false,
     totalPages: 0,
-    posts: []
+    posts: [],
+    deleteConfirmModalIsOpen: false
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     activeTag,
@@ -38,7 +41,9 @@ const Board = () => {
     currentPage,
     isEditing,
     totalPages,
-    posts
+    posts,
+    deleteConfirmModalIsOpen,
+    commentToDelete
   } = state;
 
   // eslint-disable-next-line
@@ -49,7 +54,8 @@ const Board = () => {
       content: '',
       tag: '잡담',
       commentText: '',
-      selectedFile: null
+      selectedFile: null,
+      commentToDelete: null
     }
   });
 
@@ -142,6 +148,7 @@ const Board = () => {
   };
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append('title', data.title);
@@ -158,6 +165,8 @@ const Board = () => {
       closeModal();
     } catch (error) {
       console.error('Error submitting post:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -172,7 +181,14 @@ const Board = () => {
     }));
   };
 
-  const handleDeleteClick = async () => {
+  const handleDeleteClick = () => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteConfirmModalIsOpen: true
+    }));
+  };
+
+  const confirmDelete = async () => {
     if (selectedItem) {
       try {
         const response = await deletePosts(selectedItem.shortId);
@@ -181,6 +197,11 @@ const Board = () => {
         closeModal();
       } catch (error) {
         console.error('삭제 오류', error);
+      } finally {
+        setState((prevState) => ({
+          ...prevState,
+          deleteConfirmModalIsOpen: false
+        }));
       }
     }
   };
@@ -213,16 +234,29 @@ const Board = () => {
     }
   };
 
-  const handleCommentDelete = async (commentId) => {
-    if (selectedItem && commentId) {
+  const handleCommentDeleteClick = (commentId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteConfirmModalIsOpen: true,
+      commentToDelete: commentId // 추가
+    }));
+  };
+
+  const confirmCommentDelete = async () => {
+    if (selectedItem && commentToDelete) {
       try {
-        await deleteComments(selectedItem.shortId, commentId);
+        await deleteComments(selectedItem.shortId, commentToDelete);
         const updatedComments = selectedItem.comments.filter(
-          (comment) => comment._id !== commentId
+          (comment) => comment._id !== commentToDelete
         );
         setState((prevState) => ({
           ...prevState,
-          selectedItem: { ...prevState.selectedItem, comments: updatedComments }
+          selectedItem: {
+            ...prevState.selectedItem,
+            comments: updatedComments
+          },
+          deleteConfirmModalIsOpen: false,
+          commentToDelete: null
         }));
         console.log('댓글 삭제 완료');
       } catch (error) {
@@ -231,6 +265,14 @@ const Board = () => {
     } else {
       console.error('올바르지 않은 commentId 또는 선택된 게시글이 없습니다.');
     }
+  };
+
+  const cancelDelete = () => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteConfirmModalIsOpen: false,
+      commentToDelete: null // 추가
+    }));
   };
 
   const handleCommentUpdate = async (commentId, updatedContent) => {
@@ -260,9 +302,7 @@ const Board = () => {
     <BoardContainer>
       <BoardTagsContainer>
         <TagButtons activeTag={activeTag} handleTagClick={handleTagClick} />
-        <IconBox>
-          <WriteIcon onClick={handleWriteIconClick} />
-        </IconBox>
+        <WriteIcon onClick={handleWriteIconClick} />
       </BoardTagsContainer>
       <PostList posts={posts} openModal={openModal} />
       <PaginationContainer>
@@ -308,10 +348,25 @@ const Board = () => {
             handleEditClick={handleEditClick}
             handleDeleteClick={handleDeleteClick}
             handleCommentSubmit={handleCommentSubmit}
-            handleCommentDelete={handleCommentDelete}
+            handleCommentDelete={handleCommentDeleteClick}
             handleCommentUpdate={handleCommentUpdate}
           />
         )}
+      </CustomModal>
+      <CustomModal
+        isOpen={deleteConfirmModalIsOpen}
+        onRequestClose={cancelDelete}
+      >
+        <DeleteConfirmContainer>
+          <p>정말 삭제하시겠습니까?</p>
+          <CommentButton
+            onClick={commentToDelete ? confirmCommentDelete : confirmDelete}
+            disabled={isSubmitting}
+          >
+            예
+          </CommentButton>{' '}
+          <CommentButton onClick={cancelDelete}>아니오</CommentButton>
+        </DeleteConfirmContainer>
       </CustomModal>
     </BoardContainer>
   );
@@ -337,8 +392,38 @@ const PaginationContainer = styled.div`
   margin-top: 1.3rem;
 `;
 
-const IconBox = styled.div`
+const DeleteConfirmContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  p {
+    margin-bottom: 1rem;
+  }
+  button {
+    margin: 0.5rem;
+    color: gray;
+    cursor: pointer;
+    font-size: 0.875rem;
+    background: none;
+    border: none;
+    &:hover {
+      color: black;
+    }
+  }
+`;
+
+const CommentButton = styled.button`
+  margin-left: auto;
+  display: block;
+  background-color: #543d20;
+  color: white;
+  padding: 0.4rem 0.9rem;
+  border: none;
+  border-radius: 10px;
   cursor: pointer;
+  font-size: 0.875rem;
 `;
 
 export default Board;

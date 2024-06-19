@@ -5,12 +5,12 @@
  *   description: 도서관 정보 관리
  */
 
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Library = require('../models/librarySchema');
-const User = require('../models/userSchema');
-const Review = require('../models/reviewSchema');
-const { ensureAuthenticated } = require('../middlewares/checklogin');
+const Library = require("../models/librarySchema");
+const User = require("../models/userSchema");
+const Review = require("../models/reviewSchema");
+const { ensureAuthenticated } = require("../middlewares/checklogin");
 
 /**
  * @swagger
@@ -49,17 +49,20 @@ const { ensureAuthenticated } = require('../middlewares/checklogin');
  *                   averageRating:
  *                     type: number
  */
-router.get('/', async (req, res, next) => {
+router.get("/", async (req, res, next) => {
     try {
         const libraries = await Library.find();
 
         // 각 도서관의 리뷰와 평균 평점 포함
         const librariesWithRatings = await Promise.all(
-            libraries.map(async library => {
+            libraries.map(async (library) => {
                 const reviews = await Review.find({ library: library._id });
                 let averageRating = 0;
                 if (reviews.length > 0) {
-                    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+                    const totalRating = reviews.reduce(
+                        (sum, review) => sum + review.rating,
+                        0
+                    );
                     averageRating = totalRating / reviews.length;
                 }
                 return {
@@ -70,7 +73,6 @@ router.get('/', async (req, res, next) => {
         );
 
         res.json(librariesWithRatings);
-        console.log(librariesWithRatings);
     } catch (error) {
         next(error);
     }
@@ -135,12 +137,12 @@ router.get('/', async (req, res, next) => {
  *         description: 도서관을 찾을 수 없습니다.
  */
 // librariesRoutes.js
-router.get('/:libraryId', async (req, res, next) => {
+router.get("/:libraryId", async (req, res, next) => {
     try {
         const { libraryId } = req.params;
         const library = await Library.findById(libraryId);
         if (!library) {
-            return res.status(404).send('도서관을 찾을 수 없습니다.');
+            return res.status(404).send("도서관을 찾을 수 없습니다.");
         }
 
         const reviews = await Review.find({ library: libraryId });
@@ -148,7 +150,10 @@ router.get('/:libraryId', async (req, res, next) => {
         // 평균 평점 계산
         let averageRating = 0;
         if (reviews.length > 0) {
-            const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+            const totalRating = reviews.reduce(
+                (sum, review) => sum + review.rating,
+                0
+            );
             averageRating = totalRating / reviews.length;
         }
 
@@ -185,23 +190,27 @@ router.get('/:libraryId', async (req, res, next) => {
  *       400:
  *         description: 이미 찜한 도서관입니다.
  */
-router.post('/favoriteLibraries', ensureAuthenticated, async (req, res, next) => {
-    try {
-        const userId = req.user._id; // 인증된 사용자 ID 가져오기
-        const { libraryId } = req.body;
-        const user = await User.findById(userId);
-        if (!user) return res.status(404).send('유저를 찾을 수 없습니다.');
+router.post(
+    "/favoriteLibraries",
+    ensureAuthenticated,
+    async (req, res, next) => {
+        try {
+            const userId = req.user._id; // 인증된 사용자 ID 가져오기
+            const { libraryId } = req.body;
+            const user = await User.findById(userId);
+            if (!user) return res.status(404).send("유저를 찾을 수 없습니다.");
 
-        if (!user.favoriteLibraries.includes(libraryId)) {
-            user.favoriteLibraries.push(libraryId);
-            await user.save();
-            res.status(200).send('도서관을 추가했습니다.');
-        } else {
-            res.status(400).send('이미 찜한 도서관입니다.');
+            if (!user.favoriteLibraries.includes(libraryId)) {
+                user.favoriteLibraries.push(libraryId);
+                await user.save();
+                res.status(200).send("도서관을 추가했습니다.");
+            } else {
+                res.status(400).send("이미 찜한 도서관입니다.");
+            }
+        } catch (error) {
+            next(error);
         }
-    } catch (error) {
-        next(error);
     }
-});
+);
 
 module.exports = router;

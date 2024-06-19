@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import CommentSection from './CommentSection';
 
@@ -11,6 +11,8 @@ const ModalContent = ({
   handleCommentDelete,
   handleCommentUpdate
 }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+
   return (
     <StyledModalContent>
       <ModalHeader>
@@ -22,11 +24,21 @@ const ModalContent = ({
             <TextButton onClick={handleDeleteClick}>삭제</TextButton>
           </ActionButtons>
         )}
-        <ModalAuthor>
+        <ModalAuthor
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+        >
           <CommentAvatar>
             <ProfileImage src={selectedItem.author.profilePic} alt='Profile' />
           </CommentAvatar>
+          {console.log(selectedItem)}
           {selectedItem.author.name}
+          {showTooltip && (
+            <Tooltip>
+              <p>Favorite Author: {selectedItem.author.favoriteAuthor}</p>
+              <p>Profile Message: {selectedItem.author.profileMsg}</p>
+            </Tooltip>
+          )}
         </ModalAuthor>
       </ModalHeader>
       <Hr />
@@ -89,6 +101,7 @@ const ModalAuthor = styled.div`
   margin-left: auto;
   display: flex;
   align-items: center;
+  position: relative;
 `;
 
 const ModalBody = styled.div`
@@ -170,6 +183,19 @@ const DateText = styled.div`
   font-size: 0.875rem;
   color: #888;
   text-align: right;
+`;
+
+const Tooltip = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  white-space: nowrap;
 `;
 
 export default ModalContent;
