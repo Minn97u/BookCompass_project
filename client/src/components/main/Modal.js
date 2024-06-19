@@ -135,14 +135,11 @@ const Modal = ({
             />
           </ArchiveAddButton>
         </PlaceAddress>
-<<<<<<< Updated upstream
         <PlaceOperatingHours>
           운영시간 : {place.hours || '운영시간 정보 없음'}
         </PlaceOperatingHours>
         <PlacePhone>전화번호 : {place.phone || '전화번호 없음'}</PlacePhone>
         <PlaceHoliday>휴일 : {place.holidays || '연중 무휴'}</PlaceHoliday>
-=======
->>>>>>> Stashed changes
         <PlaceURL
           href={place.url || '#'}
           target='_blank'
