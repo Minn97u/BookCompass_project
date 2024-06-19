@@ -323,4 +323,5 @@ const MypageContainer = styled.div`
   align-items: center;
   margin: 25px auto;
   padding: 30px;
+  width: 100%;
 `;
