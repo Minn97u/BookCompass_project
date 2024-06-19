@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ClickStar from './ClickStar';
-import axios from 'axios';
 import { postReview } from '../../api/Main';
 
-function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
+function ReviewWrite({ onClose, placeId, userId, refreshReviews, placeType }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  console.log('libraryId:', libraryId); // 추가
+  console.log('placeId:', placeId); // 디버깅용 로그
+  console.log('userId:', userId); // 디버깅용 로그
 
   const handleReviewChange = (e) => {
     setReviewText(e.target.value);
   };
 
-  console.log('userId:', userId);
   const handleSubmit = async () => {
     if (rating === 0) {
       alert('평점을 선택해주세요.');
@@ -23,15 +22,16 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
     try {
       console.log('리뷰 데이터:', {
         userId,
-        libraryId,
+        placeId,
         rating,
-        comment: reviewText
+        comment: reviewText,
+        placeType // 추가
       });
 
       const response = await postReview(
         userId,
-        libraryId,
         placeId,
+        placeType,
         rating,
         reviewText
       );

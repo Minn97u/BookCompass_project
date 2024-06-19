@@ -20,7 +20,7 @@ const Modal = ({
   place,
   type,
   userId,
-  archiveAdded,
+  archiveAdded = {},
   setArchiveAdded
 }) => {
   const [averageRating, setAverageRating] = useState(0);
@@ -34,6 +34,7 @@ const Modal = ({
               ? await getLibraryAvgRating(place._id)
               : await getParkAvgRating(place._id);
           setAverageRating(rating);
+          console.log(averageRating);
         }
       } catch (error) {
         console.error('평균 평점을 가져오는 중 오류 발생:', error);
@@ -147,7 +148,7 @@ const Modal = ({
         <Review
           rating={averageRating}
           placeId={place._id}
-          type={type}
+          placeType={type}
           archiveAdded={archiveAdded}
         />
       </ModalContent>

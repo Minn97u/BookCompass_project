@@ -10,7 +10,7 @@ import axios from 'axios';
 import ReviewEdit from './ReviewEdit'; // 추가된 부분
 import { getReviews, editReview } from '../../api/Main'; // 경로에 따라 실제 경로로 수정 필요
 
-const Review = ({ rating, placeId }) => {
+const Review = ({ rating, placeId, placeType }) => {
   const [isWriteReviewOpen, setIsWriteReviewOpen] = useState(false);
   const [iconImage, setIconImage] = useState(WriteReviewIcon);
   const [userId, setUserId] = useState(localStorage.getItem('userId'));
@@ -31,6 +31,7 @@ const Review = ({ rating, placeId }) => {
     try {
       const response = await getReviews(placeId);
       setReviews(response.data);
+      console.log('Reviews data:', response.data); // 데이터 확인
     } catch (error) {
       console.error('리뷰를 불러오는 데 실패했습니다:', error);
     }
@@ -89,6 +90,7 @@ const Review = ({ rating, placeId }) => {
         <ReviewWrite
           placeId={placeId}
           userId={userId}
+          placeType={placeType}
           refreshReviews={refreshReviews}
           onClose={handleToggleReview}
         />
@@ -110,6 +112,7 @@ const Review = ({ rating, placeId }) => {
             loggedInUserId={userId}
             handleEditReview={() => handleEditClick(review)}
             userId={review.user._id}
+            placeType={placeType}
           />
         ))
       )}

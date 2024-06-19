@@ -66,18 +66,21 @@ export const getParkFav = async (userId) => {
 
 export const postReview = async (
   userId,
-  libraryId,
   placeId,
+  placeType,
   rating,
   comment
 ) => {
   try {
+    const isLibrary = placeType === 'library';
+    const isPark = placeType === 'park';
+
     const response = await axios.post(
       '/api/reviews',
       {
         userId,
-        libraryId: placeId, // placeId가 libraryId로 사용되는 경우
-        parkId: null, // parkId는 null이기 때문에 null로 설정
+        libraryId: isLibrary ? placeId : null, // libraryId는 도서관일 경우에만 설정
+        parkId: isPark ? placeId : null, // parkId는 공원일 경우에만 설정
         rating,
         comment
       },
@@ -85,6 +88,7 @@ export const postReview = async (
         withCredentials: true
       }
     );
+
     console.log('리뷰가 성공적으로 작성되었습니다:', response.data);
     return response.data; // API 응답 데이터 반환
   } catch (error) {
