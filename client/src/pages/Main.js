@@ -5,12 +5,14 @@ import LibraryParkMap from '../components/main/LibraryParkMap';
 import Modal from '../components/main/Modal';
 import LibraryList from '../components/main/LibraryList';
 import ParkList from '../components/main/ParkList';
+import AuthModal from '../components/auth/AuthModal';
 import {
   getLibraryPings,
   getParkPings,
   getLibraryFav,
   getParkFav
 } from '../api/Main';
+import { getLoginStatus } from '../api/Auth';
 
 const districts = [
   { name: '강남구', center: { lat: 37.5172, lng: 127.0473 } },
@@ -47,10 +49,11 @@ const Main = () => {
   const [selectedLibrary, setSelectedLibrary] = useState(null);
   const [selectedPark, setSelectedPark] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 로그인 모달 상태 추가
   const [selectedButton, setSelectedButton] = useState('library');
   const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.978 });
   const [selectedGu, setSelectedGu] = useState('');
-  const [archiveAdded, setArchiveAdded] = useState({}); // archiveAdded 상태를 객체로 관리
+  const [archiveAdded, setArchiveAdded] = useState({});
 
   useEffect(() => {
     const fetchLibraryPings = async () => {
@@ -131,14 +134,28 @@ const Main = () => {
     setMapCenter({ lat: park.latitude, lng: park.longitude });
   };
 
+  const checkLoginAndOpenModal = async (place, type) => {
+    try {
+      const response = await getLoginStatus();
+      if (response.data.loggedIn) {
+        setSelectedLibrary(type === 'library' ? place : null);
+        setSelectedPark(type === 'park' ? place : null);
+        setIsModalOpen(true);
+      } else {
+        setIsLoginModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+      setIsLoginModalOpen(true);
+    }
+  };
+
   const handleLibraryClick = (library) => {
-    setSelectedLibrary(library);
-    setIsModalOpen(true);
+    checkLoginAndOpenModal(library, 'library');
   };
 
   const handleParkClick = (park) => {
-    setSelectedPark(park);
-    setIsModalOpen(true);
+    checkLoginAndOpenModal(park, 'park');
   };
 
   const handleButtonClick = (buttonType) => {
@@ -242,18 +259,25 @@ const Main = () => {
           </LibraryParkMapContainer>
         </Flex>
       </Guide>
-      <Modal
-        isOpen={isModalOpen}
-        closeModal={() => setIsModalOpen(false)}
-        place={selectedButton === 'library' ? selectedLibrary : selectedPark}
-        type={selectedButton === 'library' ? 'library' : 'park'}
-        userId={userId}
-        archiveAdded={archiveAdded} // Boolean 값만 전달
-        setArchiveAdded={(isAdded) => {
-          // 필요에 따라 상태를 업데이트
-          setArchiveAdded(isAdded);
-        }}
-      />
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          closeModal={() => setIsModalOpen(false)}
+          place={selectedButton === 'library' ? selectedLibrary : selectedPark}
+          type={selectedButton === 'library' ? 'library' : 'park'}
+          userId={userId}
+          archiveAdded={archiveAdded}
+          setArchiveAdded={(isAdded) => {
+            setArchiveAdded(isAdded);
+          }}
+        />
+      )}
+      {isLoginModalOpen && (
+        <AuthModal
+          onClose={() => setIsLoginModalOpen(false)}
+          initialFormType='로그인'
+        /> // AuthModal 사용
+      )}
     </FullHeightContainer>
   );
 };
