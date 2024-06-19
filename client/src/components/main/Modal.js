@@ -135,9 +135,10 @@ const Modal = ({
           </ArchiveAddButton>
         </PlaceAddress>
         <PlaceOperatingHours>
-          {place.hours || '운영시간 정보 없음'}
+          운영시간 : {place.hours || '운영시간 정보 없음'}
         </PlaceOperatingHours>
-        <PlacePhone>{place.phone || '전화번호 없음'}</PlacePhone>
+        <PlacePhone>전화번호 : {place.phone || '전화번호 없음'}</PlacePhone>
+        <PlaceHoliday>휴일 : {place.holidays || '연중 무휴'}</PlaceHoliday>
         <PlaceURL
           href={place.url || '#'}
           target='_blank'
@@ -280,10 +281,24 @@ const PlaceURL = styled.a`
   font-size: 14px;
   line-height: 18px;
   color: #3e91f4;
-  position: absolute;
   width: 365px;
   height: 16px;
   left: 978px;
   top: 544px;
   text-align: left;
+`;
+
+const PlaceHoliday = styled.div`
+  margin-top: -5px;
+  margin-bottom: 10px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #191619;
+  display: flex;
+  text-align: left;
+  align-items: center;
+  width: 88%;
 `;
