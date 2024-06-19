@@ -120,9 +120,6 @@ const ChangePasswordForm = ({ setFormType }) => {
       <ChangeButton onClick={handleChangePassword} disabled={!isFormValid}>
         변경
       </ChangeButton>
-      <TextButton onClick={() => setFormType('로그인')}>
-        로그인하러 가기
-      </TextButton>
     </>
   );
 };

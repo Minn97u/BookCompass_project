@@ -79,7 +79,7 @@ function Intro() {
 
     // 제목2 타이핑 애니메이션
     gsap.to(title2Ref.current, {
-      duration: 2,
+      duration: 3,
       text: {
         value: '서울시 독서문화 실태 조사 결과는?',
         speed: 0.5,
@@ -111,7 +111,7 @@ function Intro() {
 
     // 제목3 타이핑 애니메이션
     gsap.to(title3Ref.current, {
-      duration: 2,
+      duration: 3,
       text: {
         value: '서울시 시민들의 공공 도서관 방문 횟수는?',
         speed: 0.5,
@@ -143,7 +143,7 @@ function Intro() {
 
     // 제목4 타이핑 애니메이션
     gsap.to(title4Ref.current, {
-      duration: 2,
+      duration: 3,
       text: {
         value: '서재 나침반의 기획 의도',
         speed: 0.5,
@@ -286,7 +286,7 @@ function Intro() {
       <DescriptionContainer2>
         <DescriptionTitle ref={title4Ref}></DescriptionTitle>
         <DescriptionText4 ref={text4Ref} style={{ opacity: 0 }}>
-          서재 나침반은 이러한 문제를 해결하고
+          서재 나침반은 이러한 문제를 해결하고{' '}
           <strong>독서 문화를 활성화</strong>하기 위해 만들어졌습니다.
           <br />
           <br /> 시민들이 <strong>도서관 정보를 쉽게</strong> 접근 할 수 있도록
@@ -299,7 +299,7 @@ function Intro() {
           <br />
         </DescriptionText4>
       </DescriptionContainer2>
-      <BottomBox ref={logoImgRef}>
+      <BottomBox>
         <LogoImg src={Logo} alt='logo' />
         <BottomText>당신의 이야기가 시작되는 곳,</BottomText>
         <BottomText>당신의 서재를 찾아보세요.</BottomText>
@@ -315,6 +315,7 @@ const Header = styled.div`
   position: relative;
   height: 30vh;
   margin-bottom: -30px;
+  margin-top: 30px;
 `;
 
 const BookImgContainer = styled.img`
@@ -329,12 +330,6 @@ const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
-
-const LogoImg = styled.img`
-  width: 30rem;
-  margin-top: 120px;
-  margin-bottom: 10px;
 `;
 
 const Title = styled.div`
@@ -369,6 +364,7 @@ const DescriptionContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   padding: 20px;
+  margin-top: 30px;
 `;
 
 const DescriptionTitle = styled.h2`
@@ -395,7 +391,20 @@ const DescriptionText4 = styled.div`
 `;
 
 const BottomBox = styled.div`
-  margin-bottom: 90px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 80px;
+  background-color: #f3e8da;
+  width: 100%;
+  height: 20rem;
+  margin-top: 80px;
+`;
+
+const LogoImg = styled.img`
+  width: 30rem;
+  margin-bottom: 10px;
 `;
 
 const BottomText = styled.p`

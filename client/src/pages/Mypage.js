@@ -197,7 +197,7 @@ const Mypage = () => {
         <UserName>{myInfo.name}</UserName>
         <UserEmail>{myInfo.email}</UserEmail>
         <UserDescription>{myInfo.description}</UserDescription>
-        <SettingBtn onClick={handleSettingClick}>Edit</SettingBtn>
+        <SettingBtn onClick={handleSettingClick}>프로필 편집</SettingBtn>
       </ProfileConatiner>
       <MypageContainer>
         <MypageBox
@@ -300,12 +300,13 @@ const UserDescription = styled.p`
 `;
 
 const SettingBtn = styled.button`
-  font-size: 0.8rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 400;
   color: white;
-  width: 2.5rem;
+  width: 11rem;
+  height: 2rem;
   padding: 5px;
-  border: none;
+  border: 1px solid #563c0a;
   border-radius: 7px;
   background-color: #563c0a;
   align-self: flex-end;
