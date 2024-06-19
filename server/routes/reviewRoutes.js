@@ -37,12 +37,7 @@ router.get('/', async (req, res, next) => {
     let reviews;
 
     if (libraryExists) {
-      reviews = await Review.find({ library: placeId, 
-        $or: [
-          {isDeleted: false},
-          {isDeleted: { $exists: false }}
-        ]
-       })
+      reviews = await Review.find({ library: placeId })
         .populate('user')
         .populate('library')
         .populate('park');
