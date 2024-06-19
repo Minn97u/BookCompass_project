@@ -9,6 +9,7 @@ const Review = require('../models/reviewSchema');
 const { ensureAuthenticated } = require('../middlewares/checklogin');
 const sendMail = require('../utils/sendmail');
 const revokeToken = require('../utils/revokeToken');
+const baseURL = process.env.NODE_ENV === "development" ? "http://localhost:3000" : process.env.CORS_ORIGIN;
 
 /**
  * @swagger
@@ -188,10 +189,10 @@ router.get(
   (req, res) => {
     if (req.user.favoriteAuthor === null || req.user.region === null) {
       // 추가 정보 입력 페이지로 리디렉트
-      res.redirect('http://localhost:3000/additionalinfo');
+      res.redirect(`${baseURL}/additionalinfo`);
     } else {
       // 메인 페이지로 리디렉트
-      res.redirect('http://localhost:3000');
+      res.redirect(baseURL);
     }
   }
 );
