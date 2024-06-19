@@ -12,6 +12,12 @@ const LoginForm = ({ setFormType, onClose }) => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loginError, setLoginError] = useState('');
 
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  };
+
   const handleLogin = async () => {
     const data = {
       email: email,
@@ -20,10 +26,10 @@ const LoginForm = ({ setFormType, onClose }) => {
     try {
       const res = await postLogin(data);
       console.log('로그인 성공:', res);
-      localStorage.setItem('userId', res.data.user.id);
-      localStorage.setItem('userName', res.data.user.name);
-      localStorage.setItem('userRegion', res.data.user.region);
-      localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      // localStorage.setItem('userId', res.data.user.id);
+      // localStorage.setItem('userName', res.data.user.name);
+      // localStorage.setItem('userRegion', res.data.user.region);
+      // localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
       onClose();
       window.location.href = '/';
     } catch (error) {
@@ -34,15 +40,15 @@ const LoginForm = ({ setFormType, onClose }) => {
 
   const handleGoogleLogin = async () => {
     try {
-      await getGoogleLogin();
-      const res = await getUserInfo();
-      console.log('구글 로그인 성공:', res);
-      localStorage.setItem('userId', res.data.user.id);
-      localStorage.setItem('userName', res.data.user.name);
-      localStorage.setItem('userRegion', res.data.user.region);
-      localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
-      onClose();
-      window.location.href = '/';
+      getGoogleLogin();
+      // const res = await getUserInfo();
+      // console.log('구글 로그인 성공');
+      // localStorage.setItem('userId', res.data.user.id);
+      // localStorage.setItem('userName', res.data.user.name);
+      // localStorage.setItem('userRegion', res.data.user.region);
+      // localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      // onClose();
+      // window.location.href = '/';
     } catch (error) {
       console.error('구글 로그인 실패:', error);
     }
@@ -64,6 +70,7 @@ const LoginForm = ({ setFormType, onClose }) => {
           placeholder='비밀번호 입력'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          handleEnter={handleEnter}
         />
         <VisibilityIcon
           src={isPasswordVisible ? VisibleIcon : InvisibleIcon}

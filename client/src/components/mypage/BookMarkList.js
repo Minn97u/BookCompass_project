@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import LocationPing from '../../assets/icons/LocationPing.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
+import GreenMarker from '../../assets/icons/GreenMarker.svg';
 import DeleteModal from '../common/DeleteModal';
 
 const BookMarkList = ({ datas, setList }) => {
@@ -35,7 +36,10 @@ const BookMarkList = ({ datas, setList }) => {
           <ListGroup key={data.id}>
             <List>
               <EleBox>
-                <LocationIconImg src={LocationPing} alt='location-icon' />
+                <LocationIconImg
+                  src={data.type === 'library' ? LocationPing : GreenMarker}
+                  alt='location-icon'
+                />
                 <TextBox>
                   <Title>{data.name}</Title>
                   <Location>{data.address}</Location>

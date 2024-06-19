@@ -174,10 +174,10 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 50px;
+  padding: 60px 50px;
   position: absolute;
-  width: 350px;
-  height: 400px;
+  width: 370px;
+  height: 450px;
   left: 40%;
   top: 15%;
   background: #ffffff;
@@ -187,8 +187,8 @@ const ModalContent = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 3px;
+  right: 0px;
   background: none;
   border: none;
   cursor: pointer;
@@ -259,6 +259,7 @@ const PlaceOperatingHours = styled.div`
   display: flex;
   text-align: left;
   align-items: center;
+  width: 88%;
 `;
 
 const PlacePhone = styled.p`

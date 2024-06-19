@@ -4,7 +4,11 @@ const bcrypt = require('bcryptjs');
 const User = require('../../models/userSchema');
 
 module.exports = new LocalStrategy({ usernameField: 'email' }, (email, password, done) => {
-    User.findOne({ email: email })
+    User.findOne({ email: email, 
+        $or: [
+            {isDeleted: false},
+            {isDeleted: { $exists: false }}
+          ]})
         .then(user => {
             if (!user) {
                 // 사용자 ID가 존재하지 않음

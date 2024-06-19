@@ -356,8 +356,8 @@ const FindLibraryIcon = styled.img`
 
 const LabelContainer = styled.div`
   display: flex;
-  align-items: center; // 수직 방향 중앙 정렬
-  justify-content: center; // 수평 방향 중앙 정렬
+  align-items: center;
+  justify-content: center;
 `;
 
 const Label = styled.span`
@@ -383,6 +383,15 @@ const Select = styled.select`
 const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: 0px 15px;
+  height: 50rem;
+
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바의 색상 설정 */
+    border-radius: 5px; /* 스크롤바의 모서리 반경 설정 */
+  }
 `;

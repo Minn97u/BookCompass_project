@@ -13,7 +13,6 @@ function ReviewList({
   userId
 }) {
   const isEditable = loggedInUserId === userId;
-  console.log('리뷰를 수정해야해', loggedInUserId, userId);
 
   return (
     <ReviewListContainer>

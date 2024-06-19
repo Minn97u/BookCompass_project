@@ -20,8 +20,6 @@ const BookMarkMap = ({
       return;
     }
 
-    console.log('지도정보 들어오나', libraries, parks);
-
     const mapContainer = document.getElementById('map');
     const mapOption = {
       center: new kakao.maps.LatLng(37.5665, 126.978),
@@ -50,6 +48,16 @@ const BookMarkMap = ({
       parkImageOption
     );
 
+    // 변경된 부분: CustomOverlay를 생성하는 함수
+    const createCustomOverlay = (position, content) => {
+      const overlay = new kakao.maps.CustomOverlay({
+        position: position,
+        content: content,
+        yAnchor: 1.9
+      });
+      return overlay;
+    };
+
     const displayLibraryMarkers = (locations) => {
       locations.forEach((location) => {
         const markerPosition = new kakao.maps.LatLng(
@@ -61,25 +69,37 @@ const BookMarkMap = ({
           image: libraryMarkerImage,
           name: location.name
         });
-        const content = `<div style="padding:10px; font-size:0.9rem; text-align:center;">${location.name}</div>`;
-        const infowindow = new kakao.maps.InfoWindow({
-          content: content
-        });
+
+        const content = `
+          <div style="
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: flex;
+            background: white;
+            border: 1px solid black;
+          ">
+            ${location.name}
+          </div>
+        `;
+
+        // 변경된 부분: CustomOverlay 생성 및 이벤트 설정
+        const overlay = createCustomOverlay(markerPosition, content);
 
         kakao.maps.event.addListener(marker, 'click', () => {
           onLibraryClick(location);
         });
 
         kakao.maps.event.addListener(marker, 'mouseover', () => {
-          infowindow.open(map, marker);
+          overlay.setMap(map);
         });
 
         kakao.maps.event.addListener(marker, 'mouseout', () => {
-          infowindow.close();
+          overlay.setMap(null);
         });
 
         marker.setMap(map);
-        libraryMarkers.current.push({ marker, infowindow });
+        libraryMarkers.current.push({ marker, overlay }); // 변경된 부분: infowindow -> overlay
       });
     };
 
@@ -94,25 +114,37 @@ const BookMarkMap = ({
           image: parkMarkerImage,
           name: location.name
         });
-        const content = `<div style="padding:10px; font-size:0.9rem; text-align:center;">${location.name}</div>`;
-        const infowindow = new kakao.maps.InfoWindow({
-          content: content
-        });
+
+        const content = `
+          <div style="
+            padding: 10px;
+            font-size: 0.9rem;
+            text-align: center;
+            display: flex;
+            background: white;
+            border: 1px solid black;
+          ">
+            ${location.name}
+          </div>
+        `;
+
+        // 변경된 부분: CustomOverlay 생성 및 이벤트 설정
+        const overlay = createCustomOverlay(markerPosition, content);
 
         kakao.maps.event.addListener(marker, 'click', () => {
           onParkClick(location);
         });
 
         kakao.maps.event.addListener(marker, 'mouseover', () => {
-          infowindow.open(map, marker);
+          overlay.setMap(map);
         });
 
         kakao.maps.event.addListener(marker, 'mouseout', () => {
-          infowindow.close();
+          overlay.setMap(null);
         });
 
         marker.setMap(map);
-        parkMarkers.current.push({ marker, infowindow });
+        parkMarkers.current.push({ marker, overlay }); // 변경된 부분: infowindow -> overlay
       });
     };
 

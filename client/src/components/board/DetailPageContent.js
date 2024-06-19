@@ -67,7 +67,6 @@ const Container = styled.div`
   height: auto;
   max-height: 80vh;
   margin: 0 auto;
-
   display: flex;
   flex-direction: column;
   position: relative;

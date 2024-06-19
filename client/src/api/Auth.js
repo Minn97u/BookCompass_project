@@ -9,7 +9,8 @@ export const getLoginStatus = () => {
 };
 
 export const getGoogleLogin = () => {
-  window.location.href = 'http://kdt-ai-10-team04.elicecoding.com/api/google';
+  // window.location.href = 'http://kdt-ai-10-team04.elicecoding.com/api/google';
+  window.location.href = 'http://localhost:3000/api/google';
 };
 
 export const postSignup = (data) => {
@@ -38,4 +39,8 @@ export const getUserInfo = () => {
 
 export const postUserInfo = (data) => {
   return axios.post('/api/additional-info', data);
+};
+
+export const deleteUser = (data) => {
+  return axios.delete('/api/deleteUser', data);
 };
