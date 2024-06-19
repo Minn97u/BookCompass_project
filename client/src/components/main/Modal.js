@@ -26,6 +26,7 @@ const Modal = ({
   const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
+    console.log('정보', place);
     const fetchAverageRating = async () => {
       try {
         if (place) {
@@ -134,18 +135,27 @@ const Modal = ({
             />
           </ArchiveAddButton>
         </PlaceAddress>
+<<<<<<< Updated upstream
         <PlaceOperatingHours>
           운영시간 : {place.hours || '운영시간 정보 없음'}
         </PlaceOperatingHours>
         <PlacePhone>전화번호 : {place.phone || '전화번호 없음'}</PlacePhone>
         <PlaceHoliday>휴일 : {place.holidays || '연중 무휴'}</PlaceHoliday>
+=======
+>>>>>>> Stashed changes
         <PlaceURL
           href={place.url || '#'}
           target='_blank'
           rel='noopener noreferrer'
         >
+          ddddddsds
           {place.url || '홈페이지 URL 없음'}
         </PlaceURL>
+        <PlaceOperatingHours>
+          {place.hours || '운영시간 정보 없음'}
+        </PlaceOperatingHours>
+        <PlacePhone>{place.phone || '전화번호 없음'}</PlacePhone>
+
         <Review
           rating={averageRating}
           placeId={place._id}
@@ -281,6 +291,10 @@ const PlaceURL = styled.a`
   font-size: 14px;
   line-height: 18px;
   color: #3e91f4;
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
   width: 365px;
   height: 16px;
   left: 978px;

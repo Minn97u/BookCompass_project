@@ -51,9 +51,11 @@ const Main = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 로그인 모달 상태 추가
   const [selectedButton, setSelectedButton] = useState('library');
-  const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.978 });
+  const [mapCenter, setMapCenter] = useState({});
   const [selectedGu, setSelectedGu] = useState('');
   const [archiveAdded, setArchiveAdded] = useState({});
+
+  const [mapLevel, setMapLevel] = useState('8');
 
   useEffect(() => {
     const fetchLibraryPings = async () => {
@@ -127,11 +129,13 @@ const Main = () => {
   const handleLibraryItemClick = (library) => {
     setSelectedLibrary(library);
     setMapCenter({ lat: library.latitude, lng: library.longitude });
+    setMapLevel('3');
   };
 
   const handleParkItemClick = (park) => {
     setSelectedPark(park);
     setMapCenter({ lat: park.latitude, lng: park.longitude });
+    setMapLevel('3');
   };
 
   const checkLoginAndOpenModal = async (place, type) => {
@@ -162,6 +166,11 @@ const Main = () => {
     setSelectedButton(buttonType);
   };
 
+  const handelModalClose = () => {
+    setIsModalOpen(false);
+    setMapLevel('8');
+  };
+
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -180,6 +189,24 @@ const Main = () => {
   const filteredParks = parks.filter(
     (park) => selectedGu === '' || park.district === selectedGu
   );
+
+  useEffect(() => {
+    if (isModalOpen) {
+      if (selectedLibrary) {
+        setMapCenter({
+          lat: selectedLibrary.latitude,
+          lng: selectedLibrary.longitude
+        });
+      } else if (selectedPark) {
+        setMapCenter({
+          lat: selectedPark.latitude,
+          lng: selectedPark.longitude
+        });
+      } else {
+        setMapCenter({ lat: 37.5665, lng: 126.978 });
+      }
+    }
+  }, [isModalOpen, selectedLibrary, selectedPark]);
 
   return (
     <FullHeightContainer>
@@ -241,6 +268,7 @@ const Main = () => {
               onParkClick={handleParkClick}
               selectedButton={selectedButton}
               center={mapCenter}
+              mapLevel={mapLevel}
             />
             <ButtonContainer>
               <Button
@@ -262,7 +290,7 @@ const Main = () => {
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
-          closeModal={() => setIsModalOpen(false)}
+          closeModal={handelModalClose}
           place={selectedButton === 'library' ? selectedLibrary : selectedPark}
           type={selectedButton === 'library' ? 'library' : 'park'}
           userId={userId}
