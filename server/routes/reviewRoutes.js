@@ -37,22 +37,12 @@ router.get('/', async (req, res, next) => {
     let reviews;
 
     if (libraryExists) {
-      reviews = await Review.find({ library: placeId, 
-        $or: [
-          {isDeleted: false},
-          {isDeleted: { $exists: false }}
-        ]
-       })
+      reviews = await Review.find({ library: placeId })
         .populate('user')
         .populate('library')
         .populate('park');
     } else if (parkExists) {
-      reviews = await Review.find({ park: placeId,
-        $or: [
-          {isDeleted: false},
-          {isDeleted: { $exists: false }}
-        ]
-       })
+      reviews = await Review.find({ park: placeId })
         .populate('user')
         .populate('library')
         .populate('park');
