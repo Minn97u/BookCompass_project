@@ -57,7 +57,7 @@ router.post("/", ensureAuthenticated, async (req, res) => {
     try {
         const post = await Post.findOne({ shortId: postId });
 
-        if (!post) {
+        if (!post || post.isDeleted) {
             return res.status(404).json({ msg: "Post not found" });
         }
 
@@ -122,7 +122,7 @@ router.get("/", async (req, res) => {
             "name profilePic"
         );
 
-        if (!post) {
+        if (!post || post.isDeleted) {
             return res.status(404).json({ msg: "Post not found" });
         }
 
@@ -187,7 +187,7 @@ router.put("/:commentId", ensureAuthenticated, async (req, res) => {
     try {
         const post = await Post.findOne({ shortId: postId });
 
-        if (!post) {
+        if (!post || post.isDeleted) {
             return res.status(404).json({ msg: "Post not found" });
         }
 
@@ -250,7 +250,7 @@ router.delete("/:commentId", ensureAuthenticated, async (req, res) => {
 
     try {
         const post = await Post.findOne({ shortId: postId });
-        if (!post) {
+        if (!post || post.isDeleted) {
             return res.status(404).json({ msg: "Post not found" });
         }
 

@@ -232,10 +232,10 @@ router.get("/myComments", ensureAuthenticated, async (req, res, next) => {
         const userId = req.user._id;
         const comments = await Comment.find({ author: userId }).populate(
             "postId",
-            "shortId tittle"
+            "shortId title isDeleted"
         );
-
-        const formattedComments = comments.map((comment) => ({
+        const filteredComments = comments.filter(comment => comment.postId && !comment.postId.isDeleted);
+        const formattedComments = filteredComments.map((comment) => ({
             _id: comment._id,
             content: comment.content,
             date: comment.createdAt,

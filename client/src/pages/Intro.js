@@ -6,8 +6,26 @@ import Logo from '../assets/icons/Logo.svg';
 import BookImg from '../assets/icons/bookImg.svg';
 
 gsap.registerPlugin(TextPlugin, ScrollTrigger);
+import { getUserInfo } from '../api/Auth';
 
 function Intro() {
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const res = await getUserInfo();
+        console.log('사용자 정보:', res);
+        localStorage.setItem('userId', res.data.user._id);
+        localStorage.setItem('userName', res.data.user.name);
+        localStorage.setItem('userRegion', res.data.user.region);
+        localStorage.setItem('favoriteAuthor', res.data.user.favoriteAuthor);
+      } catch (error) {
+        console.error('사용자 정보 가져오기 실패:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   const app = useRef(null);
   const bookImgRef = useRef(null);
   const titleRef = useRef(null);

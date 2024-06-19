@@ -9,6 +9,7 @@ const reviewSchema = new Schema(
         park: { type: Schema.Types.ObjectId, ref: "Park" }, // park 필드 추가
         rating: { type: Number, required: true },
         comment: { type: String, required: true },
+        isDeleted: { type: Boolean, default: false },
     },
     {
         timestamps: true, // 생성 및 수정 시간 자동 추가

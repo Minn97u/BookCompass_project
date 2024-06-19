@@ -4,6 +4,7 @@ import EditInfo from '../components/edit/EditInfo';
 import EditProfile from '../components/edit/EditProfile';
 import AuthModal from '../components/auth/AuthModal';
 import { getProfileInfo } from '../api/Mypage';
+import { deleteUser, getLogout } from '../api/Auth';
 
 const EditPage = () => {
   const [myProfile, setMyProfile] = useState({
@@ -21,6 +22,21 @@ const EditPage = () => {
   const handlePasswordChangeClick = () => {
     setFormType('비밀번호 변경');
     setModalVisible(true);
+  };
+  const handleDeleteUserClick = async () => {
+    const userConfirmed = window.confirm('회원 탈퇴를 진행하시겠습니까?');
+    if (userConfirmed) {
+      const res = await deleteUser();
+      console.log(res.data.msg);
+      await getLogout();
+      localStorage.removeItem('userId');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRegion');
+      localStorage.removeItem('favoriteAuthor');
+      window.location.href = '/';
+    } else {
+      console.log('회원 탈퇴가 취소되었습니다.');
+    }
   };
 
   const fetchProfileInfo = async () => {
@@ -53,7 +69,7 @@ const EditPage = () => {
             비밀번호 변경
           </TextButton>
           <Divider>|</Divider>
-          <TextButton>회원 탈퇴</TextButton>
+          <TextButton onClick={handleDeleteUserClick}> 회원 탈퇴 </TextButton>
         </EditAccount>
       </EditBox>
       {modalVisible && (
