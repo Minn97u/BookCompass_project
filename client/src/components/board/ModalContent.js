@@ -35,8 +35,8 @@ const ModalContent = ({
           {selectedItem.author.name}
           {showTooltip && (
             <Tooltip>
-              <p>Favorite Author: {selectedItem.author.favoriteAuthor}</p>
-              <p>Profile Message: {selectedItem.author.profileMsg}</p>
+              <p>선호 작가: {selectedItem.author.favoriteAuthor}</p>
+              <p>자기 소개: {selectedItem.author.profileMsg}</p>
             </Tooltip>
           )}
         </ModalAuthor>
