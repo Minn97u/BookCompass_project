@@ -234,6 +234,7 @@ const Main = () => {
                 <Input
                   type='text'
                   placeholder='도서관 검색'
+                  value={keyword}
                   onChange={handleKeywordChange}
                   onKeyDown={handleKeyDown}
                 />
