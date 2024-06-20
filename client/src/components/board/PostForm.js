@@ -2,20 +2,24 @@ import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as PicAddIcon } from '../../assets/icons/picaddbutton.svg';
 import TagButtons from './TagButtons';
+import { useWatch } from 'react-hook-form';
 
 const PostForm = ({
-  title,
-  content,
-  tag,
-  onTitleChange,
-  onContentChange,
-  onTagChange,
   onSubmit,
+  control,
   fileInputRef,
   onFileInputClick,
   onFileChange,
-  selectedFile
+  setValue
 }) => {
+  const { register, handleSubmit } = control;
+  const tag = useWatch({ control, name: 'tag' });
+  const selectedFile = useWatch({ control, name: 'selectedFile' });
+
+  const handleTagClick = (tag) => {
+    setValue('tag', tag);
+  };
+
   return (
     <ModalContent>
       <ModalHeader></ModalHeader>
@@ -23,12 +27,11 @@ const PostForm = ({
         <CommentSection>
           <TitleInput
             placeholder='제목을 입력해 주세요.'
-            value={title}
-            onChange={onTitleChange}
+            {...register('title')}
           />
           <HrLine />
           <BoardTagsContainer>
-            <TagButtons activeTag={tag} handleTagClick={onTagChange} />
+            <TagButtons activeTag={tag} handleTagClick={handleTagClick} />
             <PicAddIcon onClick={onFileInputClick} />
             <FileInput
               id='fileInput'
@@ -39,10 +42,9 @@ const PostForm = ({
           </BoardTagsContainer>
           <ContentTextArea
             placeholder='내용을 입력해 주세요.'
-            value={content}
-            onChange={onContentChange}
+            {...register('content')}
           />
-          <CommentButton onClick={onSubmit}>등록</CommentButton>
+          <CommentButton onClick={handleSubmit(onSubmit)}>등록</CommentButton>
         </CommentSection>
       </ModalBody>
     </ModalContent>
