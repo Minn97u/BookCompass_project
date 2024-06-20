@@ -8,24 +8,31 @@ const FindPasswordForm = ({ setFormType }) => {
   const [emailError, setEmailError] = useState('');
   const inputRef = useRef(null);
 
+  const isFormValid = email !== '';
+
   const handleFindPassword = async () => {
     const data = {
       email
     };
-    try {
-      const res = await postFindPassword(data);
-      console.log('비밀번호 찾기 성공', res);
-      setEmailError('임시 비밀번호가 전송되었습니다.');
-    } catch (error) {
-      console.error('비밀번호 찾기 실패:', error);
-      const status = error.response.status;
-      if (status === 404) {
-        setEmailError('가입되지 않은 이메일입니다.');
-      } else if (status === 400) {
-        setEmailError('소셜 로그인 회원입니다.');
-      } else {
+
+    if (isFormValid) {
+      try {
+        const res = await postFindPassword(data);
+        console.log('비밀번호 찾기 성공', res);
+        setEmailError('임시 비밀번호가 전송되었습니다.');
+      } catch (error) {
         console.error('비밀번호 찾기 실패:', error);
+        const status = error.response.status;
+        if (status === 404) {
+          setEmailError('가입되지 않은 이메일입니다.');
+        } else if (status === 400) {
+          setEmailError('소셜 로그인 회원입니다.');
+        } else {
+          console.error('비밀번호 찾기 실패:', error);
+        }
       }
+    } else {
+      setEmailError('모두 입력해 주세요.');
     }
   };
 

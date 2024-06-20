@@ -17,7 +17,6 @@ const BookMarkList = ({ datas, setList }) => {
   };
 
   const handleDeleteBtn = (listid, type) => {
-    console.log('리스트 아이디', listid);
     setCurrentId(listid);
     setCurrentType(type);
     setModalOpen(true);

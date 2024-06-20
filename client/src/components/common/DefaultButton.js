@@ -1,46 +1,7 @@
-import { useState } from 'react';
-import { useMutation } from 'react-query';
 import styled from 'styled-components';
 
-const DefaultButton = ({
-  onClick,
-  buttonText,
-  initialDisabled = false,
-  apiFn
-}) => {
-  const [isButtonDisabled, setIsButtonDisabled] = useState(initialDisabled);
-
-  const mutateFunction = useMutation({
-    mutationFn: async (data) => {
-      const res = await apiFn(data);
-      return res;
-    },
-    onSuccess: (res) => {
-      console.log('성공', res);
-    },
-    onError: (error) => {
-      console.error('실패:', error);
-      alert('실패');
-    },
-    onSettled: () => {
-      setTimeout(() => {
-        setIsButtonDisabled(false);
-      }, 500);
-    }
-  });
-
-  const handleButtonClick = () => {
-    setIsButtonDisabled(true);
-    onClick(mutateFunction);
-  };
-  return (
-    <Button
-      disabled={isButtonDisabled || mutateFunction.isLoading}
-      onClick={handleButtonClick}
-    >
-      {buttonText}
-    </Button>
-  );
+const DefaultButton = ({ children, ...rest }) => {
+  return <Button {...rest}> {children}</Button>;
 };
 
 const Button = styled.button`

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMutation } from 'react-query';
 import styled from 'styled-components';
 import Districts from '../auth/Districts';
 import SignUpDistrict from '../auth/SignUpDistrict';
@@ -6,13 +7,18 @@ import { postUserInfo } from '../../api/Auth';
 import DefaultButton from '../common/DefaultButton';
 
 const EditInfo = ({ myInfo, setMyInfo }) => {
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [resultText, setResultText] = useState('');
 
   const isFormValid =
     myInfo.region !== '' &&
     (myInfo.foundAnswer ? myInfo.foundAnswer.trim() !== '' : false);
 
-  const handleEditUserInfo = (mutateFn) => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: postUserInfo
+  });
+
+  const handleEditUserInfo = () => {
     if (!isFormValid) {
       setResultText('모두 입력해 주세요.');
       return;
@@ -23,10 +29,21 @@ const EditInfo = ({ myInfo, setMyInfo }) => {
       favoriteAuthor: myInfo.foundAnswer
     };
 
-    mutateFn.mutate(data, {
+    mutate(data, {
       onSuccess: () => {
+        console.log('성공');
         localStorage.setItem('userRegion', data.region);
         localStorage.setItem('favoriteAuthor', data.favoriteAuthor);
+        setIsButtonDisabled(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        alert('실패');
+      },
+      onSettled: () => {
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+        }, 300);
       }
     });
   };
@@ -56,11 +73,11 @@ const EditInfo = ({ myInfo, setMyInfo }) => {
           />
         </InputBox>
         <DefaultButton
-          buttonText={'수정'}
           onClick={handleEditUserInfo}
-          apiFn={postUserInfo}
-          initialDisabled={false}
-        />
+          disabled={isButtonDisabled || isPending}
+        >
+          수정
+        </DefaultButton>
       </InfoBox>
       {resultText && <ErrorText>{resultText}</ErrorText>}
     </EditInfoContainer>
