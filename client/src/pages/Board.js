@@ -300,11 +300,6 @@ const Board = () => {
     }
   };
 
-  const tag = useWatch({
-    control: methods.control,
-    name: 'tag'
-  });
-
   return (
     <FormProvider {...methods}>
       <BoardContainer>
@@ -326,7 +321,6 @@ const Board = () => {
               control={methods.control}
               onSubmit={methods.handleSubmit(onSubmit)}
               setValue={methods.setValue}
-              tag={tag}
               fileInputRef={fileInputRef}
               onFileInputClick={handleFileInputClick}
               onFileChange={handlePicAddIconClick}
@@ -335,7 +329,6 @@ const Board = () => {
             <PostForm
               control={methods.control}
               setValue={methods.setValue}
-              tag={tag}
               onSubmit={methods.handleSubmit(onSubmit)}
               fileInputRef={fileInputRef}
               onFileInputClick={handleFileInputClick}
