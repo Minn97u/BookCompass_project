@@ -188,8 +188,7 @@ const DateText = styled.div`
 const Tooltip = styled.div`
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-70%);
   background-color: #fff;
   border: 1px solid #ccc;
   padding: 0.5rem;
