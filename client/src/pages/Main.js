@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { debounce } from 'lodash';
 import FindLibrary from '../../src/assets/icons/FindLibrary.svg';
 import LibraryParkMap from '../components/main/LibraryParkMap';
 import Modal from '../components/main/Modal';
@@ -116,6 +117,11 @@ const Main = () => {
     fetchParkFavs();
   }, []);
 
+  const debouncedSetKeyword = useCallback(
+    debounce((value) => setKeyword(value), 500),
+    []
+  );
+
   const handleFindLibraryClick = () => {
     console.log(keyword);
   };
@@ -166,7 +172,7 @@ const Main = () => {
     setSelectedButton(buttonType);
   };
 
-  const handelModalClose = () => {
+  const handleModalClose = () => {
     setIsModalOpen(false);
     setMapLevel('8');
   };
@@ -214,6 +220,10 @@ const Main = () => {
     }
   }, [isModalOpen, selectedLibrary, selectedPark]);
 
+  const handleKeywordChange = (e) => {
+    debouncedSetKeyword(e.target.value);
+  };
+
   return (
     <FullHeightContainer>
       <Guide as={HBox}>
@@ -224,8 +234,7 @@ const Main = () => {
                 <Input
                   type='text'
                   placeholder='도서관 검색'
-                  value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
+                  onChange={handleKeywordChange}
                   onKeyDown={handleKeyDown}
                 />
                 <ClickableIconContainer onClick={handleFindLibraryClick}>
@@ -293,7 +302,7 @@ const Main = () => {
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
-          closeModal={handelModalClose}
+          closeModal={handleModalClose}
           place={selectedButton === 'library' ? selectedLibrary : selectedPark}
           type={selectedButton === 'library' ? 'library' : 'park'}
           userId={userId}
