@@ -171,6 +171,12 @@ const Main = () => {
     setMapLevel('8');
   };
 
+  const handleChangeGu = (e) => {
+    setSelectedGu(e.target.value);
+    setMapLevel('8');
+    setKeyword('');
+  };
+
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -228,10 +234,7 @@ const Main = () => {
               </KeywordInputContainer>
               <LabelContainer>
                 <Label>설정한 위치</Label>
-                <Select
-                  value={selectedGu}
-                  onChange={(e) => setSelectedGu(e.target.value)}
-                >
+                <Select value={selectedGu} onChange={handleChangeGu}>
                   <option value=''>전체</option>
                   {districts.map((gu) => (
                     <option key={gu.name} value={gu.name}>
