@@ -88,10 +88,9 @@
 
 -   [Figma 링크](https://www.figma.com/design/TvYfVPgD88WEqyyeMtMC7B/%EC%84%9C%EC%9E%AC-%EB%82%98%EC%B9%A8%EB%B0%98?node-id=0-1&t=CBwbMY2H977cPQQ8-0)
 
--   [ERD] (https://dbdiagram.io/d/%EC%84%9C%EC%9E%AC-%EB%82%98%EC%B9%A8%EB%B0%98-6667d3616bc9d447b15b3c47)
+-   [ERD](https://dbdiagram.io/d/%EC%84%9C%EC%9E%AC-%EB%82%98%EC%B9%A8%EB%B0%98-6667d3616bc9d447b15b3c47)
 
--   [API] (http://kdt-ai-10-team04.elicecoding.com/api-docs
-    )
+-   [API](http://kdt-ai-10-team04.elicecoding.com/api-docs)
 
 ```
 - 파일 트리
