@@ -20,7 +20,7 @@ const Modal = ({
   place,
   type,
   userId,
-  archiveAdded = {},
+  archiveAdded = { libraryFavs: [], parkFavs: [] },
   setArchiveAdded
 }) => {
   const [averageRating, setAverageRating] = useState(0);
