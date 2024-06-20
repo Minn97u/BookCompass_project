@@ -118,6 +118,7 @@ function Navbar() {
       {showModal && (
         <AuthModal onClose={handleCloseModal} initialFormType='로그인' />
       )}
+
       <Outlet />
     </>
   );
@@ -133,9 +134,10 @@ const GlobalStyle = createGlobalStyle`
 const NavbarWrapper = styled.div`
   width: 100%; /* 네브바가 전체 너비를 차지하도록 설정 */
   box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
-  border-bottom: 1px solid #e7e7e7; /* 더 얇은 선 */
+  border-bottom: 1px solid #ae9d8a; /* 더 얇은 선 */
   margin: 0; /* 모든 마진 제거 */
   padding: 20px 0px 30px 0px;
+  background-color: #dcccb5;
 `;
 
 const NavbarContainer = styled.div`
@@ -155,8 +157,6 @@ const StyledLogo = styled(LogoSVG)`
 `;
 
 const NavButton = styled.button`
-  font-family: 'SUITE';
-  font-style: normal;
   font-weight: ${({ isActive }) => (isActive ? '700' : '400')};
   font-size: 18px;
   line-height: 16px;

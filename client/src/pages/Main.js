@@ -340,6 +340,7 @@ const Button = styled.button`
 const FullHeightContainer = styled.div`
   display: flex;
   flex-direction: column;
+  border-top: 0.5px solid #ae9d8a;
 `;
 
 const HBox = styled.div`
