@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { LongInput } from '../common/LongInput';
 import { postFindPassword } from '../../api/Auth';
@@ -6,6 +6,7 @@ import { postFindPassword } from '../../api/Auth';
 const FindPasswordForm = ({ setFormType }) => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const inputRef = useRef(null);
 
   const handleFindPassword = async () => {
     const data = {
@@ -44,6 +45,7 @@ const FindPasswordForm = ({ setFormType }) => {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           handleEnter={handleEnter}
+          ref={inputRef}
         />
         {emailError && <ErrorText>{emailError}</ErrorText>}
       </InputContainer>

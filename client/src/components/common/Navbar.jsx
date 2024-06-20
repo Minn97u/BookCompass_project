@@ -18,7 +18,6 @@ function Navbar() {
   const [showModal, setShowModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginText, setLoginText] = useState('로그인');
-  const userId = localStorage.getItem('userId');
   const navigate = useNavigate();
 
   const handelLoginStatus = async () => {

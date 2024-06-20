@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import SignUpDistrict from './SignUpDistrict';
 import Districts from './Districts';
@@ -11,6 +11,7 @@ const FindEmailForm = ({ setFormType }) => {
   const [region, setRegion] = useState('');
   const [foundAnswer, setFoundAnswer] = useState('');
   const [resultText, setResultText] = useState('');
+  const inputRef = useRef(null);
 
   const isFormValid = name !== '' && region !== '' && foundAnswer.trim() !== '';
 
@@ -58,6 +59,7 @@ const FindEmailForm = ({ setFormType }) => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           height='1.8rem'
+          ref={inputRef}
         />
         <DistrictBox>
           <SignUpDistrict

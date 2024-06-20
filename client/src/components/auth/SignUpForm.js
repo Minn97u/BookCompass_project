@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import SignUpDistrict from './SignUpDistrict';
 import Districts from './Districts';
@@ -22,6 +22,7 @@ const SignUpForm = ({ setFormType, onClose }) => {
   const [checkPasswordReg, setCheckPasswordReg] = useState('');
   const [signupError, setSignupError] = useState('모두 입력해 주세요.');
   const [isFormValid, setIsFormValid] = useState(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const validateForm = () => {
@@ -132,6 +133,7 @@ const SignUpForm = ({ setFormType, onClose }) => {
         }}
         checkText={checkEmailText}
         height='1.8rem'
+        ref={inputRef}
       />
       <LongInput
         title='비밀번호'
