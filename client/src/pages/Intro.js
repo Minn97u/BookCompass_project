@@ -258,12 +258,7 @@ const Header = styled.div`
 const IntroImg = styled.img`
   width: 30rem;
   align-self: center;
-`;
-
-const BookImgContainer = styled.img`
-  width: 40rem;
-  align-self: center;
-  margin-bottom: -40px;
+  margin-right: 7px;
 `;
 
 const TitleBox = styled.div`

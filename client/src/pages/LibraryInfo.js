@@ -1,8 +1,8 @@
-import React from 'react';
+import styled from 'styled-components';
 
 const LibraryIframe = () => {
   return (
-    <div>
+    <Container>
       <iframe
         src='/library_books_tables_ko.html'
         style={{ width: '100%', height: '1100px', border: 'none' }}
@@ -18,8 +18,13 @@ const LibraryIframe = () => {
         }}
         title='Book Rank Tables'
       />
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  padding: 40px 60px;
+  background-color: #f9f5f1;
+`;
 
 export default LibraryIframe;
