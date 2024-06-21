@@ -19,9 +19,9 @@ const PostForm = ({
     '잡담',
     '서평',
     '프로그램',
-    '도서 추천',
     '같이 해요',
-    '추천 장소'
+    '추천 장소',
+    '도서 추천'
   ];
   const handleTagClick = (tag) => {
     setValue('tag', tag);
