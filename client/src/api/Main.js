@@ -30,6 +30,16 @@ export const getLibraryAvgRating = async (id) => {
   }
 };
 
+export const getDustData = () => {
+  return axios
+    .get('/api/dust')
+    .then((response) => response.data)
+    .catch((error) => {
+      console.error('Error fetching dust data:', error);
+      throw error;
+    });
+};
+
 export const getParkAvgRating = async (id) => {
   try {
     const response = await axios.get(`/api/parks/${id}`);

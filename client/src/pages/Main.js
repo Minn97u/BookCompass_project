@@ -11,7 +11,8 @@ import {
   getLibraryPings,
   getParkPings,
   getLibraryFav,
-  getParkFav
+  getParkFav,
+  getDustData
 } from '../api/Main';
 import { getLoginStatus } from '../api/Auth';
 
@@ -45,18 +46,19 @@ const districts = [
 
 const Main = () => {
   const [keyword, setKeyword] = useState('');
-  const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [libraries, setLibraries] = useState([]);
   const [parks, setParks] = useState([]);
   const [selectedLibrary, setSelectedLibrary] = useState(null);
   const [selectedPark, setSelectedPark] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 로그인 모달 상태 추가
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [selectedButton, setSelectedButton] = useState('library');
   const [mapCenter, setMapCenter] = useState({});
   const [selectedGu, setSelectedGu] = useState('');
   const [archiveAdded, setArchiveAdded] = useState({});
   const [mapLevel, setMapLevel] = useState('8');
+  const [dustData, setDustData] = useState(null); // 미세먼지 정보 상태 추가
+  const [parkDustInfo, setParkDustInfo] = useState(null); // 공원 미세먼지 정보 상태 추가
 
   useEffect(() => {
     const fetchLibraryPings = async () => {
@@ -114,23 +116,9 @@ const Main = () => {
   }, []);
 
   const debouncedSetKeyword = useCallback(
-    debounce((value) => setDebouncedKeyword(value), 500),
+    debounce((value) => setKeyword(value), 500),
     []
   );
-
-  useEffect(() => {
-    debouncedSetKeyword(keyword);
-  }, [keyword, debouncedSetKeyword]);
-
-  const handleFindLibraryClick = () => {
-    console.log(debouncedKeyword);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      console.log(debouncedKeyword);
-    }
-  };
 
   const handleLibraryItemClick = (library) => {
     setSelectedLibrary(library);
@@ -168,13 +156,31 @@ const Main = () => {
     checkLoginAndOpenModal(park, 'park');
   };
 
-  const handleButtonClick = (buttonType) => {
+  const handleButtonClick = async (buttonType) => {
     setSelectedButton(buttonType);
+    if (buttonType === 'park') {
+      try {
+        const dustResponse = await getDustData(); // 미세먼지 데이터 가져오기
+        console.log('Dust Response:', dustResponse); // API 호출 결과를 콘솔에 출력
+        setDustData(dustResponse);
+        console.log(dustData);
+        setParkDustInfo({
+          dataTime: dustResponse[0].dataTime,
+          pm10: dustResponse[0].pm10Value, // 미세먼지 농도
+          khaiGrade: dustResponse[0].khaiGrade // 대기질 점수
+        });
+      } catch (error) {
+        console.error('Error fetching dust data:', error);
+      }
+    } else {
+      setParkDustInfo(null); // 도서관 버튼을 클릭하면 미세먼지 정보 초기화
+    }
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
     setMapLevel('8');
+    setParkDustInfo(null); // 모달 닫을 때 미세먼지 정보 초기화
   };
 
   const handleChangeGu = (e) => {
@@ -221,7 +227,7 @@ const Main = () => {
   }, [isModalOpen, selectedLibrary, selectedPark]);
 
   const handleKeywordChange = (e) => {
-    setKeyword(e.target.value);
+    debouncedSetKeyword(e.target.value);
   };
 
   return (
@@ -234,10 +240,10 @@ const Main = () => {
                 <Input
                   type='text'
                   placeholder='도서관 검색'
+                  value={keyword}
                   onChange={handleKeywordChange}
-                  onKeyDown={handleKeyDown}
                 />
-                <ClickableIconContainer onClick={handleFindLibraryClick}>
+                <ClickableIconContainer>
                   <FindLibraryIcon src={FindLibrary} alt='FindLibrary' />
                 </ClickableIconContainer>
               </KeywordInputContainer>
@@ -257,13 +263,13 @@ const Main = () => {
               {selectedButton === 'library' ? (
                 <LibraryList
                   libraries={filteredLibraries}
-                  keyword={debouncedKeyword}
+                  keyword={keyword}
                   handleLibraryItemClick={handleLibraryItemClick}
                 />
               ) : (
                 <ParkList
                   parks={filteredParks}
-                  keyword={debouncedKeyword}
+                  keyword={keyword}
                   handleParkItemClick={handleParkItemClick}
                 />
               )}
@@ -275,7 +281,7 @@ const Main = () => {
             <LibraryParkMap
               libraries={filteredLibraries}
               parks={filteredParks}
-              searchTerm={debouncedKeyword}
+              searchTerm={keyword}
               onLibraryClick={handleLibraryClick}
               onParkClick={handleParkClick}
               selectedButton={selectedButton}
@@ -296,6 +302,14 @@ const Main = () => {
                 공원
               </Button>
             </ButtonContainer>
+            {parkDustInfo && selectedButton === 'park' && (
+              <DustInfo khaiGrade={parkDustInfo.khaiGrade}>
+                <Heading>대기 정보</Heading>
+                <Paragraph>일시: {parkDustInfo.dataTime}</Paragraph>
+                <Paragraph>대기질 점수: {parkDustInfo.khaiGrade}</Paragraph>
+                <Paragraph>미세먼지 농도: {parkDustInfo.pm10} µg/m³</Paragraph>
+              </DustInfo>
+            )}
           </LibraryParkMapContainer>
         </Flex>
       </Guide>
@@ -323,6 +337,37 @@ const Main = () => {
 };
 
 export default Main;
+
+const DustInfo = styled.div`
+  margin-top: 5px;
+
+  background-color: ${(props) => (props.khaiGrade >= 3 ? 'orange' : 'green')};
+  color: white;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 3;
+  border-radius: 15px; /* Use a smaller border-radius for a rounded rectangle */
+  letter-spacing: -0.5px;
+  height: auto; /* Allow height to adjust based on content */
+  width: 200px; /* Set a fixed width */
+  box-sizing: border-box;
+  text-align: left;
+  -left: 10px;
+  padding-left: 10px;
+`;
+
+const Paragraph = styled.p`
+  font-family: 'SUIT';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  margin: 2px 0; /* Adjust the top and bottom margins as needed */
+  letter-spacing: -0.5px; /* Adjust letter spacing if needed */
+`;
+const Heading = styled.h4`
+  margin: 5px 0; /* Adjust the top and bottom margins as needed */
+`;
 
 const LibraryParkMapContainer = styled.div`
   position: relative;
