@@ -3,12 +3,22 @@ const Dust = require("../models/dustSchema");
 require("dotenv").config();
 
 const API_KEY = process.env.API_KEY;
-const API_URL = `https://api.odcloud.kr/api/MinuDustFrcstDspthSvrc/v1/getMinuDustWeekFrcstDspth?serviceKey=${API_KEY}&returnType=json&numOfRows=10&pageNo=1`;
+const BASE_URL =
+    "http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getCtprvnRltmMesureDnsty";
 
 async function fetchAndSaveDust() {
     try {
-        const response = await axios.get(API_URL);
-        console.log("API 응답 데이터:", response.data);
+        const url = new URL(BASE_URL);
+        const params = new URLSearchParams({
+            serviceKey: API_KEY,
+            returnType: "json",
+            numOfRows: 10,
+            pageNo: 1,
+            sidoName: "서울",
+        });
+        url.search = params.toString();
+
+        const response = await axios.get(url.toString());
 
         if (response.data.response.header.resultCode !== "00") {
             throw new Error(
@@ -17,20 +27,13 @@ async function fetchAndSaveDust() {
         }
 
         const items = response.data.response.body.items;
-        console.log("API 응답 아이템:", items);
 
+        // 데이터 매핑
         const dustData = items.map((item) => ({
-            presnatnDt: item.presnatnDt,
-            frcstOneCn: item.frcstOneCn,
-            frcstTwoCn: item.frcstTwoCn,
-            frcstThreeCn: item.frcstThreeCn,
-            frcstFourCn: item.frcstFourCn,
-            frcstOneDt: item.frcstOneDt,
-            frcstTwoDt: item.frcstTwoDt,
-            frcstThreeDt: item.frcstThreeDt,
-            frcstFourDt: item.frcstFourDt,
+            dataTime: item.dataTime,
+            pm10Value: item.pm10Value,
+            khaiGrade: item.khaiGrade,
         }));
-        console.log(dustData);
 
         await Dust.deleteMany();
         await Dust.insertMany(dustData);
