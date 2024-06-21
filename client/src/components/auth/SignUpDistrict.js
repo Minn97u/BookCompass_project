@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import DropDown from '../../assets/icons/DropDown.svg';
 import UpIcon from '../../assets/icons/UpIcon.svg';
 
-const defaultText = '서울특별시';
+const defaultText = '선택하세요';
 
 const SignUpDistrict = ({ options, selectedOption, setSelectedOption }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,6 +79,7 @@ const TextContainer = styled.div`
   flex: 1;
   text-align: center;
   font-size: 0.9rem;
+  padding-left: 15px;
 `;
 
 const IconContainer = styled.div`
@@ -99,10 +100,12 @@ const DropdownList = styled.ul`
   border: 1px solid #d0d0d0;
   background-color: white;
   z-index: 1000;
+  text-align: center;
 `;
 
 const DropdownItem = styled.li`
   padding: 6px;
+  padding-left: -10px;
   font-size: 0.9rem;
   color: #191619;
   cursor: pointer;

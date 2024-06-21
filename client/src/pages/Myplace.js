@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { getLibraryPings, getParkPings, getReviews } from '../api/Main';
 import styled from 'styled-components';
 import ReviewStar from '../components/main/ReviewStar';
+import BooksImg from '../assets/icons/books.svg';
 
 const Myplace = () => {
   const [libraries, setLibraries] = useState([]);
@@ -14,8 +15,8 @@ const Myplace = () => {
       const libraryData = await getLibraryPings();
       const filteredLibraries = await Promise.all(
         libraryData
-          .filter(library => library.district === userPlace)
-          .map(async library => {
+          .filter((library) => library.district === userPlace)
+          .map(async (library) => {
             const reviews = await getReviews(library._id);
             const { reviews: _, ...libraryWithoutReviews } = library;
             return { ...libraryWithoutReviews, reviews: reviews.data };
@@ -32,8 +33,8 @@ const Myplace = () => {
       const parkData = await getParkPings();
       const filteredParks = await Promise.all(
         parkData
-          .filter(park => park.district === userPlace)
-          .map(async park => {
+          .filter((park) => park.district === userPlace)
+          .map(async (park) => {
             const reviews = await getReviews(park._id);
             const { reviews: _, ...parkWithoutReviews } = park;
             return { ...parkWithoutReviews, reviews: reviews.data };
@@ -50,12 +51,12 @@ const Myplace = () => {
     getPark();
   }, []);
 
-  const handlePlaceClick = place => {
+  const handlePlaceClick = (place) => {
     setSelectedPlace(place);
     console.log('Selected Place:', place);
   };
 
-  const calculateAverageRating = reviews => {
+  const calculateAverageRating = (reviews) => {
     if (reviews.length === 0) return 0;
     const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
     return Number((totalRating / reviews.length).toFixed(2));
@@ -71,9 +72,7 @@ const Myplace = () => {
               <Item
                 key={index}
                 onClick={() => handlePlaceClick(library)}
-                isSelected={
-                  selectedPlace && selectedPlace._id === library._id
-                }
+                isSelected={selectedPlace && selectedPlace._id === library._id}
               >
                 {library.name}
               </Item>
@@ -96,7 +95,9 @@ const Myplace = () => {
         </Category>
       </Sidebar>
       <Content>
-        <Header>안녕하세요, {userPlace}!</Header>
+        <Header>
+          <span>안녕하세요,</span> {userPlace}!
+        </Header>
         {selectedPlace && (
           <Details>
             <h2>{selectedPlace.name}</h2>
@@ -104,58 +105,59 @@ const Myplace = () => {
               <ReviewStar
                 rating={calculateAverageRating(selectedPlace.reviews)}
               />
-              <ReviewCount>
-                ({selectedPlace.reviews.length})
-              </ReviewCount>
+              <ReviewCount>({selectedPlace.reviews.length})</ReviewCount>
             </InlineInfo>
-            <p>
-              <strong>주소 :</strong> {selectedPlace.address}
-            </p>
-            <p>
-              <strong>휴무일 :</strong>{' '}
-              {selectedPlace.holidays || '연중무휴'}
-            </p>
-            <p>
-              <strong>운영시간 :</strong>{' '}
-              {selectedPlace.hours || '운영시간 정보 없음'}
-            </p>
-            <p>
-              <strong>전화번호 :</strong> {selectedPlace.phone}
-            </p>
-            <p>
-              <strong>홈페이지 :</strong>{' '}
-              {selectedPlace.url ? (
-                <a
-                  href={selectedPlace.url}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                >
-                  {selectedPlace.url}
-                </a>
-              ) : (
-                '홈페이지 URL 없음'
-              )}
-            </p>
-            <p>
+            <ContentBox>
+              <InfoBox>
+                <p>
+                  <strong>주소 :</strong> {selectedPlace.address}
+                </p>
+                <p>
+                  <strong>휴무일 :</strong>{' '}
+                  {selectedPlace.holidays || '연중무휴'}
+                </p>
+                <p>
+                  <strong>운영시간 :</strong>{' '}
+                  {selectedPlace.hours || '운영시간 정보 없음'}
+                </p>
+                <p>
+                  <strong>전화번호 :</strong> {selectedPlace.phone}
+                </p>
+                <p>
+                  <strong>홈페이지 :</strong>{' '}
+                  {selectedPlace.url ? (
+                    <a
+                      href={selectedPlace.url}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                    >
+                      {selectedPlace.url}
+                    </a>
+                  ) : (
+                    '홈페이지 URL 없음'
+                  )}
+                </p>
+              </InfoBox>
+              <BookImg src={BooksImg} alt='book-img' />
+            </ContentBox>
+            <RevieContanier>
               <strong>리뷰:</strong>
-            </p>
+            </RevieContanier>
             <ReviewList>
-              {selectedPlace.reviews.length > 0 ? (
-                selectedPlace.reviews.map((review, index) => (
-                  <ReviewItem key={index}>
-                    <ReviewStar rating={review.rating} />
-                    <CommentContainer>
-                      <Comment>{review.comment}</Comment>
-                      <UserName>{review.user.name}</UserName>
-                    </CommentContainer>
-                    <ReviewDate>
-                      {new Date(review.date).toLocaleDateString()}
-                    </ReviewDate>
-                  </ReviewItem>
-                ))
-              ) : (
-                'No reviews'
-              )}
+              {selectedPlace.reviews.length > 0
+                ? selectedPlace.reviews.map((review, index) => (
+                    <ReviewItem key={index}>
+                      <ReviewStar rating={review.rating} />
+                      <CommentContainer>
+                        <Comment>{review.comment}</Comment>
+                      </CommentContainer>
+                      <ReviewDate>
+                        {new Date(review.date).toLocaleDateString()}
+                        <UserName>{review.user.name}</UserName>
+                      </ReviewDate>
+                    </ReviewItem>
+                  ))
+                : 'No reviews'}
             </ReviewList>
           </Details>
         )}
@@ -173,7 +175,8 @@ const Container = styled.div`
 const Sidebar = styled.div`
   width: 20rem;
   background-color: #f9f5f0;
-  padding: 3.5rem 1rem 0 1rem;
+  padding: 2.5rem 2rem 0rem 1rem;
+  background-color: #f3e6d7;
   border-right: 1px solid #c5b8a8;
   position: fixed;
   height: 100%;
@@ -194,17 +197,17 @@ const ItemList = styled.div`
 const Item = styled.div`
   padding: 10px;
   cursor: pointer;
-  background-color: ${props => (props.isSelected ? '#f0f0f0' : 'white')};
-  font-weight: ${props => (props.isSelected ? 'bold' : 'normal')};
+  background-color: ${(props) => (props.isSelected ? '#f0f0f0' : 'white')};
+  font-weight: ${(props) => (props.isSelected ? 'bold' : 'normal')};
   &:hover {
     background-color: #f0f0f0;
   }
 `;
 
 const Content = styled.div`
-  margin-left: 20rem;
+  margin-left: 22rem;
   flex: 1;
-  padding: 0 10rem;
+  padding: 0.3rem 10rem;
   box-sizing: border-box;
   text-align: left;
 `;
@@ -214,6 +217,10 @@ const Header = styled.h1`
   text-align: left;
   color: #583e26;
   margin: 3rem 0 0 0;
+
+  span {
+    color: #2f2f2f;
+  }
 `;
 
 const InlineInfo = styled.div`
@@ -230,16 +237,17 @@ const ReviewCount = styled.span`
 `;
 
 const Details = styled.div`
-  padding: 20px;
+  padding-top: 40px;
   text-align: left;
   box-sizing: border-box;
+  margin-left: 3px;
 `;
 
 const ReviewList = styled.div`
   margin-top: 10px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+
   width: 100%;
 `;
 
@@ -253,6 +261,7 @@ const ReviewItem = styled.div`
 
 const CommentContainer = styled.div`
   display: flex;
+  flex-direction: row;
   align-items: center;
 `;
 
@@ -261,6 +270,8 @@ const ReviewDate = styled.span`
   text-align: center;
   color: #999;
   font-size: 0.8em;
+  display: flex;
+  flex-direction: column;
 `;
 
 const Comment = styled.p`
@@ -269,7 +280,32 @@ const Comment = styled.p`
 `;
 
 const UserName = styled.span`
+  font-size: 0.9rem;
   font-weight: normal;
   color: #333;
-  margin-left: 5px;
+  text-align: right;
+  margin-right: 3px;
+  margin-top: 5px;
+`;
+
+const RevieContanier = styled.div`
+  margin-top: 70px;
+`;
+
+const BookImg = styled.img`
+  width: 10rem;
+  align-self: flex-end;
+  margin-bottom: 15px;
+`;
+
+const ContentBox = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+`;
+
+const InfoBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 `;

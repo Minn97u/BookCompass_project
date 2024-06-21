@@ -77,6 +77,7 @@ const BoardContent = styled.div`
   gap: 1.25rem;
   width: 100%;
   box-sizing: border-box;
+  padding: 3rem;
 
   @media (min-width: 1200px) {
     grid-template-columns: repeat(3, 1fr);

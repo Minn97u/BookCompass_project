@@ -68,7 +68,6 @@ const Board = () => {
   const itemsPerPage = 10;
   const fetchItems = async (page = currentPage, tag = activeTag) => {
     try {
-      console.log('Fetching items for page:', page, 'and tag:', tag); // 로그 추가
       const res = await getPosts(page, itemsPerPage, tag === '전체' ? '' : tag);
       setState((prevState) => ({
         ...prevState,
@@ -147,7 +146,6 @@ const Board = () => {
   };
 
   const handlePageChange = (pageNumber) => {
-    console.log('Page change requested:', pageNumber); // 로그 추가
     setState((prevState) => ({
       ...prevState,
       currentPage: pageNumber

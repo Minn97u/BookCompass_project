@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const LibraryIframe = () => {
+const LibraryInfo = () => {
   return (
     <Container>
       <iframe
@@ -27,4 +27,4 @@ const Container = styled.div`
   background-color: #f9f5f1;
 `;
 
-export default LibraryIframe;
+export default LibraryInfo;

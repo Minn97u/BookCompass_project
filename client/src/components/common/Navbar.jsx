@@ -87,14 +87,6 @@ function Navbar() {
             <LogoImg src={RealLogo} alt='logo' />
           </LogoContainer>
           <ButtonContainer>
-            <Link to={'/library/info'}>
-              <Button
-                isActive={activeButton === 'libraryinfo'}
-                onClick={() => handleButtonClick('libraryinfo')}
-              >
-                도서 정보
-              </Button>
-            </Link>
             <Link to={'/library'}>
               <Button
                 isActive={activeButton === 'library'}
@@ -103,6 +95,23 @@ function Navbar() {
                 도서관 찾기
               </Button>
             </Link>
+            <Link to={'/myplace'}>
+              <Button
+                isActive={activeButton === 'myplace'}
+                onClick={() => handleButtonClick('myplace')}
+              >
+                내 주변 도서관
+              </Button>
+            </Link>
+            <Link to={'/library/info'}>
+              <Button
+                isActive={activeButton === 'libraryinfo'}
+                onClick={() => handleButtonClick('libraryinfo')}
+              >
+                도서 정보
+              </Button>
+            </Link>
+
             <Link to={'/board'}>
               <Button
                 isActive={activeButton === 'board'}
