@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { debounce } from 'lodash';
 import FindLibrary from '../../src/assets/icons/FindLibrary.svg';
 import LibraryParkMap from '../components/main/LibraryParkMap';
 import Modal from '../components/main/Modal';
@@ -116,6 +117,11 @@ const Main = () => {
     fetchParkFavs();
   }, []);
 
+  const debouncedSetKeyword = useCallback(
+    debounce((value) => setKeyword(value), 500),
+    []
+  );
+
   const handleFindLibraryClick = () => {
     console.log(keyword);
   };
@@ -166,9 +172,15 @@ const Main = () => {
     setSelectedButton(buttonType);
   };
 
-  const handelModalClose = () => {
+  const handleModalClose = () => {
     setIsModalOpen(false);
     setMapLevel('8');
+  };
+
+  const handleChangeGu = (e) => {
+    setSelectedGu(e.target.value);
+    setMapLevel('8');
+    setKeyword('');
   };
 
   const userId = localStorage.getItem('userId');
@@ -208,6 +220,10 @@ const Main = () => {
     }
   }, [isModalOpen, selectedLibrary, selectedPark]);
 
+  const handleKeywordChange = (e) => {
+    debouncedSetKeyword(e.target.value);
+  };
+
   return (
     <FullHeightContainer>
       <Guide as={HBox}>
@@ -219,7 +235,7 @@ const Main = () => {
                   type='text'
                   placeholder='도서관 검색'
                   value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
+                  onChange={handleKeywordChange}
                   onKeyDown={handleKeyDown}
                 />
                 <ClickableIconContainer onClick={handleFindLibraryClick}>
@@ -228,10 +244,7 @@ const Main = () => {
               </KeywordInputContainer>
               <LabelContainer>
                 <Label>설정한 위치</Label>
-                <Select
-                  value={selectedGu}
-                  onChange={(e) => setSelectedGu(e.target.value)}
-                >
+                <Select value={selectedGu} onChange={handleChangeGu}>
                   <option value=''>전체</option>
                   {districts.map((gu) => (
                     <option key={gu.name} value={gu.name}>
@@ -290,7 +303,7 @@ const Main = () => {
       {isModalOpen && (
         <Modal
           isOpen={isModalOpen}
-          closeModal={handelModalClose}
+          closeModal={handleModalClose}
           place={selectedButton === 'library' ? selectedLibrary : selectedPark}
           type={selectedButton === 'library' ? 'library' : 'park'}
           userId={userId}
@@ -340,6 +353,7 @@ const Button = styled.button`
 const FullHeightContainer = styled.div`
   display: flex;
   flex-direction: column;
+  border-top: 0.5px solid #ae9d8a;
 `;
 
 const HBox = styled.div`

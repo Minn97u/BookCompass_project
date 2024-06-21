@@ -270,8 +270,9 @@ const ProfileConatiner = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #eed8bc;
-  min-width: 21.5rem;
+  background-color: #f9f5f0;
+  border-right: 1px solid #c5b8a8;
+  min-width: 20rem;
   position: relative;
 `;
 
@@ -289,7 +290,7 @@ const UserName = styled.p`
 
 const UserEmail = styled.p`
   font-size: 1rem;
-  color: #787878;
+  color: #5a4832;
   margin-top: -15px;
 `;
 
@@ -319,7 +320,7 @@ const MypageContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 50px;
+  gap: 30px;
   align-items: center;
   margin: 25px auto;
   padding: 30px;

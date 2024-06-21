@@ -11,7 +11,7 @@ const options = {
         },
         servers: [
             {
-                url: "http://localhost:3001", // Replace with your server URL
+                url: "kdt-ai-10-team04.elicecoding.com",
             },
         ],
     },

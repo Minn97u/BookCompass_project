@@ -11,7 +11,9 @@ import {
   addParkFavorite,
   deleteParkFavorite,
   getLibraryAvgRating,
-  getParkAvgRating
+  getParkAvgRating,
+  getLibraryFav,
+  getParkFav
 } from '../../api/Main';
 
 const Modal = ({
@@ -20,7 +22,7 @@ const Modal = ({
   place,
   type,
   userId,
-  archiveAdded = {},
+  archiveAdded = { libraryFavs: [], parkFavs: [] },
   setArchiveAdded
 }) => {
   const [averageRating, setAverageRating] = useState(0);
@@ -47,6 +49,36 @@ const Modal = ({
     }
   }, [isOpen, place, type]);
 
+  const fetchFavorites = async () => {
+    try {
+      if (type === 'library') {
+        const libraryFavs = await getLibraryFav();
+        const libraryFavsMap = libraryFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          libraryFavs: libraryFavsMap
+        }));
+      } else if (type === 'park') {
+        const parkFavs = await getParkFav();
+        const parkFavsMap = parkFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          parkFavs: parkFavsMap
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
+
   const handleArchiveButtonClick = async () => {
     try {
       let response;
@@ -58,37 +90,19 @@ const Modal = ({
 
         if (isFavoriteIndex !== -1) {
           response = await deleteLibraryFavorite(place._id);
-          setArchiveAdded((prev) => ({
-            ...prev,
-            libraryFavs: prev.libraryFavs.filter(
-              (item, index) => index !== isFavoriteIndex
-            )
-          }));
         } else {
           response = await addLibraryFavorite(place._id);
-          setArchiveAdded((prev) => ({
-            ...prev,
-            libraryFavs: [...prev.libraryFavs, { id: place._id }]
-          }));
         }
       } else if (type === 'park') {
         if (archiveAdded.parkFavs.some((item) => item.id === place._id)) {
-          // 이미 즐겨찾기에 추가된 경우 삭제
           response = await deleteParkFavorite(place._id);
-          setArchiveAdded((prev) => ({
-            ...prev,
-            parkFavs: prev.parkFavs.filter((item) => item.id !== place._id)
-          }));
         } else {
-          // 즐겨찾기에 추가되지 않은 경우 추가
           response = await addParkFavorite(place._id);
-          setArchiveAdded((prev) => ({
-            ...prev,
-            parkFavs: [...prev.parkFavs, { id: place._id }]
-          }));
         }
       }
+
       alert(response.data);
+      fetchFavorites(); // 즐겨찾기 상태를 다시 가져옴
     } catch (error) {
       if (error.response) {
         alert(error.response.data);

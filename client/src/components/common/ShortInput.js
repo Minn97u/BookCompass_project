@@ -1,32 +1,37 @@
-import React from 'react';
+import { forwardRef, useEffect } from 'react';
 import styled from 'styled-components';
 
-export const ShortInput = ({
-  title,
-  type,
-  placeholder,
-  value,
-  onChange,
-  checkText,
-  height
-}) => {
-  return (
-    <InputContainer>
-      <LabelContainer>
-        {title && <Label>{title}</Label>}
-        {checkText && <CheckText>{checkText}</CheckText>}
-      </LabelContainer>
-      <StyledInput
-        label={title}
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        height={height}
-      />
-    </InputContainer>
-  );
-};
+export const ShortInput = forwardRef(
+  (
+    { title, type, placeholder, value, onChange, checkText, height },
+    inputRef
+  ) => {
+    useEffect(() => {
+      if (inputRef) {
+        inputRef.current.focus();
+      }
+    }, []);
+    return (
+      <InputContainer>
+        <LabelContainer>
+          {title && <Label>{title}</Label>}
+          {checkText && <CheckText>{checkText}</CheckText>}
+        </LabelContainer>
+        <StyledInput
+          ref={inputRef}
+          label={title}
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          height={height}
+        />
+      </InputContainer>
+    );
+  }
+);
+
+ShortInput.displayName = 'ShortInput';
 
 const InputContainer = styled.div`
   display: flex;

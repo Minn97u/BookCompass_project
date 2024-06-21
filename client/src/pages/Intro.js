@@ -30,16 +30,13 @@ function Intro() {
   const bookImgRef = useRef(null);
   const titleRef = useRef(null);
   const textRef = useRef(null);
-  const graphSectionRef = useRef(null);
   const title2Ref = useRef(null);
   const text2Ref = useRef(null);
-  const graphSection2Ref = useRef(null);
   const title3Ref = useRef(null);
   const text3Ref = useRef(null);
   const graphSection3Ref = useRef(null);
   const title4Ref = useRef(null);
   const text4Ref = useRef(null);
-  const logoImgRef = useRef(null);
 
   useEffect(() => {
     const tl = gsap.timeline({
@@ -55,10 +52,10 @@ function Intro() {
 
     // 제목1 타이핑 애니메이션
     tl.to(titleRef.current, {
-      duration: 3, // 타이핑 속도
+      duration: 5, // 타이핑 속도
       text: { value: '우리는 책을 얼마나 읽을까요?', speed: 0.5, stagger: 0.1 },
       ease: 'none',
-      delay: 0.5
+      delay: 0.1
     });
 
     // 설명1 텍스트 페이드 인 애니메이션
@@ -66,20 +63,12 @@ function Intro() {
       textRef.current,
       { opacity: 0 },
       { opacity: 1, duration: 1 },
-      '-=0.5'
-    );
-
-    // 그래픽1 섹션 애니메이션
-    tl.fromTo(
-      graphSectionRef.current,
-      { y: 100, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1 },
-      '-=1' // 앞의 애니메이션들이 끝난 후 시작
+      '-=4' // 타이핑 애니메이션이 끝나기 2초 전에 시작
     );
 
     // 제목2 타이핑 애니메이션
     gsap.to(title2Ref.current, {
-      duration: 3,
+      duration: 5,
       text: {
         value: '서울시 독서문화 실태 조사 결과는?',
         speed: 0.5,
@@ -90,28 +79,20 @@ function Intro() {
         trigger: title2Ref.current,
         start: 'top center',
         toggleActions: 'play none none none'
-      },
-      onComplete: () => {
-        // 제목2 애니메이션이 완료된 후 실행
-        gsap.fromTo(
-          text2Ref.current,
-          { opacity: 0 },
-          { opacity: 1, duration: 1 }
-        );
-
-        // 그래픽2 섹션 애니메이션
-        gsap.fromTo(
-          graphSection2Ref.current,
-          { y: 100, opacity: 0 },
-          { y: 0, opacity: 1, duration: 1 },
-          '-=1' // 앞의 애니메이션들이 끝난 후 시작
-        );
       }
     });
 
+    // 제목2 애니메이션이 완료된 후 실행
+    gsap.fromTo(
+      text2Ref.current,
+      { opacity: 0 },
+      { opacity: 1, duration: 1 },
+      '-=1'
+    );
+
     // 제목3 타이핑 애니메이션
     gsap.to(title3Ref.current, {
-      duration: 3,
+      duration: 5,
       text: {
         value: '서울시 시민들의 공공 도서관 방문 횟수는?',
         speed: 0.5,
@@ -142,44 +123,29 @@ function Intro() {
     });
 
     // 제목4 타이핑 애니메이션
-    gsap.to(title4Ref.current, {
-      duration: 3,
-      text: {
-        value: '서재 나침반의 기획 의도',
-        speed: 0.5,
-        stagger: 0.1
-      },
-      ease: 'none',
-      scrollTrigger: {
-        trigger: title4Ref.current,
-        start: 'top center',
-        toggleActions: 'play none none none'
-      },
-      onComplete: () => {
-        // 제목3 애니메이션이 완료된 후 실행
-        gsap.fromTo(
-          text4Ref.current,
-          { opacity: 0 },
-          { opacity: 1, duration: 1 }
-        );
-      }
-    });
-
-    // logoImg 애니메이션
-    gsap.fromTo(
-      logoImgRef.current,
-      { y: 70, opacity: 0, ease: 'power3.out' },
-      {
-        y: 0,
-        opacity: 1,
-        ease: 'power3.out',
+    gsap
+      .timeline({
         scrollTrigger: {
-          trigger: logoImgRef.current,
+          trigger: title4Ref.current,
           start: 'top center',
           toggleActions: 'play none none none'
         }
-      }
-    );
+      })
+      .to(title4Ref.current, {
+        duration: 5,
+        text: {
+          value: '서재 나침반의 기획 의도',
+          speed: 0.5,
+          stagger: 0.1
+        },
+        ease: 'none'
+      })
+      .fromTo(
+        text4Ref.current,
+        { y: 100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1 },
+        '-=4' // 제목4 애니메이션이 끝나기 4초 전에 시작
+      );
 
     tl.play();
   }, []);
@@ -190,9 +156,9 @@ function Intro() {
         <BookImgContainer ref={bookImgRef} src={BookImg} alt='book' />
       </Header>
       <Title>
-        <DescriptionContainer>
-          <DescriptionTitle ref={titleRef}></DescriptionTitle>
-          <DescriptionText ref={textRef}>
+        <DescriptionTitle ref={titleRef}></DescriptionTitle>
+        <DescriptionContainer ref={textRef}>
+          <DescriptionText>
             지난 10년 동안 서울시의 독서인구 비율은 2013년{' '}
             <strong>62.4%</strong> 에서 2023년 <strong>48.5%</strong>로 꾸준히{' '}
             <strong>감소</strong> 해왔습니다.
@@ -204,62 +170,66 @@ function Intro() {
             이러한 추세는 현대 사회에서 <strong>독서의 중요성</strong>이 점점 더
             간과되고 있음을 보여줍니다.
           </DescriptionText>
+          <GraphSection>
+            <GraphsRow>
+              <GraphContainer>
+                <iframe
+                  src='/books_per_person_by_age.html'
+                  width='100%'
+                  height='500px'
+                  style={{ border: 'none' }}
+                  title='연령대별 1인당 평균 독서 권수'
+                />
+              </GraphContainer>
+              <GraphContainer>
+                <iframe
+                  src='/reading_population_by_age.html'
+                  width='100%'
+                  height='500px'
+                  style={{ border: 'none' }}
+                  title='연령대별 평균 독서 인구 비율'
+                />
+              </GraphContainer>
+            </GraphsRow>
+          </GraphSection>
         </DescriptionContainer>
       </Title>
-      <GraphSection ref={graphSectionRef}>
-        <GraphsRow>
-          <GraphContainer>
-            <iframe
-              src='/books_per_person_by_age.html'
-              width='100%'
-              height='500px'
-              style={{ border: 'none' }}
-              title='연령대별 1인당 평균 독서 권수'
-            />
-          </GraphContainer>
-          <GraphContainer>
-            <iframe
-              src='/reading_population_by_age.html'
-              width='100%'
-              height='500px'
-              style={{ border: 'none' }}
-              title='연령대별 평균 독서 인구 비율'
-            />
-          </GraphContainer>
-        </GraphsRow>
-      </GraphSection>
-      <DescriptionContainer2>
+      <Title2>
         <DescriptionTitle ref={title2Ref}></DescriptionTitle>
-        <DescriptionText2 ref={text2Ref} style={{ opacity: 0 }}>
-          <br />
-          서울시민들의 도서관 이용 실태 조사를 바탕으로, 우리는 도서관이
-          제공해야 할 <strong>다양한 정보</strong>와 <strong>프로그램</strong>,
-          그리고 <strong>접근성</strong>의 중요성을 확인할 수 있었습니다.
-          <br />
-        </DescriptionText2>
-      </DescriptionContainer2>
-      <GraphSection ref={graphSection2Ref} style={{ opacity: 0 }}>
-        <GraphsRow>
-          <GraphContainer>
-            <iframe
-              src='/fig_q29_pie2.html'
-              width='100%'
-              height='500px'
-              style={{ border: 'none' }}
-              title='Pie Chart Q29'
-            />
-          </GraphContainer>
-          <GraphContainer>
-            <iframe
-              src='/fig_q28_pie2.html'
-              width='100%'
-              height='500px'
-              style={{ border: 'none' }}
-              title='Pie Chart Q28'
-            />
-          </GraphContainer>
-        </GraphsRow>
-      </GraphSection>
+        <DescriptionContainer2 ref={text2Ref} style={{ opacity: 0 }}>
+          <DescriptionText2>
+            <br />
+            서울시민들의 도서관 이용 실태 조사를 바탕으로, 우리는 도서관이
+            제공해야 할 <strong>다양한 정보</strong>와 <strong>프로그램</strong>
+            , 그리고 <strong>접근성</strong>의 중요성을 확인할 수 있었습니다.
+            <br />
+          </DescriptionText2>
+
+          <GraphSection>
+            <GraphsRow>
+              <GraphContainer>
+                <iframe
+                  src='/fig_q29_pie2.html'
+                  width='100%'
+                  height='500px'
+                  style={{ border: 'none' }}
+                  title='Pie Chart Q29'
+                />
+              </GraphContainer>
+              <GraphContainer>
+                <iframe
+                  src='/fig_q28_pie2.html'
+                  width='100%'
+                  height='500px'
+                  style={{ border: 'none' }}
+                  title='Pie Chart Q28'
+                />
+              </GraphContainer>
+            </GraphsRow>
+          </GraphSection>
+        </DescriptionContainer2>
+      </Title2>
+
       <DescriptionContainer2>
         <DescriptionTitle ref={title3Ref}></DescriptionTitle>
         <DescriptionText ref={text3Ref} style={{ opacity: 0 }}>
@@ -308,35 +278,38 @@ function Intro() {
   );
 }
 
-const Header = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  height: 30vh;
-  margin-bottom: -30px;
-  margin-top: 30px;
-`;
-
-const BookImgContainer = styled.img`
-  width: 40rem;
-  position: absolute;
-  top: 55%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-`;
-
 const MainContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  gap: 20px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30vh;
+`;
+
+const BookImgContainer = styled.img`
+  width: 40rem;
+  align-self: center;
+  margin-bottom: -40px;
 `;
 
 const Title = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  margin-top: -10px;
+`;
+
+const Title2 = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 20px;
 `;
 
 const GraphSection = styled.div`
@@ -363,8 +336,6 @@ const DescriptionContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 20px;
-  margin-top: 30px;
 `;
 
 const DescriptionTitle = styled.h2`
@@ -377,7 +348,7 @@ const DescriptionText = styled.p`
 `;
 
 const DescriptionContainer2 = styled.div`
-  margin-top: 80px;
+  margin-top: 6px;
 `;
 
 const DescriptionText2 = styled.p`
