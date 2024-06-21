@@ -46,6 +46,7 @@ const districts = [
 
 const Main = () => {
   const [keyword, setKeyword] = useState('');
+  const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [libraries, setLibraries] = useState([]);
   const [parks, setParks] = useState([]);
   const [selectedLibrary, setSelectedLibrary] = useState(null);
@@ -116,9 +117,23 @@ const Main = () => {
   }, []);
 
   const debouncedSetKeyword = useCallback(
-    debounce((value) => setKeyword(value), 500),
+    debounce((value) => setDebouncedKeyword(value), 500),
     []
   );
+
+  useEffect(() => {
+    debouncedSetKeyword(keyword);
+  }, [keyword, debouncedSetKeyword]);
+
+  const handleFindLibraryClick = () => {
+    console.log(debouncedKeyword);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      console.log(debouncedKeyword);
+    }
+  };
 
   const handleLibraryItemClick = (library) => {
     setSelectedLibrary(library);
@@ -180,7 +195,7 @@ const Main = () => {
   const handleModalClose = () => {
     setIsModalOpen(false);
     setMapLevel('8');
-    setParkDustInfo(null); // 모달 닫을 때 미세먼지 정보 초기화
+    // setParkDustInfo(null); // 모달 닫을 때 미세먼지 정보 초기화
   };
 
   const handleChangeGu = (e) => {
@@ -240,10 +255,10 @@ const Main = () => {
                 <Input
                   type='text'
                   placeholder='도서관 검색'
-                  value={keyword}
                   onChange={handleKeywordChange}
+                  onKeyDown={handleKeyDown}
                 />
-                <ClickableIconContainer>
+                <ClickableIconContainer onClick={handleFindLibraryClick}>
                   <FindLibraryIcon src={FindLibrary} alt='FindLibrary' />
                 </ClickableIconContainer>
               </KeywordInputContainer>
@@ -263,13 +278,13 @@ const Main = () => {
               {selectedButton === 'library' ? (
                 <LibraryList
                   libraries={filteredLibraries}
-                  keyword={keyword}
+                  keyword={debouncedKeyword}
                   handleLibraryItemClick={handleLibraryItemClick}
                 />
               ) : (
                 <ParkList
                   parks={filteredParks}
-                  keyword={keyword}
+                  keyword={debouncedKeyword}
                   handleParkItemClick={handleParkItemClick}
                 />
               )}
@@ -281,7 +296,7 @@ const Main = () => {
             <LibraryParkMap
               libraries={filteredLibraries}
               parks={filteredParks}
-              searchTerm={keyword}
+              searchTerm={debouncedKeyword}
               onLibraryClick={handleLibraryClick}
               onParkClick={handleParkClick}
               selectedButton={selectedButton}

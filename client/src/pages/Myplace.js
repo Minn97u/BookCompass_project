@@ -3,12 +3,15 @@ import { getLibraryPings, getParkPings, getReviews } from '../api/Main';
 import styled from 'styled-components';
 import ReviewStar from '../components/main/ReviewStar';
 import BooksImg from '../assets/icons/books.svg';
+import { getLoginStatus } from '../api/Auth';
 
 const Myplace = () => {
   const [libraries, setLibraries] = useState([]);
   const [parks, setParks] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
-  const userPlace = localStorage.getItem('userRegion');
+  const [userPlace, setUserPlace] = useState(
+    localStorage.getItem('userRegion')
+  );
 
   const getLibrary = async () => {
     try {
@@ -45,8 +48,16 @@ const Myplace = () => {
       console.error('Error fetching parks:', error);
     }
   };
+  const checkLoginStatus = async () => {
+    try {
+      await getLoginStatus();
+    } catch (error) {
+      setUserPlace('로그인 후 내 주변 도서관을 찾아보세요');
+    }
+  };
 
   useEffect(() => {
+    checkLoginStatus();
     getLibrary();
     getPark();
   }, []);
@@ -183,15 +194,18 @@ const Sidebar = styled.div`
 `;
 
 const Category = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const CategoryHeader = styled.h2`
   font-size: 1.5em;
+  padding-left: 10px;
 `;
 
 const ItemList = styled.div`
   padding-left: 20px;
+  max-height: 350px;
+  overflow-y: auto;
 `;
 
 const Item = styled.div`
