@@ -87,6 +87,14 @@ function Navbar() {
             <LogoImg src={RealLogo} alt='logo' />
           </LogoContainer>
           <ButtonContainer>
+            <Link to={'/library/info'}>
+              <Button
+                isActive={activeButton === 'libraryinfo'}
+                onClick={() => handleButtonClick('libraryinfo')}
+              >
+                도서관 정보
+              </Button>
+            </Link>
             <Link to={'/library'}>
               <Button
                 isActive={activeButton === 'library'}
