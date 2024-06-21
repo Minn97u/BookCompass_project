@@ -31,7 +31,6 @@ const ModalContent = ({
           <CommentAvatar>
             <ProfileImage src={selectedItem.author.profilePic} alt='Profile' />
           </CommentAvatar>
-          {console.log(selectedItem)}
           {selectedItem.author.name}
           {showTooltip && (
             <Tooltip>

@@ -69,7 +69,6 @@ const Board = () => {
         totalPages: res.totalPages,
         posts: res.posts
       }));
-      console.log('게시글', res.posts);
     } catch (error) {
       console.error('Error fetching items:', error);
     }
@@ -160,7 +159,6 @@ const Board = () => {
       const response = isEditing
         ? await updatePosts(formData, selectedItem.shortId)
         : await postPosts(formData);
-      console.log('Post submitted successfully:', response.data);
       await fetchItems();
       closeModal();
     } catch (error) {
@@ -192,7 +190,6 @@ const Board = () => {
     if (selectedItem) {
       try {
         const response = await deletePosts(selectedItem.shortId);
-        console.log('삭제 완료', response.data);
         await fetchItems();
         closeModal();
       } catch (error) {
@@ -217,7 +214,6 @@ const Board = () => {
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
-        console.log('Comment submitted successfully');
 
         const res = await viewPosts(selectedItem.shortId);
         setState((prevState) => ({
@@ -227,7 +223,6 @@ const Board = () => {
 
         setValue('commentText', '');
         reset({ commentText: '' });
-        console.log('hihi', data.commentText);
       } catch (error) {
         console.error('Error submitting comment:', error);
       }
@@ -258,7 +253,6 @@ const Board = () => {
           deleteConfirmModalIsOpen: false,
           commentToDelete: null
         }));
-        console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
       }
@@ -289,7 +283,6 @@ const Board = () => {
           ...prevState,
           selectedItem: { ...prevState.selectedItem, comments: updatedComments }
         }));
-        console.log('댓글 수정 완료');
       } catch (error) {
         console.error('댓글 수정 오류', error);
       }
@@ -306,7 +299,7 @@ const Board = () => {
           handleTagClick={handleTagClick}
           tags={tags}
         />
-        <WriteIcon onClick={handleWriteIconClick} />
+        <StyledWriteIcon onClick={handleWriteIconClick} />
       </BoardTagsContainer>
       <PostList posts={posts} openModal={openModal} />
       <PaginationContainer>
@@ -362,7 +355,7 @@ const Board = () => {
         onRequestClose={cancelDelete}
       >
         <DeleteConfirmContainer>
-          <p>정말 삭제하시겠습니까?</p>
+          <h2>정말 삭제하시겠습니까?</h2>
           <CommentButton
             onClick={commentToDelete ? confirmCommentDelete : confirmDelete}
             disabled={isSubmitting}
@@ -402,6 +395,7 @@ const DeleteConfirmContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  padding-top: 10rem;
   p {
     margin-bottom: 1rem;
   }
@@ -428,6 +422,10 @@ const CommentButton = styled.button`
   border-radius: 10px;
   cursor: pointer;
   font-size: 0.875rem;
+`;
+
+const StyledWriteIcon = styled(WriteIcon)`
+  cursor: pointer;
 `;
 
 export default Board;

@@ -62,8 +62,6 @@ const PostDetails = () => {
 
       const res = await updatePosts(formData, selectedItem.shortId);
       window.location.href = `/board/${shortId}`;
-
-      console.log('Post submitted successfully:', res.data);
     } catch (error) {
       console.error('Error submitting post:', error);
     }
@@ -85,7 +83,6 @@ const PostDetails = () => {
       try {
         const response = await deletePosts(selectedItem.shortId);
         navigate('/mypage');
-        console.log('삭제 완료', response.data);
         // 선택한 게시물 삭제 후 보드 페이지로 돌아가거나 상태 업데이트 처리
       } catch (error) {
         console.error('삭제 오류', error);
@@ -103,7 +100,6 @@ const PostDetails = () => {
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
-        console.log('Comment submitted successfully');
 
         // 댓글 제출 후 게시물 상세 정보 다시 가져오기
         const res = await viewPosts(selectedItem.shortId);
@@ -125,7 +121,6 @@ const PostDetails = () => {
           ...prevItem,
           comments: updatedComments
         }));
-        console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
       }
@@ -148,7 +143,6 @@ const PostDetails = () => {
           ...prevItem,
           comments: updatedComments
         }));
-        console.log('댓글 수정 완료');
       } catch (error) {
         console.error('댓글 수정 오류', error);
       }
