@@ -55,8 +55,6 @@ const EditProfile = ({ profile, setProfile }) => {
 
     mutate(data, {
       onSuccess: () => {
-        localStorage.setItem('userRegion', data.region);
-        localStorage.setItem('favoriteAuthor', data.favoriteAuthor);
         setIsButtonDisabled(true);
       },
       onError: (err) => {
