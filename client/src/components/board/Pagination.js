@@ -80,7 +80,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <ArrowLeft />
       </PaginationButton>
       {renderPageNumbers()}
-      <PaginationButton onClick={() => onPageChange(currentPage + 1)}>
+      <PaginationButton
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
         <ArrowRight />
       </PaginationButton>
       <PaginationButton onClick={() => onPageChange(totalPages)}>
@@ -102,9 +105,11 @@ const StyledPaginationButton = styled.button`
   border: none;
   padding: 0.4rem 0.7rem;
   border-radius: 50%;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   font-size: 0.875rem;
   margin: 0 0.325rem;
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
+  pointer-events: ${(props) => (props.disabled ? 'none' : 'auto')};
 `;
 
 export default Pagination;
