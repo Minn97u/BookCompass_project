@@ -15,7 +15,7 @@ const PostForm = ({
   const { register, handleSubmit } = control;
   const tag = useWatch({ control, name: 'tag' });
   const selectedFile = useWatch({ control, name: 'selectedFile' });
-
+  const tags = ['잡담', '같이 해요', '추천 장소'];
   const handleTagClick = (tag) => {
     setValue('tag', tag);
   };
@@ -31,7 +31,11 @@ const PostForm = ({
           />
           <HrLine />
           <BoardTagsContainer>
-            <TagButtons activeTag={tag} handleTagClick={handleTagClick} />
+            <TagButtons
+              activeTag={tag}
+              handleTagClick={handleTagClick}
+              tags={tags}
+            />
             <PicAddIcon onClick={onFileInputClick} />
             <FileInput
               id='fileInput'
