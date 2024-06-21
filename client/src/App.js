@@ -41,6 +41,12 @@ const App = () => {
     checkLoginStatus();
   }, []);
 
+  useEffect(() => {
+    if (location.pathname.startsWith('/api-docs')) {
+      window.location.href = '/api-docs';
+    }
+  }, [location.pathname]);
+
   return (
     <div className='App'>
       <QueryClientProvider client={queryClient}>
