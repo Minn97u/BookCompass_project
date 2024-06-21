@@ -4,8 +4,19 @@ const upload = require("../middlewares/upload");
 
 async function createPost(req, res) {
     try {
+        console.log("req.body:", req.body); // req.body 로그 추가
+        console.log("req.user:", req.user);
+        console.log("req.file:", req.file);
         const userId = req.user._id;
-        const post = await postService.createPost(req.body, userId);
+        const postData = {
+            ...req.body,
+            name: req.user.name,
+            profilePic: req.user.profilePic,
+            favoriteAuthor: req.user.favoriteAuthor,
+            profileMsg: req.user.profileMsg,
+            postImg: req.file ? req.file.path : null,
+        };
+        const post = await postService.createPost(postData, userId);
         res.status(201).json(post);
     } catch (err) {
         res.status(400).json({ msg: err.message });

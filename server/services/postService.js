@@ -6,7 +6,6 @@ async function createPost(data, userId) {
     if (!title || !content) {
         throw new Error("Title and content are required");
     }
-
     const newPost = new Post({
         title,
         content,
@@ -18,7 +17,7 @@ async function createPost(data, userId) {
             favoriteAuthor: data.favoriteAuthor,
             profileMsg: data.profileMsg,
         },
-        postImg: postImg ? postImg.path : null,
+        postImg: postImg || null,
     });
     const savedPost = await newPost.save();
     return savedPost;
