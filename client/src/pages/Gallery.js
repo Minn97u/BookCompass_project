@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getPosts } from '../api/BoardApi'; // API 호출 추가
 import InfiniteScroll from 'react-infinite-scroll-component';
+import NowLoading from '../assets/icons/NowLoading.svg';
 
 const Gallery = () => {
   const [posts, setPosts] = useState([]);
@@ -35,7 +36,11 @@ const Gallery = () => {
         dataLength={posts.length}
         next={fetchMoreData}
         hasMore={hasMore}
-        loader={<Loading>Loading...</Loading>}
+        loader={
+          <Loading>
+            <img src={NowLoading} alt='Loading...' />
+          </Loading>
+        }
         endMessage={<EndMessage>모든 게시물을 불러왔습니다.</EndMessage>}
         scrollableTarget='scrollableDiv'
       >
