@@ -3,14 +3,16 @@ import styled from 'styled-components';
 import closebutton from '../../assets/icons/closebutton.svg';
 import {
   deleteMyPost,
-  deleteMyComment,
-  deleteMyReviews
+  deleteMyComments,
+  deleteMyReviews,
+  deleteMyFavorite
 } from '../../api/Mypage';
 
 const DeleteType = {
   POST: 'post',
   COMMENT: 'comment',
-  PLACE: 'place',
+  LIBRARY: 'library',
+  PARK: 'park',
   REVIEW: 'review'
 };
 
@@ -19,9 +21,14 @@ const DeleteModal = ({ onClose, id, type, deleteSuccess }) => {
     try {
       if (type === DeleteType.POST) {
         await deleteMyPost(id);
-      } else if (type === DeleteType.COMMENT) {
-        await deleteMyComment(id);
-      } else if (type === DeleteType.REVIEW) {
+      }
+      if (type === DeleteType.COMMENT) {
+        await deleteMyComments(id);
+      }
+      if (type === DeleteType.LIBRARY || type === DeleteType.PARK) {
+        await deleteMyFavorite({ id, type: type.toLowerCase() });
+      }
+      if (type === DeleteType.REVIEW) {
         await deleteMyReviews(id);
       }
       deleteSuccess(id);

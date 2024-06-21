@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
 import DeleteModal from '../common/DeleteModal';
@@ -6,6 +7,7 @@ import DeleteModal from '../common/DeleteModal';
 const WriteList = ({ datas, type, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const [currentId, setCurrentId] = useState(null);
+  const navigate = useNavigate();
 
   const closeModal = () => {
     setModalOpen(false);
@@ -13,25 +15,33 @@ const WriteList = ({ datas, type, setList }) => {
   };
 
   const handleDeleteBtn = (listid) => {
-    console.log('리스트 아이디', listid);
     setCurrentId(listid);
     setModalOpen(true);
   };
 
   const handleDeleteConfirm = (id) => {
-    console.log(id);
     setList(datas.filter((data) => data.id !== id));
     closeModal();
+  };
+
+  const handleTitleClick = (id) => {
+    navigate(`/board/${id}`);
   };
 
   return (
     <>
       <ListContainer>
-        {datas.map((data) => (
+        {datas.map((data, index) => (
           <ListGroup key={data.id}>
             <List>
               <TextBox>
-                <Title>{data.title}</Title>
+                <Title
+                  onClick={() =>
+                    handleTitleClick(type === 'comment' ? data.postId : data.id)
+                  }
+                >
+                  {data.title}
+                </Title>
                 <Date>{data.date}</Date>
               </TextBox>
               <DeleteWrite>
@@ -42,9 +52,7 @@ const WriteList = ({ datas, type, setList }) => {
                 />
               </DeleteWrite>
             </List>
-            {datas.length > 1 && datas.indexOf(data) !== datas.length - 1 && (
-              <Hr />
-            )}
+            {datas.length > 1 && index !== datas.length - 1 && <Hr />}
           </ListGroup>
         ))}
       </ListContainer>
@@ -89,6 +97,7 @@ const Title = styled.span`
   font-size: 1.2rem;
   color: #191619;
   padding-bottom: 4px;
+  cursor: pointer;
 `;
 
 const Date = styled.span`

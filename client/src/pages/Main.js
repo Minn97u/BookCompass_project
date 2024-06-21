@@ -1,10 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
+import { debounce } from 'lodash';
 import FindLibrary from '../../src/assets/icons/FindLibrary.svg';
 import LibraryParkMap from '../components/main/LibraryParkMap';
 import Modal from '../components/main/Modal';
 import LibraryList from '../components/main/LibraryList';
 import ParkList from '../components/main/ParkList';
+import AuthModal from '../components/auth/AuthModal';
+import {
+  getLibraryPings,
+  getParkPings,
+  getLibraryFav,
+  getParkFav
+} from '../api/Main';
+import { getLoginStatus } from '../api/Auth';
 
 const districts = [
   { name: '강남구', center: { lat: 37.5172, lng: 127.0473 } },
@@ -41,60 +50,127 @@ const Main = () => {
   const [selectedLibrary, setSelectedLibrary] = useState(null);
   const [selectedPark, setSelectedPark] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false); // 로그인 모달 상태 추가
   const [selectedButton, setSelectedButton] = useState('library');
-  const [mapCenter, setMapCenter] = useState({ lat: 37.5665, lng: 126.978 });
+  const [mapCenter, setMapCenter] = useState({});
   const [selectedGu, setSelectedGu] = useState('');
+  const [archiveAdded, setArchiveAdded] = useState({});
+
+  const [mapLevel, setMapLevel] = useState('8');
 
   useEffect(() => {
-    fetch('/api/libraries')
-      .then((response) => response.json())
-      .then((data) => {
-        setLibraries(data);
-      })
-      .catch((error) => console.error('Error fetching libraries:', error));
+    const fetchLibraryPings = async () => {
+      try {
+        const libraryData = await getLibraryPings();
+        setLibraries(libraryData);
+      } catch (error) {
+        console.error('Error fetching libraries:', error);
+      }
+    };
 
-    fetch('/api/parks')
-      .then((response) => response.json())
-      .then((data) => {
-        setParks(data);
-      })
-      .catch((error) => console.error('Error fetching parks:', error));
+    const fetchParkPings = async () => {
+      try {
+        const parkData = await getParkPings();
+        setParks(parkData);
+      } catch (error) {
+        console.error('Error fetching parks:', error);
+      }
+    };
+
+    const fetchLibraryFavs = async () => {
+      try {
+        const libraryFavs = await getLibraryFav();
+        const libraryFavsMap = libraryFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          libraryFavs: libraryFavsMap
+        }));
+      } catch (error) {
+        console.error('Error fetching library favorites:', error);
+      }
+    };
+
+    const fetchParkFavs = async () => {
+      try {
+        const parkFavs = await getParkFav();
+        const parkFavsMap = parkFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          parkFavs: parkFavsMap
+        }));
+      } catch (error) {
+        console.error('Error fetching park favorites:', error);
+      }
+    };
+
+    fetchLibraryPings();
+    fetchParkPings();
+    fetchLibraryFavs();
+    fetchParkFavs();
   }, []);
 
-  const handleFindLibraryClick = () => {
-    console.log(keyword);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      console.log(keyword);
-    }
-  };
+  const debouncedSetKeyword = useCallback(
+    debounce((value) => setKeyword(value), 500),
+    []
+  );
 
   const handleLibraryItemClick = (library) => {
     setSelectedLibrary(library);
     setMapCenter({ lat: library.latitude, lng: library.longitude });
+    setMapLevel('3');
   };
 
   const handleParkItemClick = (park) => {
     setSelectedPark(park);
     setMapCenter({ lat: park.latitude, lng: park.longitude });
+    setMapLevel('3');
+  };
+
+  const checkLoginAndOpenModal = async (place, type) => {
+    try {
+      const response = await getLoginStatus();
+      if (response.data.loggedIn) {
+        setSelectedLibrary(type === 'library' ? place : null);
+        setSelectedPark(type === 'park' ? place : null);
+        setIsModalOpen(true);
+      } else {
+        setIsLoginModalOpen(true);
+      }
+    } catch (error) {
+      console.error('Error checking login status:', error);
+      setIsLoginModalOpen(true);
+    }
   };
 
   const handleLibraryClick = (library) => {
-    setSelectedLibrary(library);
-    setIsModalOpen(true);
-    console.log('selectedLibrary:', selectedLibrary);
-  };
-
-  const handleButtonClick = (button) => {
-    setSelectedButton(button);
-    setKeyword('');
+    checkLoginAndOpenModal(library, 'library');
   };
 
   const handleParkClick = (park) => {
-    setSelectedPark(park);
-    setIsModalOpen(true);
+    checkLoginAndOpenModal(park, 'park');
+  };
+
+  const handleButtonClick = (buttonType) => {
+    setSelectedButton(buttonType);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setMapLevel('8');
+  };
+
+  const handleChangeGu = (e) => {
+    setSelectedGu(e.target.value);
+    setMapLevel('8');
+    setKeyword('');
   };
 
   const userId = localStorage.getItem('userId');
@@ -116,6 +192,28 @@ const Main = () => {
     (park) => selectedGu === '' || park.district === selectedGu
   );
 
+  useEffect(() => {
+    if (isModalOpen) {
+      if (selectedLibrary) {
+        setMapCenter({
+          lat: selectedLibrary.latitude,
+          lng: selectedLibrary.longitude
+        });
+      } else if (selectedPark) {
+        setMapCenter({
+          lat: selectedPark.latitude,
+          lng: selectedPark.longitude
+        });
+      } else {
+        setMapCenter({ lat: 37.5665, lng: 126.978 });
+      }
+    }
+  }, [isModalOpen, selectedLibrary, selectedPark]);
+
+  const handleKeywordChange = (e) => {
+    debouncedSetKeyword(e.target.value);
+  };
+
   return (
     <FullHeightContainer>
       <Guide as={HBox}>
@@ -127,19 +225,15 @@ const Main = () => {
                   type='text'
                   placeholder='도서관 검색'
                   value={keyword}
-                  onChange={(e) => setKeyword(e.target.value)}
-                  onKeyDown={handleKeyDown}
+                  onChange={handleKeywordChange}
                 />
-                <ClickableIconContainer onClick={handleFindLibraryClick}>
+                <ClickableIconContainer>
                   <FindLibraryIcon src={FindLibrary} alt='FindLibrary' />
                 </ClickableIconContainer>
               </KeywordInputContainer>
               <LabelContainer>
                 <Label>설정한 위치</Label>
-                <Select
-                  value={selectedGu}
-                  onChange={(e) => setSelectedGu(e.target.value)}
-                >
+                <Select value={selectedGu} onChange={handleChangeGu}>
                   <option value=''>전체</option>
                   {districts.map((gu) => (
                     <option key={gu.name} value={gu.name}>
@@ -176,6 +270,7 @@ const Main = () => {
               onParkClick={handleParkClick}
               selectedButton={selectedButton}
               center={mapCenter}
+              mapLevel={mapLevel}
             />
             <ButtonContainer>
               <Button
@@ -194,16 +289,29 @@ const Main = () => {
           </LibraryParkMapContainer>
         </Flex>
       </Guide>
-      <Modal
-        isOpen={isModalOpen}
-        closeModal={() => setIsModalOpen(false)}
-        place={selectedButton === 'library' ? selectedLibrary : selectedPark}
-        type={selectedButton === 'library' ? 'library' : 'park'}
-        userId={userId}
-      />
+      {isModalOpen && (
+        <Modal
+          isOpen={isModalOpen}
+          closeModal={handleModalClose}
+          place={selectedButton === 'library' ? selectedLibrary : selectedPark}
+          type={selectedButton === 'library' ? 'library' : 'park'}
+          userId={userId}
+          archiveAdded={archiveAdded}
+          setArchiveAdded={(isAdded) => {
+            setArchiveAdded(isAdded);
+          }}
+        />
+      )}
+      {isLoginModalOpen && (
+        <AuthModal
+          onClose={() => setIsLoginModalOpen(false)}
+          initialFormType='로그인'
+        /> // AuthModal 사용
+      )}
     </FullHeightContainer>
   );
 };
+
 export default Main;
 
 const LibraryParkMapContainer = styled.div`
@@ -234,6 +342,7 @@ const Button = styled.button`
 const FullHeightContainer = styled.div`
   display: flex;
   flex-direction: column;
+  border-top: 0.5px solid #ae9d8a;
 `;
 
 const HBox = styled.div`
@@ -302,8 +411,8 @@ const FindLibraryIcon = styled.img`
 
 const LabelContainer = styled.div`
   display: flex;
-  align-items: center; // 수직 방향 중앙 정렬
-  justify-content: center; // 수평 방향 중앙 정렬
+  align-items: center;
+  justify-content: center;
 `;
 
 const Label = styled.span`
@@ -329,6 +438,15 @@ const Select = styled.select`
 const ListContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: 0px 15px;
+  height: 50rem;
+
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: #888; /* 스크롤바의 색상 설정 */
+    border-radius: 5px; /* 스크롤바의 모서리 반경 설정 */
+  }
 `;

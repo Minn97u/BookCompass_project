@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import SignUpDistrict from './SignUpDistrict';
 import Districts from './Districts';
@@ -11,6 +11,7 @@ const FindEmailForm = ({ setFormType }) => {
   const [region, setRegion] = useState('');
   const [foundAnswer, setFoundAnswer] = useState('');
   const [resultText, setResultText] = useState('');
+  const inputRef = useRef(null);
 
   const isFormValid = name !== '' && region !== '' && foundAnswer.trim() !== '';
 
@@ -24,7 +25,6 @@ const FindEmailForm = ({ setFormType }) => {
     if (isFormValid) {
       try {
         const res = await postFindEmail(data);
-        console.log('이메일 찾기 성공', res);
         setResultText(`가입 이메일 : ${res.data.results[0].email}`);
       } catch (error) {
         console.error('이메일 찾기 실패:', error);
@@ -42,6 +42,12 @@ const FindEmailForm = ({ setFormType }) => {
     }
   };
 
+  const handleEnter = (e) => {
+    if (e.key === 'Enter') {
+      handleFindEmail();
+    }
+  };
+
   return (
     <>
       <ShortInputContainer>
@@ -52,6 +58,7 @@ const FindEmailForm = ({ setFormType }) => {
           value={name}
           onChange={(e) => setName(e.target.value)}
           height='1.8rem'
+          ref={inputRef}
         />
         <DistrictBox>
           <SignUpDistrict
@@ -68,6 +75,7 @@ const FindEmailForm = ({ setFormType }) => {
         placeholder='가장 좋아하는 작가 이름'
         value={foundAnswer}
         onChange={(e) => setFoundAnswer(e.target.value)}
+        handleEnter={handleEnter}
       />
       <ResultText>{resultText}</ResultText>
       <FindButton onClick={handleFindEmail}>찾기</FindButton>

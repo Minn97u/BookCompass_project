@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import CustomModal from '../components/board/Modal';
 import PostForm from '../components/board/PostForm';
 import { ReactComponent as WriteIcon } from '../assets/icons/writebutton.svg';
@@ -8,7 +8,7 @@ import Pagination from '../components/board/Pagination';
 import TagButtons from '../components/board/TagButtons';
 import PostList from '../components/board/PostList';
 import ModalContent from '../components/board/ModalContent';
-
+import DeleteConfirmModal from '../components/board/DeleteConfirmModal';
 import {
   getPosts,
   viewPosts,
@@ -28,9 +28,13 @@ const Board = () => {
     currentPage: 1,
     isEditing: false,
     totalPages: 0,
-    posts: []
+    posts: [],
+    deleteConfirmModalIsOpen: false,
+    commentToDelete: null
   });
+  const tags = ['전체', '같이 해요', '추천 장소'];
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     activeTag,
     modalIsOpen,
@@ -38,18 +42,20 @@ const Board = () => {
     currentPage,
     isEditing,
     totalPages,
-    posts
+    posts,
+    deleteConfirmModalIsOpen,
+    commentToDelete
   } = state;
 
-  // eslint-disable-next-line
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
-  const { handleSubmit, setValue, reset, watch } = useForm({
+  const methods = useForm({
     defaultValues: {
       title: '',
       content: '',
       tag: '잡담',
       commentText: '',
-      selectedFile: null
+      selectedFile: null,
+      commentToDelete: null
     }
   });
 
@@ -63,7 +69,6 @@ const Board = () => {
         totalPages: res.totalPages,
         posts: res.posts
       }));
-      console.log('게시글', res.posts);
     } catch (error) {
       console.error('Error fetching items:', error);
     }
@@ -102,7 +107,7 @@ const Board = () => {
       selectedItem: null,
       isEditing: false
     }));
-    reset();
+    methods.reset();
   };
 
   const handleWriteIconClick = () => {
@@ -115,14 +120,14 @@ const Board = () => {
       selectedItem: null,
       modalIsOpen: true
     }));
-    reset({ title: '', content: '', tag: '잡담', selectedFile: null });
+    methods.reset({ title: '', content: '', tag: '잡담', selectedFile: null });
   };
 
   const handlePicAddIconClick = (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setValue('selectedFile', file);
+      methods.setValue('selectedFile', file);
     }
   };
 
@@ -142,6 +147,7 @@ const Board = () => {
   };
 
   const onSubmit = async (data) => {
+    setIsSubmitting(true);
     try {
       const formData = new FormData();
       formData.append('title', data.title);
@@ -153,18 +159,19 @@ const Board = () => {
       const response = isEditing
         ? await updatePosts(formData, selectedItem.shortId)
         : await postPosts(formData);
-      console.log('Post submitted successfully:', response.data);
       await fetchItems();
       closeModal();
     } catch (error) {
       console.error('Error submitting post:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleEditClick = () => {
-    setValue('title', selectedItem.title);
-    setValue('content', selectedItem.content);
-    setValue('tag', selectedItem.tag);
+    methods.setValue('title', selectedItem.title);
+    methods.setValue('content', selectedItem.content);
+    methods.setValue('tag', selectedItem.tag);
     setState((prevState) => ({
       ...prevState,
       isEditing: true,
@@ -172,65 +179,86 @@ const Board = () => {
     }));
   };
 
-  const handleDeleteClick = async () => {
+  const handleDeleteClick = () => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteConfirmModalIsOpen: true
+    }));
+  };
+
+  const confirmDelete = async () => {
     if (selectedItem) {
       try {
-        const response = await deletePosts(selectedItem.shortId);
-        console.log('삭제 완료', response.data);
+        await deletePosts(selectedItem.shortId);
         await fetchItems();
         closeModal();
       } catch (error) {
         console.error('삭제 오류', error);
+      } finally {
+        setState((prevState) => ({
+          ...prevState,
+          deleteConfirmModalIsOpen: false
+        }));
       }
     }
   };
 
   const handleCommentSubmit = async (data) => {
     if (selectedItem) {
-      // eslint-disable-next-line
-      const newComment = {
-        content: data.commentText,
-        author: { name: userName }
-      };
-
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
-        console.log('Comment submitted successfully');
-
         const res = await viewPosts(selectedItem.shortId);
         setState((prevState) => ({
           ...prevState,
           selectedItem: res
         }));
-
-        setValue('commentText', '');
-        reset({ commentText: '' });
-        console.log('hihi', data.commentText);
+        methods.setValue('commentText', '');
+        methods.reset({ commentText: '' });
       } catch (error) {
         console.error('Error submitting comment:', error);
       }
     }
   };
 
-  const handleCommentDelete = async (commentId) => {
-    if (selectedItem && commentId) {
+  const handleCommentDeleteClick = (commentId) => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteConfirmModalIsOpen: true,
+      commentToDelete: commentId
+    }));
+  };
+
+  const confirmCommentDelete = async () => {
+    if (selectedItem && commentToDelete) {
       try {
-        await deleteComments(selectedItem.shortId, commentId);
+        await deleteComments(selectedItem.shortId, commentToDelete);
         const updatedComments = selectedItem.comments.filter(
-          (comment) => comment._id !== commentId
+          (comment) => comment._id !== commentToDelete
         );
         setState((prevState) => ({
           ...prevState,
-          selectedItem: { ...prevState.selectedItem, comments: updatedComments }
+          selectedItem: {
+            ...prevState.selectedItem,
+            comments: updatedComments
+          },
+          deleteConfirmModalIsOpen: false,
+          commentToDelete: null
         }));
-        console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
       }
     } else {
       console.error('올바르지 않은 commentId 또는 선택된 게시글이 없습니다.');
     }
+  };
+
+  const cancelDelete = () => {
+    setState((prevState) => ({
+      ...prevState,
+      deleteConfirmModalIsOpen: false,
+      commentToDelete: null
+    }));
   };
 
   const handleCommentUpdate = async (commentId, updatedContent) => {
@@ -247,7 +275,6 @@ const Board = () => {
           ...prevState,
           selectedItem: { ...prevState.selectedItem, comments: updatedComments }
         }));
-        console.log('댓글 수정 완료');
       } catch (error) {
         console.error('댓글 수정 오류', error);
       }
@@ -257,68 +284,70 @@ const Board = () => {
   };
 
   return (
-    <BoardContainer>
-      <BoardTagsContainer>
-        <TagButtons activeTag={activeTag} handleTagClick={handleTagClick} />
-        <WriteIcon onClick={handleWriteIconClick} />
-      </BoardTagsContainer>
-      <PostList posts={posts} openModal={openModal} />
-      <PaginationContainer>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
+    <FormProvider {...methods}>
+      <BoardContainer>
+        <BoardTagsContainer>
+          <TagButtons
+            activeTag={activeTag}
+            handleTagClick={handleTagClick}
+            tags={tags}
+          />
+          <WriteIcon onClick={handleWriteIconClick} />
+        </BoardTagsContainer>
+        <PostList posts={posts} openModal={openModal} />
+        <PaginationContainer>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </PaginationContainer>
+        <CustomModal isOpen={modalIsOpen} onRequestClose={closeModal}>
+          {selectedItem === null ? (
+            <PostForm
+              control={methods.control}
+              onSubmit={methods.handleSubmit(onSubmit)}
+              setValue={methods.setValue}
+              fileInputRef={fileInputRef}
+              onFileInputClick={handleFileInputClick}
+              onFileChange={handlePicAddIconClick}
+            />
+          ) : isEditing ? (
+            <PostForm
+              control={methods.control}
+              setValue={methods.setValue}
+              onSubmit={methods.handleSubmit(onSubmit)}
+              fileInputRef={fileInputRef}
+              onFileInputClick={handleFileInputClick}
+              onFileChange={handlePicAddIconClick}
+            />
+          ) : (
+            <ModalContent
+              selectedItem={selectedItem}
+              userName={userName}
+              handleEditClick={handleEditClick}
+              handleDeleteClick={handleDeleteClick}
+              handleCommentSubmit={handleCommentSubmit}
+              handleCommentDelete={handleCommentDeleteClick}
+              handleCommentUpdate={handleCommentUpdate}
+            />
+          )}
+        </CustomModal>
+        <DeleteConfirmModal
+          isOpen={deleteConfirmModalIsOpen}
+          onRequestClose={cancelDelete}
+          onConfirm={commentToDelete ? confirmCommentDelete : confirmDelete}
+          isSubmitting={isSubmitting}
         />
-      </PaginationContainer>
-      <CustomModal isOpen={modalIsOpen} onRequestClose={closeModal}>
-        {selectedItem === null ? (
-          <PostForm
-            title={watch('title')}
-            content={watch('content')}
-            tag={watch('tag')}
-            onTitleChange={(e) => setValue('title', e.target.value)}
-            onContentChange={(e) => setValue('content', e.target.value)}
-            onTagChange={(tag) => setValue('tag', tag)}
-            onSubmit={handleSubmit(onSubmit)}
-            fileInputRef={fileInputRef}
-            onFileInputClick={handleFileInputClick}
-            onFileChange={handlePicAddIconClick}
-            selectedFile={watch('selectedFile')}
-          />
-        ) : isEditing ? (
-          <PostForm
-            title={watch('title')}
-            content={watch('content')}
-            tag={watch('tag')}
-            onTitleChange={(e) => setValue('title', e.target.value)}
-            onContentChange={(e) => setValue('content', e.target.value)}
-            onTagChange={(tag) => setValue('tag', tag)}
-            onSubmit={handleSubmit(onSubmit)}
-            fileInputRef={fileInputRef}
-            onFileInputClick={handleFileInputClick}
-            onFileChange={handlePicAddIconClick}
-            selectedFile={watch('selectedFile')}
-          />
-        ) : (
-          <ModalContent
-            selectedItem={selectedItem}
-            userName={userName}
-            handleEditClick={handleEditClick}
-            handleDeleteClick={handleDeleteClick}
-            handleCommentSubmit={handleCommentSubmit}
-            handleCommentDelete={handleCommentDelete}
-            handleCommentUpdate={handleCommentUpdate}
-          />
-        )}
-      </CustomModal>
-    </BoardContainer>
+      </BoardContainer>
+    </FormProvider>
   );
 };
 
 const BoardContainer = styled.div`
   width: 100%;
   margin: 0 auto;
-  padding: 1.25rem;
+  padding: 1.2rem 4rem 1.2rem 4rem;
   box-sizing: border-box;
 `;
 
@@ -326,13 +355,13 @@ const BoardTagsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.25rem;
+  margin: 10px 0px 35px 0px;
 `;
 
 const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
-  margin-top: 1.25rem;
+  margin-top: 1.3rem;
 `;
 
 export default Board;

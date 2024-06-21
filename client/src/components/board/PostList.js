@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 const PostList = ({ posts, openModal }) => (
   <BoardContent>
-    {console.log('게시글 목록', posts)}
     {posts.map((item) => (
       <BoardItem key={item.shortId} onClick={() => openModal(item)}>
         <ImageContainer>

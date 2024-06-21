@@ -177,3 +177,5 @@ sketch
 
 # Python
 nenv
+
+client/public/uploads/*

@@ -7,6 +7,7 @@ const userSchema = new Schema({
         unique: true,
         sparse: true,
     },
+    googleAccessToken: String,
     name: {
         type: String,
         required: true,
@@ -43,12 +44,22 @@ const userSchema = new Schema({
             ref: "Library",
         },
     ],
+    favoriteParks: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "Park",
+        },
+    ],
     reviews: [
         {
             type: Schema.Types.ObjectId,
             ref: "Review",
         },
     ],
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
 });
 
 module.exports = mongoose.model("User", userSchema);

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import LibraryPing from '../../../src/assets/icons/LibraryPing.svg';
+import GreenMarker from '../../assets/icons/GreenMarker.svg';
 
 const ParkList = ({ parks, keyword, handleParkItemClick }) => {
   const filterLibraries = (parks, keyword) => {
@@ -12,7 +12,7 @@ const ParkList = ({ parks, keyword, handleParkItemClick }) => {
       <List>
         {filterLibraries(parks, keyword).map((park, index) => (
           <ListItem key={index} onClick={() => handleParkItemClick(park)}>
-            <LibraryIcon src={LibraryPing} alt='LibraryPing' />
+            <LibraryIcon src={GreenMarker} alt='GreenPing' />
             <LibraryInfo>
               <LibraryName>{park.name}</LibraryName>
               <LibraryAddress>{park.address}</LibraryAddress>
@@ -29,7 +29,7 @@ export default ParkList;
 const Container = styled.div`
   flex: 1;
   overflow-y: auto;
-  max-height: 60vh;
+  height: 100%;
 `;
 
 const List = styled.ul`
@@ -55,6 +55,7 @@ const LibraryInfo = styled.div`
   display: flex;
   text-align: left;
   flex-direction: column;
+  width: 78%;
 `;
 
 const LibraryName = styled.span`
@@ -76,5 +77,5 @@ const LibraryAddress = styled.span`
   line-height: 16px;
   color: #545454;
   text-align: left;
-  margin: 5px 0;
+  margin-top: 2px;
 `;

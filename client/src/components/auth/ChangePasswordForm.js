@@ -1,24 +1,60 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { LongInput } from '../common/LongInput';
-import { postChangePassword } from '../../api/Auth';
+import { postChangePassword, getLogout } from '../../api/Auth';
 
+const passwordRegEx = /^.{8,}$/;
 const ChangePasswordForm = ({ setFormType }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [checkNewPassword, setCheckNewPassword] = useState('');
   const [checkPasswordText, setCheckPasswordText] = useState('');
+  const [checkPasswordReg, setCheckPasswordReg] = useState('');
   const [resultText, setResultText] = useState('');
+  const [isFormValid, setIsFormValid] = useState(false);
+  const inputRef = useRef(null);
 
-  const isFormValid =
-    currentPassword.trim() !== '' &&
-    newPassword.trim() !== '' &&
-    checkNewPassword.trim() !== '';
+  useEffect(() => {
+    const validateForm = () => {
+      const isValid =
+        passwordRegCheck(newPassword) &&
+        newPassword === checkNewPassword &&
+        currentPassword.trim() !== '' &&
+        checkPasswordText === '' &&
+        checkPasswordReg === '';
+      setIsFormValid(isValid);
 
-  const passwordCheck = (password, checkPassword) => {
-    setCheckPasswordText(
-      password !== checkPassword ? '비밀번호가 일치하지 않습니다.' : ''
+      if (isValid) {
+        setResultText('');
+      } else {
+        setResultText('모두 입력해 주세요.');
+      }
+    };
+
+    validateForm();
+  }, [
+    currentPassword,
+    newPassword,
+    checkNewPassword,
+    checkPasswordText,
+    checkPasswordReg
+  ]);
+
+  const passwordCheck = (newPassword, checkNewPassword) => {
+    if (newPassword !== checkNewPassword) {
+      setCheckPasswordText('비밀번호가 일치하지 않습니다.');
+    } else {
+      setCheckPasswordText('');
+    }
+  };
+
+  const passwordRegCheck = (newPassword) => {
+    const isValid = passwordRegEx.test(newPassword);
+    setCheckPasswordReg(
+      isValid ? '' : '비밀번호는 최소 8자 이상으로 설정해주세요.'
     );
+
+    return isValid;
   };
 
   const handleChangePassword = async () => {
@@ -29,17 +65,17 @@ const ChangePasswordForm = ({ setFormType }) => {
 
     if (isFormValid) {
       try {
-        const res = await postChangePassword(data);
-        console.log('비밀번호 변경 완료', res);
-        setFormType('로그인');
+        await postChangePassword(data);
+        await getLogout();
+        localStorage.removeItem('userId');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRegion');
+        localStorage.removeItem('favoriteAuthor');
+        window.location.href = '/';
+        window.alert('다시 로그인 해주세요');
       } catch (error) {
         console.error('비밀번호 변경 오류:', error);
-        const code = error.response?.data?.code;
-        if (code === 1) {
-          setResultText('모두 입력해 주세요.');
-        } else if (code === 2) {
-          setResultText('소셜 로그인 회원입니다.');
-        }
+        setResultText(error.response?.data?.msg);
       }
     } else {
       setResultText('모두 입력해 주세요.');
@@ -55,13 +91,18 @@ const ChangePasswordForm = ({ setFormType }) => {
           placeholder='현재 비밀번호 입력'
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
+          ref={inputRef}
         />
         <LongInput
           title='새로운 비밀번호'
           type='password'
           placeholder='비밀번호 입력'
           value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
+          onChange={(e) => {
+            setNewPassword(e.target.value);
+            passwordRegCheck(e.target.value);
+          }}
+          checkText={checkPasswordReg}
         />
         <LongInput
           title='새로운 비밀번호 확인'
@@ -76,10 +117,9 @@ const ChangePasswordForm = ({ setFormType }) => {
         />
       </InputContainer>
       {resultText && <ErrorText>{resultText}</ErrorText>}
-      <ChangeButton onClick={handleChangePassword}>변경</ChangeButton>
-      <TextButton onClick={() => setFormType('로그인')}>
-        로그인하러 가기
-      </TextButton>
+      <ChangeButton onClick={handleChangePassword} disabled={!isFormValid}>
+        변경
+      </ChangeButton>
     </>
   );
 };
@@ -100,11 +140,11 @@ const ErrorText = styled.p`
 const ChangeButton = styled.button`
   width: 13rem;
   height: 2.7rem;
-  background-color: #563c0a;
-  color: white;
+  background-color: ${(props) => (props.disabled ? '#d3d3d3' : '#563c0a')};
+  color: ${(props) => (props.disabled ? '#a9a9a9' : 'white')};
   border-radius: 10px;
   border: none;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   margin-top: 30px;
   font-size: 1rem;
   font-weight: 500;

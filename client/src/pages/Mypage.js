@@ -6,17 +6,19 @@ import AuthModal from '../components/auth/AuthModal';
 import WriteList from '../components/mypage/WriteList';
 import BookMarkList from '../components/mypage/BookMarkList';
 import ReviewList from '../components/mypage/ReviewList';
-import SettingIcon from '../assets/icons/SettingIcon.svg';
 import WriteListIcon from '../assets/icons/WriteListIcon.svg';
 import CommentIcon from '../assets/icons/CommentIcon.svg';
 import BookMark from '../assets/icons/BookMark.svg';
 import ReviewIcon from '../assets/icons/ReviewIcon.svg';
 import MapIcon from '../assets/icons/MapIcon.svg';
+import DefaultModal from '../components/common/DefaultModal';
+import BookMarkMap from '../components/mypage/BookMarkMap';
 import {
   getProfileInfo,
   getMyPosts,
   getMyComments,
   getMyFavoriteLibraries,
+  getMyFavoriteParksList,
   getMyReviews
 } from '../api/Mypage';
 
@@ -28,24 +30,24 @@ const Mypage = () => {
     description: ''
   });
   const [showModal, setShowModal] = useState(false);
+  const [showMapModal, setShowMapModal] = useState(false);
   const [postDatas, setPostDatas] = useState([]);
   const [commentDatas, setCommentDatas] = useState([]);
-  const [libraryDatas, setLibraryDatas] = useState([]);
+  const [favoritePlaces, setFavoritePlaces] = useState([]);
   const [reviewDatas, setReviewDatas] = useState([]);
   const navigate = useNavigate();
-
-  const bookMarkList = [
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' },
-    { name: '성동구립성수도서관', location: '성수문화복지회관 7층' }
-  ];
 
   const handleSettingClick = () => {
     navigate('/mypage/edit');
   };
 
+  const handleMapOpen = () => {
+    setShowMapModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
+    setShowMapModal(false);
   };
 
   const fetchProfileInfo = async () => {
@@ -78,7 +80,6 @@ const Mypage = () => {
         };
       });
       setPostDatas(datas);
-      console.log('내가 쓴 글', datas);
     } catch (error) {
       console.error('내가 쓴 글 실패:', error);
     }
@@ -88,17 +89,17 @@ const Mypage = () => {
     try {
       const res = await getMyComments();
       const datas = res.data.map((item) => {
-        const createAt = new Date(item.createdAt);
+        const createAt = new Date(item.date);
         const localDate = createAt.toLocaleString();
 
         return {
           id: item._id,
+          postId: item.postId,
           title: item.content,
           date: localDate
         };
       });
       setCommentDatas(datas);
-      console.log('내가 쓴 댓글', datas);
     } catch (error) {
       console.error('내가 쓴 댓글 실패:', error);
     }
@@ -107,9 +108,38 @@ const Mypage = () => {
   const fetchMyFavoriteLibraries = async () => {
     try {
       const res = await getMyFavoriteLibraries();
-      console.log('즐겨찾기 장소', res);
+      const libraryDatas = res.data.map((item) => {
+        return {
+          id: item._id,
+          name: item.name,
+          address: item.address,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          type: 'library'
+        };
+      });
+      return libraryDatas;
     } catch (error) {
-      console.error('즐겨찾기 장소 실패:', error);
+      console.error('즐겨찾기 도서관 실패:', error);
+    }
+  };
+
+  const fetchMyFavoriteParks = async () => {
+    try {
+      const res = await getMyFavoriteParksList();
+      const parkDatas = res.data.map((item) => {
+        return {
+          id: item._id,
+          name: item.name,
+          address: item.address,
+          latitude: item.latitude,
+          longitude: item.longitude,
+          type: 'park'
+        };
+      });
+      return parkDatas;
+    } catch (error) {
+      console.error('즐겨찾기 공원 실패:', error);
     }
   };
 
@@ -117,18 +147,19 @@ const Mypage = () => {
     try {
       const res = await getMyReviews();
       const datas = res.data.map((item) => {
-        const createAt = new Date(item.createdAt);
+        const createAt = new Date(item.date);
         const localDate = createAt.toLocaleString();
 
         return {
           id: item._id,
           comment: item.comment,
           rating: item.rating,
-          date: localDate
+          date: localDate,
+          libraryName: item.libraryName,
+          parkName: item.parkName
         };
       });
       setReviewDatas(datas);
-      console.log('내가 쓴 리뷰', datas);
     } catch (error) {
       console.error('내가 쓴 리뷰 실패:', error);
     }
@@ -141,9 +172,16 @@ const Mypage = () => {
           fetchProfileInfo(),
           fetchMyPosts(),
           fetchMyComments(),
-          fetchMyFavoriteLibraries(),
           fetchMyReviews()
         ]);
+
+        const [libraryDatas, parkDatas] = await Promise.all([
+          fetchMyFavoriteLibraries(),
+          fetchMyFavoriteParks()
+        ]);
+
+        const allFavoritePlaces = [...libraryDatas, ...parkDatas];
+        setFavoritePlaces(allFavoritePlaces);
       } catch (error) {
         console.error('데이터 가져오기 실패:', error);
       }
@@ -159,11 +197,7 @@ const Mypage = () => {
         <UserName>{myInfo.name}</UserName>
         <UserEmail>{myInfo.email}</UserEmail>
         <UserDescription>{myInfo.description}</UserDescription>
-        <SettingBtn
-          src={SettingIcon}
-          alt='setting'
-          onClick={handleSettingClick}
-        ></SettingBtn>
+        <SettingBtn onClick={handleSettingClick}>프로필 편집</SettingBtn>
       </ProfileConatiner>
       <MypageContainer>
         <MypageBox
@@ -187,8 +221,11 @@ const Mypage = () => {
         <MypageBox
           icon={BookMark}
           title='즐겨찾기 장소'
-          component={<BookMarkList datas={bookMarkList} />}
+          component={
+            <BookMarkList datas={favoritePlaces} setList={setFavoritePlaces} />
+          }
           mapIcon={MapIcon}
+          onMapOpen={handleMapOpen}
         />
         <MypageBox
           icon={ReviewIcon}
@@ -202,6 +239,19 @@ const Mypage = () => {
           }
         />
       </MypageContainer>
+      {showMapModal && (
+        <DefaultModal title={'즐겨찾기 장소'} onClose={handleCloseModal}>
+          <BookMarkMap
+            libraries={favoritePlaces.filter(
+              (place) => place.type === 'library'
+            )}
+            parks={favoritePlaces.filter((place) => place.type === 'park')}
+            onLibraryClick={() => {}}
+            onParkClick={() => {}}
+            center={{ lat: 37.5665, lng: 126.978 }}
+          />
+        </DefaultModal>
+      )}
       {showModal && <AuthModal onClose={handleCloseModal} />}
     </Container>
   );
@@ -212,7 +262,6 @@ export default Mypage;
 const Container = styled.div`
   display: flex;
   flex-direction: row;
-  height: calc(100vh - 60px);
 `;
 
 const ProfileConatiner = styled.div`
@@ -221,8 +270,9 @@ const ProfileConatiner = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #eed8bc;
-  min-width: 21.5rem;
+  background-color: #f9f5f0;
+  border-right: 1px solid #c5b8a8;
+  min-width: 20rem;
   position: relative;
 `;
 
@@ -240,7 +290,7 @@ const UserName = styled.p`
 
 const UserEmail = styled.p`
   font-size: 1rem;
-  color: #787878;
+  color: #5a4832;
   margin-top: -15px;
 `;
 
@@ -250,21 +300,29 @@ const UserDescription = styled.p`
   margin-top: 35px;
 `;
 
-const SettingBtn = styled.img`
-  width: 3rem;
-  padding: 5px 10px 5px 10px;
-  border: none;
-  position: absolute;
-  bottom: 50px;
-  left: 20px;
+const SettingBtn = styled.button`
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: white;
+  width: 11rem;
+  height: 2rem;
+  padding: 5px;
+  border: 1px solid #563c0a;
+  border-radius: 7px;
+  background-color: #563c0a;
+  align-self: flex-end;
   cursor: pointer;
+  margin-top: 25px;
+  margin-bottom: 2px;
 `;
 
 const MypageContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
-  gap: 50px;
+  gap: 30px;
   align-items: center;
-  margin: auto;
+  margin: 25px auto;
+  padding: 30px;
+  width: 100%;
 `;

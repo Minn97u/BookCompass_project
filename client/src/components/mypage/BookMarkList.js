@@ -2,37 +2,52 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import LocationPing from '../../assets/icons/LocationPing.svg';
 import DeleteIcon from '../../assets/icons/DeleteIcon.svg';
+import GreenMarker from '../../assets/icons/GreenMarker.svg';
 import DeleteModal from '../common/DeleteModal';
 
-const BookMarkList = ({ datas }) => {
+const BookMarkList = ({ datas, setList }) => {
   const [modalOpen, setModalOpen] = useState(false);
-
-  const handleDeleteBtn = () => {
-    setModalOpen(true);
-  };
+  const [currentId, setCurrentId] = useState(null);
+  const [currentType, setCurrentType] = useState(null);
 
   const closeModal = () => {
     setModalOpen(false);
+    setCurrentId(null);
+    setCurrentType(null);
+  };
+
+  const handleDeleteBtn = (listid, type) => {
+    setCurrentId(listid);
+    setCurrentType(type);
+    setModalOpen(true);
+  };
+
+  const handleDeleteConfirm = (id) => {
+    setList(datas.filter((data) => data.id !== id));
+    closeModal();
   };
 
   return (
     <>
       <ListContainer>
         {datas.map((data, index) => (
-          <ListGroup key={index}>
+          <ListGroup key={data.id}>
             <List>
               <EleBox>
-                <LocationIconImg src={LocationPing} alt='location-icon' />
+                <LocationIconImg
+                  src={data.type === 'library' ? LocationPing : GreenMarker}
+                  alt='location-icon'
+                />
                 <TextBox>
                   <Title>{data.name}</Title>
-                  <Location>{data.location}</Location>
+                  <Location>{data.address}</Location>
                 </TextBox>
               </EleBox>
               <CancelBookMark>
                 <DeleteIconImg
                   src={DeleteIcon}
                   alt='minus-icon'
-                  onClick={handleDeleteBtn}
+                  onClick={() => handleDeleteBtn(data.id, data.type)}
                 />
               </CancelBookMark>
             </List>
@@ -40,7 +55,14 @@ const BookMarkList = ({ datas }) => {
           </ListGroup>
         ))}
       </ListContainer>
-      {modalOpen && <DeleteModal onClose={closeModal} />}
+      {modalOpen && (
+        <DeleteModal
+          onClose={closeModal}
+          id={currentId}
+          type={currentType}
+          deleteSuccess={handleDeleteConfirm}
+        />
+      )}
     </>
   );
 };
@@ -89,7 +111,7 @@ const Title = styled.span`
 `;
 
 const Location = styled.span`
-  font-size: 0.9;
+  font-size: 0.9rem;
   color: #868686;
 `;
 

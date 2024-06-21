@@ -12,6 +12,15 @@ const CommentSchema = new Schema(
             type: String,
             required: true,
         },
+        postId: {
+            type: Schema.Types.ObjectId,
+            ref: "Post",
+            required: true,
+        },
+        isDeleted: {
+            type: Boolean,
+            default: false
+        },
     },
     {
         timestamps: true,

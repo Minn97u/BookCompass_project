@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
 import { ReactComponent as LogoSVG } from '../../assets/icons/Logo.svg';
 import AuthModal from '../auth/AuthModal';
 import { getLogout, getLoginStatus } from '../../api/Auth';
@@ -18,13 +18,13 @@ function Navbar() {
   const [showModal, setShowModal] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginText, setLoginText] = useState('로그인');
-  const userId = localStorage.getItem('userId');
   const navigate = useNavigate();
 
   const handelLoginStatus = async () => {
     try {
-      await getLoginStatus();
-      if (!userId) {
+      const res = await getLoginStatus();
+      const logined = res.data.loggedIn;
+      if (!logined) {
         setLoginText('로그인');
       } else {
         setIsLoggedIn(true);
@@ -117,6 +117,8 @@ function Navbar() {
       {showModal && (
         <AuthModal onClose={handleCloseModal} initialFormType='로그인' />
       )}
+
+      <Outlet />
     </>
   );
 }
@@ -131,9 +133,10 @@ const GlobalStyle = createGlobalStyle`
 const NavbarWrapper = styled.div`
   width: 100%; /* 네브바가 전체 너비를 차지하도록 설정 */
   box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
-  border-bottom: 1px solid #e7e7e7; /* 더 얇은 선 */
+  border-bottom: 1px solid #ae9d8a; /* 더 얇은 선 */
   margin: 0; /* 모든 마진 제거 */
   padding: 20px 0px 30px 0px;
+  background-color: #dcccb5;
 `;
 
 const NavbarContainer = styled.div`
@@ -153,8 +156,6 @@ const StyledLogo = styled(LogoSVG)`
 `;
 
 const NavButton = styled.button`
-  font-family: 'SUITE';
-  font-style: normal;
   font-weight: ${({ isActive }) => (isActive ? '700' : '400')};
   font-size: 18px;
   line-height: 16px;

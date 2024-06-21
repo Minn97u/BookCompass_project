@@ -1,32 +1,39 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const MypageBox = ({ icon, title, component, mapIcon }) => {
+const MypageBox = ({ icon, title, component, mapIcon, onMapOpen }) => {
   return (
-    <Container>
-      <TitleBox>
-        <Icon src={icon} alt='icon' />
-        <Title>{title}</Title>
-      </TitleBox>
-      <ContentWrapper>{component}</ContentWrapper>
-      {mapIcon && (
-        <MapBtn>
-          <img src={mapIcon} alt='map-icon' />
-        </MapBtn>
-      )}
-    </Container>
+    <ContainerBoreder>
+      <Container>
+        <TitleBox>
+          <Icon src={icon} alt='icon' />
+          <Title>{title}</Title>
+        </TitleBox>
+        <ContentWrapper>{component}</ContentWrapper>
+        {mapIcon && (
+          <MapBtn onClick={onMapOpen}>
+            <img src={mapIcon} alt='map-icon' />
+          </MapBtn>
+        )}
+      </Container>
+    </ContainerBoreder>
   );
 };
 
 export default MypageBox;
+
+const ContainerBoreder = styled.div`
+  border: 0.5px solid #eaeaea;
+  border-radius: 5px;
+`;
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   border-top: 8px solid #efefef;
   border-radius: 5px;
-  box-shadow: 0px 3px 18px rgba(0, 0, 0, 0.04);
-  width: 39rem;
+  box-shadow: 0px 3px 18px rgba(0, 0, 0, 0.1);
+  width: 100%;
   height: 24rem;
   padding: 20px 50px 33px 50px;
   box-sizing: border-box;

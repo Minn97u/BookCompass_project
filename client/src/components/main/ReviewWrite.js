@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import ClickStar from './ClickStar';
-import axios from 'axios';
+import { postReview } from '../../api/Main';
 
-function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
+function ReviewWrite({ onClose, placeId, userId, refreshReviews, placeType }) {
   const [reviewText, setReviewText] = useState('');
   const [rating, setRating] = useState(0);
-  console.log('libraryId:', libraryId); // 추가
+
   const handleReviewChange = (e) => {
     setReviewText(e.target.value);
   };
 
-  console.log('userId:', userId);
   const handleSubmit = async () => {
     if (rating === 0) {
       alert('평점을 선택해주세요.');
@@ -19,40 +18,19 @@ function ReviewWrite({ libraryId, onClose, placeId, userId, refreshReviews }) {
     }
 
     try {
-      console.log('리뷰 데이터:', {
+      const response = await postReview(
         userId,
-        libraryId,
+        placeId,
+        placeType,
         rating,
-        comment: reviewText
-      });
-
-      console.log('placeId:', placeId);
-
-      const response = await axios.post(
-        'http://localhost:3001/api/reviews',
-        {
-          userId,
-          libraryId: placeId,
-          parkId: null,
-          rating,
-          comment: reviewText
-        },
-        {
-          withCredentials: true
-        }
+        reviewText
       );
-      console.log('리뷰가 성공적으로 작성되었습니다:', response.data);
+
       alert('리뷰가 성공적으로 작성되었습니다.');
       onClose();
       refreshReviews(); // 리뷰 목록 갱신 함수 호출
     } catch (error) {
       console.error('리뷰 작성에 실패했습니다:', error);
-
-      // 에러 객체의 추가 정보를 출력합니다.
-      console.log('에러 응답 데이터:', error.response?.data);
-      console.log('에러 상태 코드:', error.response?.status);
-      console.log('에러 헤더:', error.response?.headers);
-
       alert('리뷰 작성에 실패했습니다.');
     }
   };

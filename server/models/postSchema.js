@@ -21,12 +21,18 @@ const PostSchema = new Schema(
             id: { type: Schema.Types.ObjectId, ref: "User", required: true },
             name: { type: String, required: true },
             profilePic: { type: String, required: false },
+            favoriteAuthor: { type: String, default: null },
+            profileMsg: { type: String, default: "메시지를 입력해 주세요" },
         },
         postImg: {
             type: String,
             default: null,
         },
         comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+        isDeleted: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,

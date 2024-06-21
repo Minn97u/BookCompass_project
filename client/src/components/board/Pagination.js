@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
 import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
 import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
@@ -20,7 +20,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
     const halfMaxPagesToShow = Math.floor(maxPagesToShow / 2);
-
     let startPage = Math.max(1, currentPage - halfMaxPagesToShow);
     let endPage = Math.min(totalPages, currentPage + halfMaxPagesToShow);
 
@@ -101,8 +100,8 @@ const StyledPaginationButton = styled.button`
   background-color: ${(props) => (props.isActive ? '#543D20' : 'white')};
   color: ${(props) => (props.isActive ? 'white' : '#8a5a2b')};
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 1.25rem;
+  padding: 0.4rem 0.7rem;
+  border-radius: 50%;
   cursor: pointer;
   font-size: 0.875rem;
   margin: 0 0.325rem;

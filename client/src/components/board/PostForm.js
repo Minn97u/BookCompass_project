@@ -2,20 +2,24 @@ import React from 'react';
 import styled from 'styled-components';
 import { ReactComponent as PicAddIcon } from '../../assets/icons/picaddbutton.svg';
 import TagButtons from './TagButtons';
+import { useWatch } from 'react-hook-form';
 
 const PostForm = ({
-  title,
-  content,
-  tag,
-  onTitleChange,
-  onContentChange,
-  onTagChange,
   onSubmit,
+  control,
   fileInputRef,
   onFileInputClick,
   onFileChange,
-  selectedFile
+  setValue
 }) => {
+  const { register, handleSubmit } = control;
+  const tag = useWatch({ control, name: 'tag' });
+  const selectedFile = useWatch({ control, name: 'selectedFile' });
+  const tags = ['잡담', '같이 해요', '추천 장소'];
+  const handleTagClick = (tag) => {
+    setValue('tag', tag);
+  };
+
   return (
     <ModalContent>
       <ModalHeader></ModalHeader>
@@ -23,12 +27,15 @@ const PostForm = ({
         <CommentSection>
           <TitleInput
             placeholder='제목을 입력해 주세요.'
-            value={title}
-            onChange={onTitleChange}
+            {...register('title')}
           />
           <HrLine />
           <BoardTagsContainer>
-            <TagButtons activeTag={tag} handleTagClick={onTagChange} />
+            <TagButtons
+              activeTag={tag}
+              handleTagClick={handleTagClick}
+              tags={tags}
+            />
             <PicAddIcon onClick={onFileInputClick} />
             <FileInput
               id='fileInput'
@@ -39,10 +46,9 @@ const PostForm = ({
           </BoardTagsContainer>
           <ContentTextArea
             placeholder='내용을 입력해 주세요.'
-            value={content}
-            onChange={onContentChange}
+            {...register('content')}
           />
-          <CommentButton onClick={onSubmit}>등록</CommentButton>
+          <CommentButton onClick={handleSubmit(onSubmit)}>등록</CommentButton>
         </CommentSection>
       </ModalBody>
     </ModalContent>
@@ -58,7 +64,7 @@ const HrLine = styled.hr`
 
 const ModalContent = styled.div`
   background: white;
-  padding: 1.25rem;
+  padding: 0.8rem;
   width: 94%;
   max-width: 60rem;
   height: auto;
@@ -123,8 +129,8 @@ const Button = styled.button`
   background-color: ${(props) => (props.isActive ? '#543D20' : 'white')};
   color: ${(props) => (props.isActive ? 'white' : '#8a5a2b')};
   border: 0.063rem solid #8a5a2b;
-  padding: 0.5rem 1rem;
-  border-radius: 1.25rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
   cursor: pointer;
   font-size: 0.875rem;
   margin-right: 0.325rem;

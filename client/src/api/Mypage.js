@@ -4,6 +4,14 @@ export const getProfileInfo = () => {
   return axios.get('/api/mypage/profile');
 };
 
+export const putProfileInfo = async (data) => {
+  return axios.put('/api/mypage/profile', data, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  });
+};
+
 export const getMyPosts = () => {
   return axios.get('/api/mypage/myPosts');
 };
@@ -16,7 +24,7 @@ export const getMyComments = () => {
   return axios.get('/api/mypage/myComments');
 };
 
-export const deleteMyComment = (id) => {
+export const deleteMyComments = (id) => {
   return axios.delete(`/api/mypage/myComments/${id}`);
 };
 
@@ -24,12 +32,14 @@ export const getMyFavoriteLibraries = () => {
   return axios.get('/api/mypage/favoriteLibrariesList');
 };
 
-export const deleteMyFavoriteLibraries = (data) => {
-  return axios.delete('/api/mypage/favoriteLibraries', data);
-};
-
 export const getMyFavoriteParksList = () => {
   return axios.get('/api/mypage/favoriteParksList');
+};
+
+export const deleteMyFavorite = (data) => {
+  return axios.delete('/api/mypage/favorites', {
+    data
+  });
 };
 
 export const getMyReviews = () => {
@@ -37,17 +47,5 @@ export const getMyReviews = () => {
 };
 
 export const deleteMyReviews = (id) => {
-  console.log(`주소: /api/mypage/myReviews/${id}`);
   return axios.delete(`/api/mypage/myReviews/${id}`);
-};
-
-export const putProfileInfo = async (data) => {
-  return axios.put('/api/mypage/profile', data, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  });
-};
-export const deleteMyReview = async (id) => {
-  await axios.delete(`/api/mypage/myReviews/${id}`);
 };

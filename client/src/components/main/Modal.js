@@ -1,75 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import BookIcon from '../../assets/icons/BookIcon.svg';
 import CloseIcon from '../../assets/icons/CloseIcon.svg';
 import Review from './Review';
 import ArchiveAddIconSrc from '../../assets/icons/ArchiveAdd.svg';
 import ArchiveAddedIconSrc from '../../assets/icons/ArchivePreAddIcon.svg';
+import {
+  addLibraryFavorite,
+  deleteLibraryFavorite,
+  addParkFavorite,
+  deleteParkFavorite,
+  getLibraryAvgRating,
+  getParkAvgRating,
+  getLibraryFav,
+  getParkFav
+} from '../../api/Main';
 
-const Modal = ({ isOpen, closeModal, place, type }) => {
-  const [archiveAdded, setArchiveAdded] = useState(false);
+const Modal = ({
+  isOpen,
+  closeModal,
+  place,
+  type,
+  userId,
+  archiveAdded = { libraryFavs: [], parkFavs: [] },
+  setArchiveAdded
+}) => {
   const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
-    // 모달이 열릴 때마다 찜하기 상태를 설정
-    if (place && place.favorite !== undefined) {
-      setArchiveAdded(place.favorite);
-    }
+    const fetchAverageRating = async () => {
+      try {
+        if (place) {
+          const rating =
+            type === 'library'
+              ? await getLibraryAvgRating(place._id)
+              : await getParkAvgRating(place._id);
+          setAverageRating(rating);
+        }
+      } catch (error) {
+        console.error('평균 평점을 가져오는 중 오류 발생:', error);
+      }
+    };
 
-    // place가 있을 때 평균 평점을 가져옴
-    if (place && type === 'library') {
-      axios
-        .get(`/api/libraries/${place._id}`)
-        .then((response) => {
-          setAverageRating(response.data.averageRating || 0);
-        })
-        .catch((error) => {
-          console.error('평균 평점을 가져오는 중 오류 발생:', error);
-        });
+    if (isOpen) {
+      fetchAverageRating();
     }
   }, [isOpen, place, type]);
 
+  const fetchFavorites = async () => {
+    try {
+      if (type === 'library') {
+        const libraryFavs = await getLibraryFav();
+        const libraryFavsMap = libraryFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          libraryFavs: libraryFavsMap
+        }));
+      } else if (type === 'park') {
+        const parkFavs = await getParkFav();
+        const parkFavsMap = parkFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
+        setArchiveAdded((prevState) => ({
+          ...prevState,
+          parkFavs: parkFavsMap
+        }));
+      }
+    } catch (error) {
+      console.error('Error fetching favorites:', error);
+    }
+  };
+
   const handleArchiveButtonClick = async () => {
     try {
-      let endpoint = '';
-      let data = {};
-      console.log(place._id);
-      console.log('즐찾 버튼 클릭');
+      let response;
 
       if (type === 'library') {
-        if (archiveAdded) {
-          endpoint = '/api/libraries/removeFavoriteLibrary';
+        const isFavoriteIndex = archiveAdded.libraryFavs.findIndex(
+          (item) => item.id === place._id
+        );
+
+        if (isFavoriteIndex !== -1) {
+          response = await deleteLibraryFavorite(place._id);
         } else {
-          endpoint = '/api/libraries/favoriteLibraries';
+          response = await addLibraryFavorite(place._id);
         }
-        data = { libraryId: place._id };
       } else if (type === 'park') {
-        if (archiveAdded) {
-          endpoint = '/api/parks/removeFavoritePark';
+        if (archiveAdded.parkFavs.some((item) => item.id === place._id)) {
+          response = await deleteParkFavorite(place._id);
         } else {
-          endpoint = '/api/parks/favoriteParks';
+          response = await addParkFavorite(place._id);
         }
-        data = { parkId: place._id };
       }
 
-      const response = await axios.post(endpoint, data);
-
       alert(response.data);
-
-      // API 요청 후 찜하기 상태 업데이트
-      setArchiveAdded(!archiveAdded); // 상태 토글
+      fetchFavorites(); // 즐겨찾기 상태를 다시 가져옴
     } catch (error) {
       if (error.response) {
         alert(error.response.data);
       } else {
-        console.error('찜하기 중 오류 발생:', error.message);
         alert('오류가 발생했습니다. 다시 시도해주세요.');
       }
     }
   };
 
-  if (!isOpen || !place) return null; // isOpen이 false이거나 place가 null인 경우 모달 닫기
+  if (!isOpen || !place) return null;
+
+  const isLibraryFavorite = archiveAdded.libraryFavs.some(
+    (item) => item.id === place._id
+  );
+  const isParkFavorite = archiveAdded.parkFavs.some(
+    (item) => item.id === place._id
+  );
 
   return (
     <ModalContainer onClick={closeModal}>
@@ -86,15 +134,24 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
           {place.address || '주소 없음'}
           <ArchiveAddButton onClick={handleArchiveButtonClick}>
             <img
-              src={archiveAdded ? ArchiveAddedIconSrc : ArchiveAddIconSrc}
+              src={
+                type === 'library'
+                  ? isLibraryFavorite
+                    ? ArchiveAddedIconSrc
+                    : ArchiveAddIconSrc
+                  : isParkFavorite
+                    ? ArchiveAddedIconSrc
+                    : ArchiveAddIconSrc
+              }
               alt='ArchiveIcon'
             />
           </ArchiveAddButton>
         </PlaceAddress>
         <PlaceOperatingHours>
-          {place.hours || '운영시간 정보 없음'}
+          운영시간 : {place.hours || '운영시간 정보 없음'}
         </PlaceOperatingHours>
-        <PlacePhone>{place.phone || '전화번호 없음'}</PlacePhone>
+        <PlacePhone>전화번호 : {place.phone || '전화번호 없음'}</PlacePhone>
+        <PlaceHoliday>휴무일 : {place.holidays || '연중 무휴'}</PlaceHoliday>
         <PlaceURL
           href={place.url || '#'}
           target='_blank'
@@ -102,7 +159,12 @@ const Modal = ({ isOpen, closeModal, place, type }) => {
         >
           {place.url || '홈페이지 URL 없음'}
         </PlaceURL>
-        <Review rating={averageRating} placeId={place._id} />
+        <Review
+          rating={averageRating}
+          placeId={place._id}
+          placeType={type}
+          archiveAdded={archiveAdded}
+        />
       </ModalContent>
     </ModalContainer>
   );
@@ -126,10 +188,10 @@ const ModalContent = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 50px;
+  padding: 60px 50px;
   position: absolute;
-  width: 350px;
-  height: 400px;
+  width: 370px;
+  height: 450px;
   left: 40%;
   top: 15%;
   background: #ffffff;
@@ -139,8 +201,8 @@ const ModalContent = styled.div`
 
 const CloseButton = styled.button`
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 3px;
+  right: 0px;
   background: none;
   border: none;
   cursor: pointer;
@@ -211,6 +273,7 @@ const PlaceOperatingHours = styled.div`
   display: flex;
   text-align: left;
   align-items: center;
+  width: 88%;
 `;
 
 const PlacePhone = styled.p`
@@ -231,10 +294,24 @@ const PlaceURL = styled.a`
   font-size: 14px;
   line-height: 18px;
   color: #3e91f4;
-  position: absolute;
   width: 365px;
   height: 16px;
   left: 978px;
   top: 544px;
   text-align: left;
+`;
+
+const PlaceHoliday = styled.div`
+  margin-top: -5px;
+  margin-bottom: 10px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #191619;
+  display: flex;
+  text-align: left;
+  align-items: center;
+  width: 88%;
 `;

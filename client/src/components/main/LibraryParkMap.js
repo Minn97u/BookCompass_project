@@ -9,7 +9,8 @@ const LibraryParkMap = ({
   onLibraryClick,
   onParkClick,
   selectedButton,
-  center
+  center,
+  mapLevel
 }) => {
   const mapRef = useRef(null);
   const libraryMarkers = useRef([]);
@@ -24,7 +25,7 @@ const LibraryParkMap = ({
     const mapContainer = document.getElementById('map');
     const mapOption = {
       center: new kakao.maps.LatLng(37.5665, 126.978),
-      level: 8
+      level: mapLevel
     };
 
     const map = new kakao.maps.Map(mapContainer, mapOption);
