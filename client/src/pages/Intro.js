@@ -4,9 +4,10 @@ import { TextPlugin, ScrollTrigger } from 'gsap/all';
 import styled from 'styled-components';
 import Logo from '../assets/icons/Logo.svg';
 import BookImg from '../assets/icons/bookImg.svg';
+import { getUserInfo } from '../api/Auth';
+import IntroImage from '../assets/icons/IntroImg.svg';
 
 gsap.registerPlugin(TextPlugin, ScrollTrigger);
-import { getUserInfo } from '../api/Auth';
 
 function Intro() {
   useEffect(() => {
@@ -150,13 +151,22 @@ function Intro() {
   }, []);
 
   return (
-    <MainContainer ref={app}>
-      <Header>
-        <BookImgContainer ref={bookImgRef} src={BookImg} alt='book' />
-      </Header>
-      <Title>
-        <DescriptionTitle ref={titleRef}></DescriptionTitle>
-        <DescriptionContainer ref={textRef}>
+    <MainContainer>
+      <TitleContainer>
+        <TitleBox>
+          <Title>우리 동네 도서관 정보 서비스</Title>
+
+          <SubTitle>
+            도서관과 독서 공간을 쉽고 편리하게 찾고 싶으신가요?
+            <br />
+            우리 동네 책 읽기 좋은 공간, 지금 바로 찾아보세요!
+          </SubTitle>
+          <IntroImg src={IntroImage} alt='intro-img' />
+        </TitleBox>
+      </TitleContainer>
+      <SubContainer>
+        <DescriptionTitle>우리는 책을 얼마나 읽을까요?</DescriptionTitle>
+        <DescriptionContainer>
           <DescriptionText>
             지난 10년 동안 서울시의 독서인구 비율은 2013년{' '}
             <strong>62.4%</strong> 에서 2023년 <strong>48.5%</strong>로 꾸준히{' '}
@@ -192,7 +202,7 @@ function Intro() {
             </GraphsRow>
           </GraphSection>
         </DescriptionContainer>
-      </Title>
+      </SubContainer>
       <Title2>
         <DescriptionTitle ref={title2Ref}></DescriptionTitle>
         <DescriptionContainer2 ref={text2Ref} style={{ opacity: 0 }}>
@@ -285,11 +295,26 @@ const MainContainer = styled.div`
   gap: 20px;
 `;
 
+const TitleContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: 90px 0px;
+`;
+
 const Header = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 30vh;
+`;
+
+const IntroImg = styled.img`
+  width: 30rem;
+  align-self: center;
+  margin-right: 5px;
 `;
 
 const BookImgContainer = styled.img`
@@ -298,10 +323,34 @@ const BookImgContainer = styled.img`
   margin-bottom: -40px;
 `;
 
-const Title = styled.div`
+const TitleBox = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  margin-right: 70px;
+`;
+
+const Title = styled.p`
+  display: flex;
+  flex-direction: row;
+  font-size: 2.8rem;
+  color: #242424;
+  font-family: 'MBC1961GulimM';
+`;
+
+const SubTitle = styled.p`
+  font-size: 1.3rem;
+  font-family: 'S-CoreDream-4Regular';
+  line-height: 30px;
+  margin-top: -20px;
+`;
+
+const SubContainer = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 40px;
+  background-color: #f9f5f0;
 `;
 
 const Title2 = styled.div`
@@ -337,7 +386,9 @@ const DescriptionContainer = styled.div`
   justify-content: center;
 `;
 
-const DescriptionTitle = styled.h2`
+const DescriptionTitle = styled.p`
+  font-family: 'LINESeedKR';
+  font-weight: 700;
   font-size: 29px;
   margin-bottom: 10px;
 `;

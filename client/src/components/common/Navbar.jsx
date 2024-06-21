@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Link, useNavigate, Outlet } from 'react-router-dom';
-import { ReactComponent as LogoSVG } from '../../assets/icons/Logo.svg';
 import AuthModal from '../auth/AuthModal';
 import { getLogout, getLoginStatus } from '../../api/Auth';
+import RealLogo from '../../assets/icons/RealLogo.svg';
 
 function Button({ children, isActive, onClick }) {
   return (
@@ -84,7 +84,7 @@ function Navbar() {
       <NavbarWrapper>
         <NavbarContainer>
           <LogoContainer to={'/'} onClick={handleLogoClick}>
-            <StyledLogo />
+            <LogoImg src={RealLogo} alt='logo' />
           </LogoContainer>
           <ButtonContainer>
             <Link to={'/library'}>
@@ -127,16 +127,19 @@ const GlobalStyle = createGlobalStyle`
   body, html {
     margin: 0;
     padding: 0;
+    
   }
 `;
 
 const NavbarWrapper = styled.div`
   width: 100%; /* 네브바가 전체 너비를 차지하도록 설정 */
-  box-sizing: border-box; /* 패딩과 테두리를 포함한 너비 계산 */
-  border-bottom: 1px solid #ae9d8a; /* 더 얇은 선 */
   margin: 0; /* 모든 마진 제거 */
-  padding: 20px 0px 30px 0px;
-  background-color: #dcccb5;
+  padding: 10px 0px;
+  box-shadow: 0 3px 5px rgba(189, 189, 189, 0.25);
+`;
+
+const LogoImg = styled.img`
+  width: 13rem;
 `;
 
 const NavbarContainer = styled.div`
@@ -150,17 +153,13 @@ const LogoContainer = styled(Link)`
   margin-top: 10px;
 `;
 
-const StyledLogo = styled(LogoSVG)`
-  width: 210px;
-  height: 58.48px;
-`;
-
 const NavButton = styled.button`
-  font-weight: ${({ isActive }) => (isActive ? '700' : '400')};
-  font-size: 18px;
+  font-family: 'S-CoreDream-4Regular';
+  font-weight: ${({ isActive }) => (isActive ? '800' : '700')};
+  font-size: 1rem;
   line-height: 16px;
   text-align: center;
-  color: #543d20;
+  color: ${({ isActive }) => (isActive ? '#68533c' : '#464646')};
   border: none;
   background-color: transparent;
   margin: 0 15px;
@@ -168,12 +167,13 @@ const NavButton = styled.button`
 
   &:hover {
     font-weight: 700;
+    color: #68533c;
   }
 `;
 
 const ButtonContainer = styled.div`
   display: flex;
-  margin-top: 32px;
+  margin-top: 8px;
 `;
 
 export default Navbar;

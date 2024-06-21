@@ -47,9 +47,11 @@ const App = () => {
           <Route path='/' element={<Navbar />}>
             <Route index element={<Intro />} />
             <Route path='library' element={<Main />} />
+            <Route path='library/info' element={<Main />} />
             <Route path='board/:shortId' element={<PostDetails />} />
             <Route path='board' element={<Board />} />
             <Route path='mypage' element={<Mypage />} />
+
             <Route path='mypage/edit' element={<EditPage />} />
             <Route path='*' element={<Navigate to='/404' />} />
           </Route>
