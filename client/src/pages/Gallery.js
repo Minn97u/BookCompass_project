@@ -11,7 +11,7 @@ const Gallery = () => {
 
   const fetchPosts = async () => {
     try {
-      const res = await getPosts(page, 10, '추천 장소'); // "추천 장소" 태그의 글들만 가져옴
+      const res = await getPosts(page, 30, '추천 장소'); // "추천 장소" 태그의 글들만 가져옴
       setPosts((prevPosts) => [...prevPosts, ...res.posts]);
       if (res.posts.length === 0) {
         setHasMore(false);
@@ -51,7 +51,7 @@ const Gallery = () => {
                 <Image
                   src={
                     item.postImg
-                      ? `${item.postImg.split('public')[1]}`
+                      ? `${item.postImg.split('/public')[1]}`
                       : './No_image_available.png'
                   }
                   alt={item.title}
