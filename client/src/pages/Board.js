@@ -31,7 +31,7 @@ const Board = () => {
     posts: [],
     deleteConfirmModalIsOpen: false
   });
-
+  const tags = ['전체', '추천 장소', '같이 해요'];
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -301,7 +301,11 @@ const Board = () => {
   return (
     <BoardContainer>
       <BoardTagsContainer>
-        <TagButtons activeTag={activeTag} handleTagClick={handleTagClick} />
+        <TagButtons
+          activeTag={activeTag}
+          handleTagClick={handleTagClick}
+          tags={tags}
+        />
         <WriteIcon onClick={handleWriteIconClick} />
       </BoardTagsContainer>
       <PostList posts={posts} openModal={openModal} />

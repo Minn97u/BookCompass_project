@@ -16,6 +16,7 @@ const PostForm = ({
   onFileChange,
   selectedFile
 }) => {
+  const tags = ['잡담', '추천 장소', '같이 해요'];
   return (
     <ModalContent>
       <ModalHeader></ModalHeader>
@@ -28,7 +29,11 @@ const PostForm = ({
           />
           <HrLine />
           <BoardTagsContainer>
-            <TagButtons activeTag={tag} handleTagClick={onTagChange} />
+            <TagButtons
+              activeTag={tag}
+              handleTagClick={onTagChange}
+              tags={tags}
+            />
             <PicAddIcon onClick={onFileInputClick} />
             <FileInput
               id='fileInput'

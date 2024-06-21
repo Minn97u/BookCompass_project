@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const TagButtons = ({ activeTag, handleTagClick }) => (
+const TagButtons = ({ activeTag, handleTagClick, tags }) => (
   <BoardTags>
-    {['전체', '추천 장소', '같이 해요'].map((tag) => (
+    {tags.map((tag) => (
       <Button
         key={tag}
         isActive={activeTag === tag}
