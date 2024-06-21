@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ReactComponent as ArrowLeft } from '../../assets/icons/arrowleft.svg';
 import { ReactComponent as ArrowRight } from '../../assets/icons/arrowright.svg';
 import { ReactComponent as DoubleArrowLeft } from '../../assets/icons/doublearrowleft.svg';
@@ -20,7 +20,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     const pageNumbers = [];
     const maxPagesToShow = 5;
     const halfMaxPagesToShow = Math.floor(maxPagesToShow / 2);
-
     let startPage = Math.max(1, currentPage - halfMaxPagesToShow);
     let endPage = Math.min(totalPages, currentPage + halfMaxPagesToShow);
 

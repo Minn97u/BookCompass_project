@@ -25,7 +25,7 @@ const PostDetails = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [isDeleted, setIsDeleted] = useState(false);
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
-  const { handleSubmit, setValue, reset, watch } = useForm({
+  const { setValue, control } = useForm({
     defaultValues: {
       title: '',
       content: '',
@@ -43,7 +43,7 @@ const PostDetails = () => {
         setSelectedItem(res);
       } catch (error) {
         console.error('게시물 상세 정보 가져오기 오류:', error);
-        setIsDeleted(true); // 데이터가 null인 경우 삭제된 페이지로 설정
+        setIsDeleted(true);
       }
     };
 
@@ -171,23 +171,18 @@ const PostDetails = () => {
     <PostDetailsContainer>
       {selectedItem === null ? (
         isDeleted ? (
-          <p>삭제된 페이지입니다.</p> // 삭제된 페이지 표시
+          <p>삭제된 페이지입니다.</p>
         ) : (
-          <p>Loading...</p> // 로딩 상태 표시
+          <p>Loading...</p>
         )
       ) : isEditing ? (
         <PostForm
-          title={watch('title')}
-          content={watch('content')}
-          tag={watch('tag')}
-          onTitleChange={(e) => setValue('title', e.target.value)}
-          onContentChange={(e) => setValue('content', e.target.value)}
-          onTagChange={(tag) => setValue('tag', tag)}
-          onSubmit={handleSubmit(onSubmit)}
+          onSubmit={onSubmit}
+          control={control}
           fileInputRef={fileInputRef}
           onFileInputClick={handleFileInputClick}
           onFileChange={handlePicAddIconClick}
-          selectedFile={watch('selectedFile')}
+          setValue={setValue}
         />
       ) : (
         <DetailPageContent

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useForm } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import CustomModal from '../components/board/Modal';
 import PostForm from '../components/board/PostForm';
 import { ReactComponent as WriteIcon } from '../assets/icons/writebutton.svg';
@@ -8,7 +8,7 @@ import Pagination from '../components/board/Pagination';
 import TagButtons from '../components/board/TagButtons';
 import PostList from '../components/board/PostList';
 import ModalContent from '../components/board/ModalContent';
-
+import DeleteConfirmModal from '../components/board/DeleteConfirmModal';
 import {
   getPosts,
   viewPosts,
@@ -29,11 +29,12 @@ const Board = () => {
     isEditing: false,
     totalPages: 0,
     posts: [],
-    deleteConfirmModalIsOpen: false
+    deleteConfirmModalIsOpen: false,
+    commentToDelete: null
   });
-  const tags = ['전체', '추천 장소', '같이 해요'];
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const tags = ['전체', '같이 해요', '추천 장소'];
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     activeTag,
     modalIsOpen,
@@ -46,9 +47,8 @@ const Board = () => {
     commentToDelete
   } = state;
 
-  // eslint-disable-next-line
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
-  const { handleSubmit, setValue, reset, watch } = useForm({
+  const methods = useForm({
     defaultValues: {
       title: '',
       content: '',
@@ -107,7 +107,7 @@ const Board = () => {
       selectedItem: null,
       isEditing: false
     }));
-    reset();
+    methods.reset();
   };
 
   const handleWriteIconClick = () => {
@@ -120,14 +120,14 @@ const Board = () => {
       selectedItem: null,
       modalIsOpen: true
     }));
-    reset({ title: '', content: '', tag: '잡담', selectedFile: null });
+    methods.reset({ title: '', content: '', tag: '잡담', selectedFile: null });
   };
 
   const handlePicAddIconClick = (event) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setValue('selectedFile', file);
+      methods.setValue('selectedFile', file);
     }
   };
 
@@ -169,9 +169,9 @@ const Board = () => {
   };
 
   const handleEditClick = () => {
-    setValue('title', selectedItem.title);
-    setValue('content', selectedItem.content);
-    setValue('tag', selectedItem.tag);
+    methods.setValue('title', selectedItem.title);
+    methods.setValue('content', selectedItem.content);
+    methods.setValue('tag', selectedItem.tag);
     setState((prevState) => ({
       ...prevState,
       isEditing: true,
@@ -189,7 +189,7 @@ const Board = () => {
   const confirmDelete = async () => {
     if (selectedItem) {
       try {
-        const response = await deletePosts(selectedItem.shortId);
+        await deletePosts(selectedItem.shortId);
         await fetchItems();
         closeModal();
       } catch (error) {
@@ -205,24 +205,16 @@ const Board = () => {
 
   const handleCommentSubmit = async (data) => {
     if (selectedItem) {
-      // eslint-disable-next-line
-      const newComment = {
-        content: data.commentText,
-        author: { name: userName }
-      };
-
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
-
         const res = await viewPosts(selectedItem.shortId);
         setState((prevState) => ({
           ...prevState,
           selectedItem: res
         }));
-
-        setValue('commentText', '');
-        reset({ commentText: '' });
+        methods.setValue('commentText', '');
+        methods.reset({ commentText: '' });
       } catch (error) {
         console.error('Error submitting comment:', error);
       }
@@ -233,7 +225,7 @@ const Board = () => {
     setState((prevState) => ({
       ...prevState,
       deleteConfirmModalIsOpen: true,
-      commentToDelete: commentId // 추가
+      commentToDelete: commentId
     }));
   };
 
@@ -265,7 +257,7 @@ const Board = () => {
     setState((prevState) => ({
       ...prevState,
       deleteConfirmModalIsOpen: false,
-      commentToDelete: null // 추가
+      commentToDelete: null
     }));
   };
 
@@ -292,80 +284,63 @@ const Board = () => {
   };
 
   return (
-    <BoardContainer>
-      <BoardTagsContainer>
-        <TagButtons
-          activeTag={activeTag}
-          handleTagClick={handleTagClick}
-          tags={tags}
+    <FormProvider {...methods}>
+      <BoardContainer>
+        <BoardTagsContainer>
+          <TagButtons
+            activeTag={activeTag}
+            handleTagClick={handleTagClick}
+            tags={tags}
+          />
+          <WriteIcon onClick={handleWriteIconClick} />
+        </BoardTagsContainer>
+        <PostList posts={posts} openModal={openModal} />
+        <PaginationContainer>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </PaginationContainer>
+        <CustomModal isOpen={modalIsOpen} onRequestClose={closeModal}>
+          {selectedItem === null ? (
+            <PostForm
+              control={methods.control}
+              onSubmit={methods.handleSubmit(onSubmit)}
+              setValue={methods.setValue}
+              fileInputRef={fileInputRef}
+              onFileInputClick={handleFileInputClick}
+              onFileChange={handlePicAddIconClick}
+            />
+          ) : isEditing ? (
+            <PostForm
+              control={methods.control}
+              setValue={methods.setValue}
+              onSubmit={methods.handleSubmit(onSubmit)}
+              fileInputRef={fileInputRef}
+              onFileInputClick={handleFileInputClick}
+              onFileChange={handlePicAddIconClick}
+            />
+          ) : (
+            <ModalContent
+              selectedItem={selectedItem}
+              userName={userName}
+              handleEditClick={handleEditClick}
+              handleDeleteClick={handleDeleteClick}
+              handleCommentSubmit={handleCommentSubmit}
+              handleCommentDelete={handleCommentDeleteClick}
+              handleCommentUpdate={handleCommentUpdate}
+            />
+          )}
+        </CustomModal>
+        <DeleteConfirmModal
+          isOpen={deleteConfirmModalIsOpen}
+          onRequestClose={cancelDelete}
+          onConfirm={commentToDelete ? confirmCommentDelete : confirmDelete}
+          isSubmitting={isSubmitting}
         />
-        <StyledWriteIcon onClick={handleWriteIconClick} />
-      </BoardTagsContainer>
-      <PostList posts={posts} openModal={openModal} />
-      <PaginationContainer>
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-        />
-      </PaginationContainer>
-      <CustomModal isOpen={modalIsOpen} onRequestClose={closeModal}>
-        {selectedItem === null ? (
-          <PostForm
-            title={watch('title')}
-            content={watch('content')}
-            tag={watch('tag')}
-            onTitleChange={(e) => setValue('title', e.target.value)}
-            onContentChange={(e) => setValue('content', e.target.value)}
-            onTagChange={(tag) => setValue('tag', tag)}
-            onSubmit={handleSubmit(onSubmit)}
-            fileInputRef={fileInputRef}
-            onFileInputClick={handleFileInputClick}
-            onFileChange={handlePicAddIconClick}
-            selectedFile={watch('selectedFile')}
-          />
-        ) : isEditing ? (
-          <PostForm
-            title={watch('title')}
-            content={watch('content')}
-            tag={watch('tag')}
-            onTitleChange={(e) => setValue('title', e.target.value)}
-            onContentChange={(e) => setValue('content', e.target.value)}
-            onTagChange={(tag) => setValue('tag', tag)}
-            onSubmit={handleSubmit(onSubmit)}
-            fileInputRef={fileInputRef}
-            onFileInputClick={handleFileInputClick}
-            onFileChange={handlePicAddIconClick}
-            selectedFile={watch('selectedFile')}
-          />
-        ) : (
-          <ModalContent
-            selectedItem={selectedItem}
-            userName={userName}
-            handleEditClick={handleEditClick}
-            handleDeleteClick={handleDeleteClick}
-            handleCommentSubmit={handleCommentSubmit}
-            handleCommentDelete={handleCommentDeleteClick}
-            handleCommentUpdate={handleCommentUpdate}
-          />
-        )}
-      </CustomModal>
-      <CustomModal
-        isOpen={deleteConfirmModalIsOpen}
-        onRequestClose={cancelDelete}
-      >
-        <DeleteConfirmContainer>
-          <h2>정말 삭제하시겠습니까?</h2>
-          <CommentButton
-            onClick={commentToDelete ? confirmCommentDelete : confirmDelete}
-            disabled={isSubmitting}
-          >
-            예
-          </CommentButton>{' '}
-          <CommentButton onClick={cancelDelete}>아니오</CommentButton>
-        </DeleteConfirmContainer>
-      </CustomModal>
-    </BoardContainer>
+      </BoardContainer>
+    </FormProvider>
   );
 };
 
@@ -387,45 +362,6 @@ const PaginationContainer = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 1.3rem;
-`;
-
-const DeleteConfirmContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  padding-top: 10rem;
-  p {
-    margin-bottom: 1rem;
-  }
-  button {
-    margin: 0.5rem;
-    color: gray;
-    cursor: pointer;
-    font-size: 0.875rem;
-    background: none;
-    border: none;
-    &:hover {
-      color: black;
-    }
-  }
-`;
-
-const CommentButton = styled.button`
-  margin-left: auto;
-  display: block;
-  background-color: #543d20;
-  color: white;
-  padding: 0.4rem 0.9rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.875rem;
-`;
-
-const StyledWriteIcon = styled(WriteIcon)`
-  cursor: pointer;
 `;
 
 export default Board;
