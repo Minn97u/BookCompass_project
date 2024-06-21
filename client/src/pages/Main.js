@@ -299,7 +299,7 @@ const Main = () => {
                 onClick={() => handleButtonClick('park')}
                 selected={selectedButton === 'park'}
               >
-                공원
+                책 읽기 좋은 공원
               </Button>
             </ButtonContainer>
             {parkDustInfo && selectedButton === 'park' && (
