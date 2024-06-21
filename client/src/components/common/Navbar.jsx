@@ -144,6 +144,8 @@ const NavbarWrapper = styled.div`
   margin: 0; /* 모든 마진 제거 */
   padding: 10px 0px;
   box-shadow: 0 3px 5px rgba(189, 189, 189, 0.25);
+  position: relative;
+  z-index: 10;
 `;
 
 const LogoImg = styled.img`
