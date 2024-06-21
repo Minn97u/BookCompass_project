@@ -92,7 +92,7 @@ function Navbar() {
                 isActive={activeButton === 'libraryinfo'}
                 onClick={() => handleButtonClick('libraryinfo')}
               >
-                도서관 정보
+                도서 정보
               </Button>
             </Link>
             <Link to={'/library'}>
