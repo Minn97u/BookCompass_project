@@ -89,15 +89,9 @@ export const postReview = async (
       }
     );
 
-    console.log('리뷰가 성공적으로 작성되었습니다:', response.data);
     return response.data; // API 응답 데이터 반환
   } catch (error) {
     console.error('리뷰 작성에 실패했습니다:', error);
-
-    // 에러 객체의 추가 정보를 출력합니다.
-    console.log('에러 응답 데이터:', error.response?.data);
-    console.log('에러 상태 코드:', error.response?.status);
-    console.log('에러 헤더:', error.response?.headers);
 
     throw error; // 예외 처리: 상위 컴포넌트에서 처리할 수 있도록 예외를 throw
   }

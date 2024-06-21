@@ -18,12 +18,7 @@ const EditForm = ({ reviewId, onClose, refreshReviews }) => {
     }
 
     try {
-      console.log('Sending data to server:', {
-        reviewId,
-        rating,
-        comment: reviewText
-      });
-      const response = await editReview(reviewId, rating, reviewText);
+      await editReview(reviewId, rating, reviewText);
       alert('리뷰가 성공적으로 수정되었습니다.');
       onClose();
       refreshReviews(); // 리뷰 목록 갱신 함수 호출

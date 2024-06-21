@@ -30,7 +30,6 @@ const App = () => {
     try {
       await getLoginStatus();
     } catch (error) {
-      console.log('로그인상태', error);
       if (location.pathname.startsWith('/mypage')) {
         navigate('/404');
       }

@@ -91,8 +91,7 @@ const SignUpForm = ({ setFormType, onClose }) => {
     };
 
     try {
-      const res = await postSignup(data);
-      console.log('회원가입 완료', res);
+      await postSignup(data);
       setFormType('로그인');
     } catch (error) {
       console.error('회원가입 오류:', error);
@@ -108,7 +107,6 @@ const SignUpForm = ({ setFormType, onClose }) => {
     try {
       getGoogleLogin();
       const res = await getUserInfo();
-      console.log('구글 회원가입 성공', res);
       localStorage.setItem('userId', res.data.user.id);
       localStorage.setItem('userName', res.data.user.name);
       localStorage.setItem('userRegion', res.data.user.region);

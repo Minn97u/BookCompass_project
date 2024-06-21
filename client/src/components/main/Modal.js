@@ -28,7 +28,6 @@ const Modal = ({
   const [averageRating, setAverageRating] = useState(0);
 
   useEffect(() => {
-    console.log('정보', place);
     const fetchAverageRating = async () => {
       try {
         if (place) {
@@ -37,7 +36,6 @@ const Modal = ({
               ? await getLibraryAvgRating(place._id)
               : await getParkAvgRating(place._id);
           setAverageRating(rating);
-          console.log(averageRating);
         }
       } catch (error) {
         console.error('평균 평점을 가져오는 중 오류 발생:', error);

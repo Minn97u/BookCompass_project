@@ -25,8 +25,7 @@ const LoginForm = ({ setFormType, onClose }) => {
       password: password
     };
     try {
-      const res = await postLogin(data);
-      console.log('로그인 성공:', res);
+      await postLogin(data);
       onClose();
       window.location.href = '/';
     } catch (error) {

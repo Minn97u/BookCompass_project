@@ -23,7 +23,6 @@ const BookMarkList = ({ datas, setList }) => {
   };
 
   const handleDeleteConfirm = (id) => {
-    console.log(id);
     setList(datas.filter((data) => data.id !== id));
     closeModal();
   };

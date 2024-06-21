@@ -65,9 +65,7 @@ const ChangePasswordForm = ({ setFormType }) => {
 
     if (isFormValid) {
       try {
-        const res = await postChangePassword(data);
-        console.log('비밀번호 변경 완료', res);
-        // setFormType('로그인');
+        await postChangePassword(data);
         await getLogout();
         localStorage.removeItem('userId');
         localStorage.removeItem('userName');

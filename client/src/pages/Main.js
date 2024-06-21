@@ -45,7 +45,6 @@ const districts = [
 
 const Main = () => {
   const [keyword, setKeyword] = useState('');
-  const [debouncedKeyword, setDebouncedKeyword] = useState('');
   const [libraries, setLibraries] = useState([]);
   const [parks, setParks] = useState([]);
   const [selectedLibrary, setSelectedLibrary] = useState(null);
@@ -56,6 +55,7 @@ const Main = () => {
   const [mapCenter, setMapCenter] = useState({});
   const [selectedGu, setSelectedGu] = useState('');
   const [archiveAdded, setArchiveAdded] = useState({});
+
   const [mapLevel, setMapLevel] = useState('8');
 
   useEffect(() => {
@@ -80,9 +80,11 @@ const Main = () => {
     const fetchLibraryFavs = async () => {
       try {
         const libraryFavs = await getLibraryFav();
-        const libraryFavsMap = libraryFavs.map((item) => ({
-          id: item._id
-        }));
+        const libraryFavsMap = libraryFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
         setArchiveAdded((prevState) => ({
           ...prevState,
           libraryFavs: libraryFavsMap
@@ -95,9 +97,11 @@ const Main = () => {
     const fetchParkFavs = async () => {
       try {
         const parkFavs = await getParkFav();
-        const parkFavsMap = parkFavs.map((item) => ({
-          id: item._id
-        }));
+        const parkFavsMap = parkFavs.map((item) => {
+          return {
+            id: item._id
+          };
+        });
         setArchiveAdded((prevState) => ({
           ...prevState,
           parkFavs: parkFavsMap
@@ -114,23 +118,9 @@ const Main = () => {
   }, []);
 
   const debouncedSetKeyword = useCallback(
-    debounce((value) => setDebouncedKeyword(value), 500),
+    debounce((value) => setKeyword(value), 500),
     []
   );
-
-  useEffect(() => {
-    debouncedSetKeyword(keyword);
-  }, [keyword, debouncedSetKeyword]);
-
-  const handleFindLibraryClick = () => {
-    console.log(debouncedKeyword);
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      console.log(debouncedKeyword);
-    }
-  };
 
   const handleLibraryItemClick = (library) => {
     setSelectedLibrary(library);
@@ -221,7 +211,7 @@ const Main = () => {
   }, [isModalOpen, selectedLibrary, selectedPark]);
 
   const handleKeywordChange = (e) => {
-    setKeyword(e.target.value);
+    debouncedSetKeyword(e.target.value);
   };
 
   return (
@@ -234,10 +224,10 @@ const Main = () => {
                 <Input
                   type='text'
                   placeholder='도서관 검색'
+                  value={keyword}
                   onChange={handleKeywordChange}
-                  onKeyDown={handleKeyDown}
                 />
-                <ClickableIconContainer onClick={handleFindLibraryClick}>
+                <ClickableIconContainer>
                   <FindLibraryIcon src={FindLibrary} alt='FindLibrary' />
                 </ClickableIconContainer>
               </KeywordInputContainer>
@@ -257,13 +247,13 @@ const Main = () => {
               {selectedButton === 'library' ? (
                 <LibraryList
                   libraries={filteredLibraries}
-                  keyword={debouncedKeyword}
+                  keyword={keyword}
                   handleLibraryItemClick={handleLibraryItemClick}
                 />
               ) : (
                 <ParkList
                   parks={filteredParks}
-                  keyword={debouncedKeyword}
+                  keyword={keyword}
                   handleParkItemClick={handleParkItemClick}
                 />
               )}
@@ -275,7 +265,7 @@ const Main = () => {
             <LibraryParkMap
               libraries={filteredLibraries}
               parks={filteredParks}
-              searchTerm={debouncedKeyword}
+              searchTerm={keyword}
               onLibraryClick={handleLibraryClick}
               onParkClick={handleParkClick}
               selectedButton={selectedButton}

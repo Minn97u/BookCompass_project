@@ -24,14 +24,12 @@ const Review = ({ rating, placeId, placeType }) => {
   const handleToggleReview = () => {
     setIsWriteReviewOpen(!isWriteReviewOpen);
     setIconImage(isWriteReviewOpen ? WriteReviewIcon : BackIcon);
-    console.log('userId:', userId);
   };
 
   const refreshReviews = async () => {
     try {
       const response = await getReviews(placeId);
       setReviews(response.data);
-      console.log('Reviews data:', response.data); // 데이터 확인
     } catch (error) {
       console.error('리뷰를 불러오는 데 실패했습니다:', error);
     }

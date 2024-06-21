@@ -26,16 +26,13 @@ const EditPage = () => {
   const handleDeleteUserClick = async () => {
     const userConfirmed = window.confirm('회원 탈퇴를 진행하시겠습니까?');
     if (userConfirmed) {
-      const res = await deleteUser();
-      console.log(res.data.msg);
+      await deleteUser();
       await getLogout();
       localStorage.removeItem('userId');
       localStorage.removeItem('userName');
       localStorage.removeItem('userRegion');
       localStorage.removeItem('favoriteAuthor');
       window.location.href = '/';
-    } else {
-      console.log('회원 탈퇴가 취소되었습니다.');
     }
   };
 
