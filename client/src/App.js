@@ -14,6 +14,7 @@ import Intro from './pages/Intro';
 import Board from './pages/Board';
 import Mypage from './pages/Mypage';
 import Main from './pages/Main';
+import LibraryInfo from './pages/LibraryInfo';
 import EditPage from './pages/EditPage';
 import AddInfo from './pages/AddInfo';
 import NotFoundPage from './pages/NotFoundPage';
@@ -47,7 +48,7 @@ const App = () => {
           <Route path='/' element={<Navbar />}>
             <Route index element={<Intro />} />
             <Route path='library' element={<Main />} />
-            <Route path='library/info' element={<Main />} />
+            <Route path='library/info' element={<LibraryInfo />} />
             <Route path='board/:shortId' element={<PostDetails />} />
             <Route path='board' element={<Board />} />
             <Route path='mypage' element={<Mypage />} />
