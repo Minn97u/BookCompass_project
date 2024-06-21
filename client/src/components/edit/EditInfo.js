@@ -1,39 +1,51 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useMutation } from 'react-query';
 import styled from 'styled-components';
 import Districts from '../auth/Districts';
 import SignUpDistrict from '../auth/SignUpDistrict';
 import { postUserInfo } from '../../api/Auth';
+import DefaultButton from '../common/DefaultButton';
 
 const EditInfo = ({ myInfo, setMyInfo }) => {
-  const [editText, setEditText] = useState('수정');
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [resultText, setResultText] = useState('');
 
   const isFormValid =
     myInfo.region !== '' &&
     (myInfo.foundAnswer ? myInfo.foundAnswer.trim() !== '' : false);
 
-  const handleEditUserInfo = async () => {
+  const { mutate, isPending } = useMutation({
+    mutationFn: postUserInfo
+  });
+
+  const handleEditUserInfo = () => {
+    if (!isFormValid) {
+      setResultText('모두 입력해 주세요.');
+      return;
+    }
+
     const data = {
       region: myInfo.region || '',
       favoriteAuthor: myInfo.foundAnswer
     };
-    if (isFormValid) {
-      try {
-        const res = await postUserInfo(data);
-        console.log('유저 정보 편집 성공:', res);
-        setResultText('');
-        setEditText('완료!');
-        setTimeout(() => {
-          setEditText('수정');
-        }, 1000);
+
+    mutate(data, {
+      onSuccess: () => {
+        console.log('성공');
         localStorage.setItem('userRegion', data.region);
         localStorage.setItem('favoriteAuthor', data.favoriteAuthor);
-      } catch (error) {
-        console.error('유저 정보 편집 실패:', error);
+        setIsButtonDisabled(true);
+      },
+      onError: (err) => {
+        console.error(err);
+        alert('실패');
+      },
+      onSettled: () => {
+        setTimeout(() => {
+          setIsButtonDisabled(false);
+        }, 300);
       }
-    } else {
-      setResultText('모두 입력해 주세요.');
-    }
+    });
   };
 
   return (
@@ -60,7 +72,12 @@ const EditInfo = ({ myInfo, setMyInfo }) => {
             }
           />
         </InputBox>
-        <EditBtn onClick={handleEditUserInfo}>{editText}</EditBtn>
+        <DefaultButton
+          onClick={handleEditUserInfo}
+          disabled={isButtonDisabled || isPending}
+        >
+          수정
+        </DefaultButton>
       </InfoBox>
       {resultText && <ErrorText>{resultText}</ErrorText>}
     </EditInfoContainer>
@@ -111,20 +128,6 @@ const AnswerInput = styled.input`
   padding: 3px 12px 3px 12px;
   margin-top: -2px;
   font-size: 0.9rem;
-`;
-
-const EditBtn = styled.button`
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: white;
-  width: 3.3rem;
-  padding: 5px 10px 5px 10px;
-  border: none;
-  border-radius: 10px;
-  background-color: #563c0a;
-  align-self: flex-end;
-  cursor: pointer;
-  margin-bottom: 2px;
 `;
 
 const SubTitle = styled.p`

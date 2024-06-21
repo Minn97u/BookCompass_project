@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { LongInput } from '../common/LongInput';
 import { postChangePassword, getLogout } from '../../api/Auth';
@@ -12,6 +12,7 @@ const ChangePasswordForm = ({ setFormType }) => {
   const [checkPasswordReg, setCheckPasswordReg] = useState('');
   const [resultText, setResultText] = useState('');
   const [isFormValid, setIsFormValid] = useState(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const validateForm = () => {
@@ -92,6 +93,7 @@ const ChangePasswordForm = ({ setFormType }) => {
           placeholder='현재 비밀번호 입력'
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
+          ref={inputRef}
         />
         <LongInput
           title='새로운 비밀번호'
