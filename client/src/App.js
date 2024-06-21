@@ -19,6 +19,7 @@ import AddInfo from './pages/AddInfo';
 import NotFoundPage from './pages/NotFoundPage';
 import { getLoginStatus } from './api/Auth';
 import PostDetails from './pages/PostDetails';
+import Gallery from './pages/Gallery';
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const App = () => {
             <Route path='mypage' element={<Mypage />} />
             <Route path='mypage/edit' element={<EditPage />} />
             <Route path='*' element={<Navigate to='/404' />} />
+            <Route path='gallery' element={<Gallery />} />
           </Route>
           <Route path='/additionalinfo' element={<AddInfo />} />
           <Route path='/404' element={<NotFoundPage />} />
