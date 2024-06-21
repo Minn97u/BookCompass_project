@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { useForm, FormProvider, useWatch } from 'react-hook-form';
+import { useForm, FormProvider } from 'react-hook-form';
 import CustomModal from '../components/board/Modal';
 import PostForm from '../components/board/PostForm';
 import { ReactComponent as WriteIcon } from '../assets/icons/writebutton.svg';
@@ -8,7 +8,7 @@ import Pagination from '../components/board/Pagination';
 import TagButtons from '../components/board/TagButtons';
 import PostList from '../components/board/PostList';
 import ModalContent from '../components/board/ModalContent';
-
+import DeleteConfirmModal from '../components/board/DeleteConfirmModal';
 import {
   getPosts,
   viewPosts,
@@ -29,11 +29,11 @@ const Board = () => {
     isEditing: false,
     totalPages: 0,
     posts: [],
-    deleteConfirmModalIsOpen: false
+    deleteConfirmModalIsOpen: false,
+    commentToDelete: null
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const {
     activeTag,
     modalIsOpen,
@@ -46,9 +46,6 @@ const Board = () => {
     commentToDelete
   } = state;
 
-  // eslint
-
-  // eslint-disable-next-line
   const [userName, setUserName] = useState(localStorage.getItem('userName'));
   const methods = useForm({
     defaultValues: {
@@ -71,7 +68,6 @@ const Board = () => {
         totalPages: res.totalPages,
         posts: res.posts
       }));
-      console.log('게시글', res.posts);
     } catch (error) {
       console.error('Error fetching items:', error);
     }
@@ -162,7 +158,6 @@ const Board = () => {
       const response = isEditing
         ? await updatePosts(formData, selectedItem.shortId)
         : await postPosts(formData);
-      console.log('Post submitted successfully:', response.data);
       await fetchItems();
       closeModal();
     } catch (error) {
@@ -193,8 +188,7 @@ const Board = () => {
   const confirmDelete = async () => {
     if (selectedItem) {
       try {
-        const response = await deletePosts(selectedItem.shortId);
-        console.log('삭제 완료', response.data);
+        await deletePosts(selectedItem.shortId);
         await fetchItems();
         closeModal();
       } catch (error) {
@@ -210,26 +204,16 @@ const Board = () => {
 
   const handleCommentSubmit = async (data) => {
     if (selectedItem) {
-      // eslint-disable-next-line
-      const newComment = {
-        content: data.commentText,
-        author: { name: userName }
-      };
-
       try {
         const commentData = { content: data.commentText };
         await postComments(commentData, selectedItem.shortId);
-        console.log('Comment submitted successfully');
-
         const res = await viewPosts(selectedItem.shortId);
         setState((prevState) => ({
           ...prevState,
           selectedItem: res
         }));
-
         methods.setValue('commentText', '');
         methods.reset({ commentText: '' });
-        console.log('hihi', data.commentText);
       } catch (error) {
         console.error('Error submitting comment:', error);
       }
@@ -240,7 +224,7 @@ const Board = () => {
     setState((prevState) => ({
       ...prevState,
       deleteConfirmModalIsOpen: true,
-      commentToDelete: commentId // 추가
+      commentToDelete: commentId
     }));
   };
 
@@ -260,7 +244,6 @@ const Board = () => {
           deleteConfirmModalIsOpen: false,
           commentToDelete: null
         }));
-        console.log('댓글 삭제 완료');
       } catch (error) {
         console.error('댓글 삭제 오류', error);
       }
@@ -273,7 +256,7 @@ const Board = () => {
     setState((prevState) => ({
       ...prevState,
       deleteConfirmModalIsOpen: false,
-      commentToDelete: null // 추가
+      commentToDelete: null
     }));
   };
 
@@ -291,7 +274,6 @@ const Board = () => {
           ...prevState,
           selectedItem: { ...prevState.selectedItem, comments: updatedComments }
         }));
-        console.log('댓글 수정 완료');
       } catch (error) {
         console.error('댓글 수정 오류', error);
       }
@@ -346,21 +328,12 @@ const Board = () => {
             />
           )}
         </CustomModal>
-        <CustomModal
+        <DeleteConfirmModal
           isOpen={deleteConfirmModalIsOpen}
           onRequestClose={cancelDelete}
-        >
-          <DeleteConfirmContainer>
-            <p>정말 삭제하시겠습니까?</p>
-            <CommentButton
-              onClick={commentToDelete ? confirmCommentDelete : confirmDelete}
-              disabled={isSubmitting}
-            >
-              예
-            </CommentButton>{' '}
-            <CommentButton onClick={cancelDelete}>아니오</CommentButton>
-          </DeleteConfirmContainer>
-        </CustomModal>
+          onConfirm={commentToDelete ? confirmCommentDelete : confirmDelete}
+          isSubmitting={isSubmitting}
+        />
       </BoardContainer>
     </FormProvider>
   );
@@ -386,36 +359,4 @@ const PaginationContainer = styled.div`
   margin-top: 1.3rem;
 `;
 
-const DeleteConfirmContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  p {
-    margin-bottom: 1rem;
-  }
-  button {
-    margin: 0.5rem;
-    color: gray;
-    cursor: pointer;
-    font-size: 0.875rem;
-    background: none;
-    border: none;
-    &:hover {
-      color: black;
-    }
-  }
-`;
-const CommentButton = styled.button`
-  margin-left: auto;
-  display: block;
-  background-color: #543d20;
-  color: white;
-  padding: 0.4rem 0.9rem;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 0.875rem;
-`;
 export default Board;
