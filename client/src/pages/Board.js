@@ -32,7 +32,14 @@ const Board = () => {
     deleteConfirmModalIsOpen: false,
     commentToDelete: null
   });
-  const tags = ['전체', '같이 해요', '추천 장소'];
+  const tags = [
+    '전체',
+    '서평',
+    '프로그램',
+    '같이 해요',
+    '추천 장소',
+    '도서 추천'
+  ];
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
