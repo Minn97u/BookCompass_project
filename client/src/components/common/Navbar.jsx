@@ -111,7 +111,14 @@ function Navbar() {
                 게시판
               </Button>
             </Link>
-
+            <Link to={'/gallery'}>
+              <Button
+                isActive={activeButton === 'gallery'}
+                onClick={() => handleButtonClick('gallery')}
+              >
+                갤러리
+              </Button>
+            </Link>
             <Button
               isActive={activeButton === 'mypage' && isLoggedIn}
               onClick={() => handleButtonClick('mypage')}

@@ -32,8 +32,14 @@ const Board = () => {
     deleteConfirmModalIsOpen: false,
     commentToDelete: null
   });
-  const tags = ['전체', '같이 해요', '추천 장소'];
-
+  const tags = [
+    '전체',
+    '서평',
+    '프로그램',
+    '도서 추천',
+    '같이 해요',
+    '추천 장소'
+  ];
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     activeTag,
@@ -62,6 +68,7 @@ const Board = () => {
   const itemsPerPage = 10;
   const fetchItems = async (page = currentPage, tag = activeTag) => {
     try {
+      console.log('Fetching items for page:', page, 'and tag:', tag); // 로그 추가
       const res = await getPosts(page, itemsPerPage, tag === '전체' ? '' : tag);
       setState((prevState) => ({
         ...prevState,
@@ -140,6 +147,7 @@ const Board = () => {
   };
 
   const handlePageChange = (pageNumber) => {
+    console.log('Page change requested:', pageNumber); // 로그 추가
     setState((prevState) => ({
       ...prevState,
       currentPage: pageNumber
