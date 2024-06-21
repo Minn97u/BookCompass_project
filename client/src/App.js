@@ -14,11 +14,13 @@ import Intro from './pages/Intro';
 import Board from './pages/Board';
 import Mypage from './pages/Mypage';
 import Main from './pages/Main';
+import LibraryInfo from './pages/LibraryInfo';
 import EditPage from './pages/EditPage';
 import AddInfo from './pages/AddInfo';
 import NotFoundPage from './pages/NotFoundPage';
 import { getLoginStatus } from './api/Auth';
 import PostDetails from './pages/PostDetails';
+import Gallery from './pages/Gallery';
 
 const queryClient = new QueryClient();
 
@@ -47,11 +49,14 @@ const App = () => {
           <Route path='/' element={<Navbar />}>
             <Route index element={<Intro />} />
             <Route path='library' element={<Main />} />
+            <Route path='library/info' element={<LibraryInfo />} />
             <Route path='board/:shortId' element={<PostDetails />} />
             <Route path='board' element={<Board />} />
             <Route path='mypage' element={<Mypage />} />
+
             <Route path='mypage/edit' element={<EditPage />} />
             <Route path='*' element={<Navigate to='/404' />} />
+            <Route path='gallery' element={<Gallery />} />
           </Route>
           <Route path='/additionalinfo' element={<AddInfo />} />
           <Route path='/404' element={<NotFoundPage />} />

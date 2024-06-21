@@ -270,10 +270,11 @@ const ProfileConatiner = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  background-color: #f9f5f0;
+  background-color: #f3e6d7;
   border-right: 1px solid #c5b8a8;
   min-width: 20rem;
   position: relative;
+  z-index: 1;
 `;
 
 const ProfileImg = styled.img`
