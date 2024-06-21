@@ -8,6 +8,7 @@ const session = require("express-session");
 const passport = require("./passport");
 const { swaggerUi, swaggerSpec } = require("./swagger");
 const MongoStore = require("connect-mongo");
+require("./utils/scheduler"); // 스케줄러 추가
 
 const app = express();
 //라우트
@@ -18,6 +19,7 @@ const commentRoutes = require("./routes/commentRoutes");
 const mypageRoutes = require("./routes/mypageRoutes");
 const libraryRoutes = require("./routes/libraryRoutes");
 const reviewRoutes = require("./routes/reviewRoutes");
+const dustRoutes = require("./routes/dustRoutes");
 const errorHandler = require("./middlewares/errorHandler");
 
 // MongoDB Atlas 연결 설정
@@ -91,6 +93,7 @@ app.use("/api/comment", commentRoutes);
 app.use("/api/mypage", mypageRoutes);
 app.use("/api/libraries", libraryRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/dust", dustRoutes);
 
 // 모든 요청에 대해 index.html 파일을 반환
 app.get("*", (req, res) => {
